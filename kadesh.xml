@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <GroundOverlay>
+    <name>Kadesh Map</name>
+    <Icon>
+      <href>
+https://mr-malum.github.io/kadesh-map/Kadesh.png
+      </href>
+    </Icon>
+
+    <LatLonBox>
+      <north>100</north>
+      <south>0</south>
+      <east>100</east>
+      <west>0</west>
+    </LatLonBox>
+
+  </GroundOverlay>
+</kml>
