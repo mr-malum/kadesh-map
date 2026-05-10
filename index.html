@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Kadesh Map</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link
@@ -28,48 +29,79 @@
 </head>
 
 <body>
-  <div id="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<div id="map"></div>
 
-  <script>
-    // Create map using simple image coordinates instead of real-world lat/lng
-    const map = L.map('map', {
-      crs: L.CRS.Simple,
-      minZoom: -2,
-      maxZoom: 4
-    });
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    // Your image dimensions
-    const imageWidth = 8192;
-    const imageHeight = 8192;
+<script>
+  // Create map
+  const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 4
+  });
 
-    // Leaflet uses [Y, X], not [X, Y]
-    const bounds = [[0, 0], [imageHeight, imageWidth]];
+  // Image dimensions
+  const imageWidth = 8192;
+  const imageHeight = 8192;
 
-    // Add the map image
-    L.imageOverlay('Kadesh.png', bounds).addTo(map);
+  // Define image bounds
+  const bounds = [[0, 0], [imageHeight, imageWidth]];
 
-    // Fit map to image
-    map.fitBounds(bounds);
+  // Add image overlay
+  L.imageOverlay('Kadesh.png', bounds).addTo(map);
 
-    // Force view to center for testing
-    map.setView([4096, 4096], 0);
+  // Fit map to image
+  map.fitBounds(bounds);
 
-    // Loud test marker
-    const testMarker = L.circleMarker([4096, 4096], {
-      radius: 80,
+  // --- TOP LEFT HEX TEST ---
+
+  // AppSheet XY for 300:300 = 1.33,1
+  const centerX = (1.33 / 100) * imageWidth;
+  const centerY = (1 / 100) * imageHeight;
+
+  // Hex size
+  const hexRadius = 70;
+
+  // Build a pointy-top hex polygon
+  function makeHex(centerX, centerY, radius) {
+    const points = [];
+
+    for (let i = 0; i < 6; i++) {
+      const angle = Math.PI / 180 * (60 * i - 30);
+
+      const x = centerX + radius * Math.cos(angle);
+      const y = centerY + radius * Math.sin(angle);
+
+      // Leaflet uses [Y, X]
+      points.push([y, x]);
+    }
+
+    return points;
+  }
+
+  // Draw hex
+  const topLeftHex = L.polygon(
+    makeHex(centerX, centerY, hexRadius),
+    {
       color: 'red',
-      weight: 8,
+      weight: 3,
       fillColor: 'yellow',
-      fillOpacity: 1,
+      fillOpacity: 0.25,
       opacity: 1
-    }).addTo(map);
+    }
+  ).addTo(map);
 
-    testMarker.bindPopup('LOUD TEST MARKER').openPopup();
+  topLeftHex.bindPopup('300:300');
 
-    console.log('Marker added:', testMarker);
-    alert('Map script loaded');
-  </script>
+  // Zoom directly to test hex
+  map.setView([centerY, centerX], 2);
+
+  console.log('Hex drawn');
+  alert('Hex test loaded');
+
+</script>
+
 </body>
 </html>
