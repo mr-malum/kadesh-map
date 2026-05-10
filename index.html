@@ -3,33 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <title>Kadesh Map</title>
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
-    html, body {
+    html, body, #map {
       margin: 0;
       height: 100%;
       width: 100%;
       overflow: hidden;
       background: black;
     }
-
-    #map {
-      width: 100%;
-      height: 100%;
-      background: black;
-    }
   </style>
 </head>
 
 <body>
-
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -44,22 +33,19 @@
   const imageWidth = 8192;
   const imageHeight = 8192;
 
-  const bounds = [[0, 0], [imageHeight, imageWidth]];
+  // IMPORTANT:
+  // Use negative Y so 0 is top and -8192 is bottom.
+  const bounds = [[-imageHeight, 0], [0, imageWidth]];
 
   L.imageOverlay('Kadesh.png', bounds).addTo(map);
-
   map.fitBounds(bounds);
 
-  // --- TOP LEFT HEX TEST: 300:300 ---
-
   // AppSheet XY for 300:300 = 1.33,1
-  // AppSheet uses top-left origin, so now we keep Y near the top.
   const centerX = (1.33 / 100) * imageWidth;
-  const centerY = (1 / 100) * imageHeight;
+  const centerY = -((1 / 100) * imageHeight);
 
   const hexRadius = 70;
 
-  // Flat-top hex polygon
   function makeHex(centerX, centerY, radius) {
     const points = [];
 
@@ -69,7 +55,6 @@
       const x = centerX + radius * Math.cos(angle);
       const y = centerY + radius * Math.sin(angle);
 
-      // Leaflet uses [Y, X]
       points.push([y, x]);
     }
 
@@ -89,11 +74,9 @@
 
   topLeftHex.bindPopup('300:300');
 
-  // Zoom directly to test hex
   map.setView([centerY, centerX], 2);
 
-  console.log('Flat-top hex drawn at 300:300');
+  console.log('Hex drawn at top-left coordinate system');
 </script>
-
 </body>
 </html>
