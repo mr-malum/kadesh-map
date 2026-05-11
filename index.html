@@ -160,30 +160,99 @@
     hex.setStyle(selectedStyle);
   }
 
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function getRowsByField(rows, fieldName, value) {
+    if (!Array.isArray(rows)) return [];
+
+    return rows.filter(row => row?.[fieldName] === value);
+  }
+
+  function renderList(title, rows, emptyText, labelFields) {
+    if (!rows.length) {
+      return `
+        <section>
+          <h3>${title}</h3>
+          <p>${emptyText}</p>
+        </section>
+      `;
+    }
+
+    return `
+      <section>
+        <h3>${title}</h3>
+        <ul>
+          ${rows.map(row => {
+            const label = labelFields
+              .map(field => row?.[field])
+              .filter(Boolean)
+              .join(" — ");
+
+            return `<li>${escapeHtml(label || "Unnamed")}</li>`;
+          }).join("")}
+        </ul>
+      </section>
+    `;
+  }
+
   function openPanelForHex(hexId) {
-    const data = db?.hexesById?.[hexId];
+    const hex = db?.hexesById?.[hexId];
+
+    const region =
+      hex?.Region_ID_Ref
+        ? db?.regionsById?.[hex.Region_ID_Ref]
+        : null;
+
+    const pois =
+      db?.poisByHexId?.[hexId] ||
+      getRowsByField(db?.raw?.pois, "Hex_ID_Ref", hexId);
+
+    const settlements =
+      db?.settlementsByHexId?.[hexId] ||
+      getRowsByField(db?.raw?.settlements, "Hex_ID_Ref", hexId);
 
     document.getElementById('app-panel')
       .classList.add('open');
 
     document.getElementById('panel-title')
-      .textContent = data?.name || hexId;
+      .textContent = hex ? `Hex ${hex.Hex_ID}` : hexId;
 
     document.getElementById('panel-subtitle')
-      .textContent = `Hex ${hexId}`;
+      .textContent = hex?.Terrain || "Unknown Terrain";
 
     document.getElementById('panel-content').innerHTML = `
-      <p><strong>Hex:</strong> ${hexId}</p>
+      <p><strong>Hex:</strong> ${escapeHtml(hexId)}</p>
 
       <p>
         <strong>Terrain:</strong>
-        ${data?.terrain || 'Unknown'}
+        ${escapeHtml(hex?.Terrain || 'Unknown')}
       </p>
 
       <p>
-        <strong>Description:</strong><br>
-        ${data?.description || 'No known point of interest.'}
+        <strong>Region:</strong>
+        ${escapeHtml(region?.Region_Name || hex?.Region_ID_Ref || 'Unknown')}
       </p>
+
+      ${renderList(
+        "Settlements",
+        settlements,
+        "No known settlements in this hex.",
+        ["Name", "Population"]
+      )}
+
+      ${renderList(
+        "Points of Interest",
+        pois,
+        "No known points of interest in this hex.",
+        ["Name", "POI_Type", "Notoriety Tier"]
+      )}
     `;
   }
 
@@ -224,8 +293,8 @@
 
           this.bindPopup(`
             <div style="min-width:180px;">
-              <strong>${data?.name || hexId}</strong><br>
-              ${data?.terrain || 'Unknown'}<br><br>
+              <strong>${escapeHtml(hexId)}</strong><br>
+              ${escapeHtml(data?.Terrain || 'Unknown')}<br><br>
 
               <button
                 onclick="openPanelForHex('${hexId}')"
