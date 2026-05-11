@@ -491,7 +491,7 @@ button.panel-link.mobile-nav-back {
   #codex-overlay .panel-nav {
     margin-left: 0;
     margin-right: 0;
-    margin-bottom: calc(112px + env(safe-area-inset-bottom));
+    margin-bottom: calc(84px + env(safe-area-inset-bottom));
   }
 
   #codex-content h3 {
