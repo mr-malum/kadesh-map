@@ -401,9 +401,36 @@ function renderCodexHexPage(hexId) {
     <p>${escapeHtml(hex?.DM_Journal || "No journal entries.")}</p>
 
     <h3>Points of Interest</h3>
-    ${renderCodexLinkedList(pois, "No known points of interest in this hex.", "poi", "POI_ID", row => {
-      return [row.Name, row.POI_Type, row["Notoriety Tier"]].filter(Boolean).join(" — ");
-    })}
+    ${renderCodexLinkedList(
+      pois,
+      "No known points of interest in this hex.",
+      "poi",
+      "POI_ID",
+      row => {
+        const meta = [];
+
+        let typeLabel = row.POI_Type || "";
+
+        const npcCount = getNpcsForPoi(row.POI_ID).length;
+
+        if (npcCount > 0) {
+          typeLabel += ` • ${npcCount} NPC${npcCount !== 1 ? "s" : ""}`;
+        }
+
+        if (typeLabel) {
+          meta.push(typeLabel);
+        }
+
+        if (row["Notoriety Tier"]) {
+          meta.push(`Notoriety: ${row["Notoriety Tier"]}`);
+        }
+
+        return [
+          row.Name,
+          ...meta
+        ].filter(Boolean).join(" — ");
+      }
+    )}
 
     <h3>NPCs</h3>
     ${renderCodexLinkedList(npcs, "No known NPCs associated with this hex.", "npc", "NPC_ID", row => {
@@ -463,13 +490,36 @@ function renderCodexRegionPage(regionId) {
     <p>${terrainSummary || "No terrain data recorded."}</p>
 
     <h3>Points of Interest</h3>
-    ${renderCodexLinkedList(pois, "No points of interest currently recorded in this region.", "poi", "POI_ID", row => {
-      return [
-        row.Name,
-        row.POI_Type,
-        row["Notoriety Tier"] ? `Notoriety: ${row["Notoriety Tier"]}` : ""
-      ].filter(Boolean).join(" — ");
-    })}
+    ${renderCodexLinkedList(
+      pois,
+      "No points of interest currently recorded in this region.",
+      "poi",
+      "POI_ID",
+      row => {
+        const meta = [];
+
+        let typeLabel = row.POI_Type || "";
+
+        const npcCount = getNpcsForPoi(row.POI_ID).length;
+
+        if (npcCount > 0) {
+          typeLabel += ` • ${npcCount} NPC${npcCount !== 1 ? "s" : ""}`;
+        }
+
+        if (typeLabel) {
+          meta.push(typeLabel);
+        }
+
+        if (row["Notoriety Tier"]) {
+          meta.push(`Notoriety: ${row["Notoriety Tier"]}`);
+        }
+
+        return [
+          row.Name,
+          ...meta
+        ].filter(Boolean).join(" — ");
+      }
+    )}
 
     <h3>NPCs</h3>
     ${renderCodexLinkedList(npcs, "No NPCs currently recorded in this region.", "npc", "NPC_ID", row => {
@@ -695,11 +745,30 @@ function renderPoiListIntoContainer() {
     "No points of interest match these filters.",
     "poi",
     "POI_ID",
-    row => [
-      row.Name,
-      row.POI_Type,
-      row["Notoriety Tier"] ? `Notoriety: ${row["Notoriety Tier"]}` : ""
-    ].filter(Boolean).join(" — ")
+    row => {
+      const meta = [];
+
+      let typeLabel = row.POI_Type || "";
+
+      const npcCount = getNpcsForPoi(row.POI_ID).length;
+
+      if (npcCount > 0) {
+        typeLabel += ` • ${npcCount} NPC${npcCount !== 1 ? "s" : ""}`;
+      }
+
+      if (typeLabel) {
+        meta.push(typeLabel);
+      }
+
+      if (row["Notoriety Tier"]) {
+        meta.push(`Notoriety: ${row["Notoriety Tier"]}`);
+      }
+
+      return [
+        row.Name,
+        ...meta
+      ].filter(Boolean).join(" — ");
+    }
   );
 }
 
