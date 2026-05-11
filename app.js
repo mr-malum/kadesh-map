@@ -240,8 +240,11 @@ function setCodexTitle(title) {
   document.getElementById("codex-title").textContent = title;
 }
 
-function setCodexContent(html) {
-  document.getElementById("codex-content").innerHTML = html;
+function setCodexContent(html, mode = "") {
+  const content = document.getElementById("codex-content");
+
+  content.className = mode;
+  content.innerHTML = html;
 }
 
 function updateCodexBackButton() {
@@ -306,7 +309,7 @@ function renderCodexIndex() {
     <button class="codex-section-button" type="button" onclick="openCodexPage('regions')">Regions</button>
     <button class="codex-section-button" type="button" onclick="openCodexPage('pois')">Points of Interest</button>
     <button class="codex-section-button" type="button" onclick="openCodexPage('npcs')">NPCs</button>
-  `);
+  `, "codex-home");
 }
 
 function renderCodexHexPage(hexId) {
@@ -470,17 +473,28 @@ function renderCodexSearchPage() {
   setCodexTitle("Search the Codex");
 
   setCodexContent(`
-    <input
-      id="codex-search-input"
-      type="search"
-      placeholder="Search regions, POIs, NPCs..."
-      autocomplete="off"
-    />
+    <div class="codex-search-shell">
+      <input
+        id="codex-search-input"
+        type="search"
+        placeholder="Search regions, POIs, NPCs..."
+        autocomplete="off"
+      />
+    </div>
 
     <div id="codex-search-results">
       <p>Begin typing to search the records of Kadesh.</p>
     </div>
-  `);
+  `, "codex-search-page");
+
+  const input = document.getElementById("codex-search-input");
+
+  input.addEventListener("input", function () {
+    renderCodexSearchResults(input.value);
+  });
+
+  input.focus();
+}
 
   const input = document.getElementById("codex-search-input");
 
@@ -588,14 +602,21 @@ function renderCodexLinkedList(rows, emptyText, type, idField, getLabel) {
       ${rows.map(row => {
         const id = row?.[idField];
         const label = getLabel(row) || id || "Unnamed Record";
+        const parts = String(label).split(" — ");
+        const title = parts.shift() || "Unnamed Record";
+        const meta = parts.join(" • ");
 
         return `
           <button
-            class="codex-section-button"
+            class="codex-section-button codex-record-button"
             type="button"
             onclick="openCodexPage('${escapeJsString(type)}', '${escapeJsString(id)}')"
           >
-            ${escapeHtml(label)}
+            <span class="codex-record-main">
+              <span class="codex-record-title">${escapeHtml(title)}</span>
+              ${meta ? `<span class="codex-record-meta">${escapeHtml(meta)}</span>` : ""}
+            </span>
+            <span class="codex-record-arrow">›</span>
           </button>
         `;
       }).join("")}
