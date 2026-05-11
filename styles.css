@@ -513,10 +513,10 @@ button.panel-link.mobile-nav-back {
 #atlas-modal {
   position: relative;
 
-  width: min(78vw, 980px);
-  height: min(82vh, 760px);
+  width: min(84vw, 1080px);
+  height: min(88vh, 840px);
 
-  padding: 86px 110px 150px;
+  padding: 78px 110px 132px;
 
   color: #3a2614;
 
