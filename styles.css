@@ -182,9 +182,10 @@ html, body {
 #panel-close {
   position: absolute;
 
-  top: 92px;
+  top: 34px;
+  left: 50%;
 
-  right: 46px;
+  transform: translateX(-50%);
 
   border: none;
   background: transparent;
@@ -192,7 +193,7 @@ html, body {
   color: #3a2614;
 
   font-family: 'Marcellus SC', Georgia, serif;
-  font-size: 32px;
+  font-size: 34px;
   line-height: 1;
 
   cursor: pointer;
@@ -201,6 +202,17 @@ html, body {
   margin: 0;
 
   z-index: 5;
+
+  opacity: 0.82;
+
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+}
+
+#panel-close:hover {
+  opacity: 1;
+  transform: translateX(-50%) scale(1.08);
 }
 
 /* Subtitle */
