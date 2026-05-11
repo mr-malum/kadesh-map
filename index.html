@@ -161,7 +161,7 @@
   }
 
   function openPanelForHex(hexId) {
-    const data = hexData?.[hexId];
+    const data = db?.hexesById?.[hexId];
 
     document.getElementById('app-panel')
       .classList.add('open');
@@ -218,7 +218,7 @@
 
         selectHex(this);
 
-        const data = hexData?.[hexId];
+        const data = db?.hexesById?.[hexId];
 
         if (isTouchDevice) {
 
