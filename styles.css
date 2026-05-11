@@ -366,8 +366,8 @@ button.panel-link.mobile-nav-back {
 .panel-nav button:hover {
   background:
     linear-gradient(
-      rgba(255, 236, 188, 0.58),
-      rgba(166, 108, 41, 0.26)
+      rgba(255, 236, 188, 0.92),
+      rgba(214, 170, 108, 0.84)
     );
 
   border-color: rgba(94, 55, 22, 0.55);
