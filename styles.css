@@ -160,26 +160,33 @@ html, body {
   padding: 12px 82px 120px 42px;
 }
 
-/* Quill-style divider */
-#app-panel-header::after {
-  content: "❦──────────────❧";
+/* Header divider */
+#app-panel-header::before {
+  content: "❦";
   position: absolute;
+  bottom: 0;
 
-  left: 50%;
-  bottom: 4px;
+  color: rgba(72, 43, 18, 0.7);
+  font-size: 18px;
 
-  transform: translateX(-50%);
+  transform: translateY(50%);
+}
 
-  color: rgba(72, 43, 18, 0.78);
+#app-panel-header::after {
+  content: "";
 
-  font-size: 20px;
-  letter-spacing: 2px;
+  width: 72%;
+  max-width: 280px;
+  height: 1px;
 
-  white-space: nowrap;
+  margin-top: 10px;
 
-  text-shadow:
-    0.5px 0 rgba(72, 43, 18, 0.35),
-    -0.5px 0 rgba(255, 239, 190, 0.3);
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(72, 43, 18, 0.65),
+    transparent
+  );
 }
 
 /* Close button */
