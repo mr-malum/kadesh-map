@@ -107,25 +107,21 @@ const startY = centerY;
 // Estimated spacing
 const rowStepY = 162.3;   // 300:300 → 301:300
 const oddColX = 163.3;    // 300:300 → 300:301
-const oddColY = rowStepY / 2;    // negative because Leaflet Y is inverted visually
-const colStepX = oddColX * 2;  // 300:300 → 300:302
+const oddColY = 81.15;    // negative because Leaflet Y is inverted visually
+//const colStepX = 326.6;  // 300:300 → 300:302
 
 function getHexCenter(xxx, yyy) {
   const row = xxx - 300;
   const col = yyy - 300;
 
-  const pair = Math.floor(col / 2);
-  const odd = col % 2;
-
   const x =
     startX +
-    (pair * colStepX) +
-    (odd * oddColX);
+    (col * oddColX);
 
   const y =
-    startY -
+    startY +
     (row * rowStepY) +
-    (odd * oddColY);
+    (col * oddColY);
 
   return { x, y };
 }
