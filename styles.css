@@ -209,10 +209,13 @@ html, body {
 #panel-title {
   margin: 4px 0 0;
 
-  font-family: 'Uncial Antiqua', cursive;
-  font-size: 2.3rem;
+  font-family: 'Cinzel', serif;
+
+  font-size: 2rem;
   line-height: 1.1;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
+
+  color: #2f1d10;
 }
 
 /* Content area */
