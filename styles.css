@@ -1280,3 +1280,7 @@ text-shadow:
     min-width: 0;
   }
 }
+
+  .codex-sort-direction {
+    align-self: end;
+}
