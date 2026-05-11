@@ -184,15 +184,13 @@ html, body {
 
   top: 82px;
 
-  right: 34px;
-
   border: none;
   background: transparent;
 
   color: rgba(58, 38, 20, 0.82);
 
   font-family: 'Marcellus SC', Georgia, serif;
-  font-size: 42px;
+  font-size: 36px;
   line-height: 1;
 
   cursor: pointer;
@@ -206,6 +204,16 @@ html, body {
     opacity 0.15s ease,
     transform 0.15s ease,
     color 0.15s ease;
+}
+
+#app-panel.right #panel-close {
+  right: 34px;
+  left: auto;
+}
+
+#app-panel.left #panel-close {
+  left: 34px;
+  right: auto;
 }
 
 #panel-close:hover {
