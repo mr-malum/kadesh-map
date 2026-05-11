@@ -75,7 +75,7 @@ html, body {
   right: -140px;
 
   background-image: url('assets/Parchment_Panel.png');
-  background-size: 115% 100%;
+  background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
 
@@ -86,14 +86,14 @@ html, body {
 
 /* Right-side panel parchment offset */
 #app-panel.right::before {
-  left: -280px;
-  right: -20px;
+  left: -60px;
+  right: -220px;
 }
 
 /* Left-side panel parchment offset */
 #app-panel.left::before {
-  left: -20px;
-  right: -280px;
+  left: -220px;
+  right: -60px;
 }
 
 #app-panel-header,
