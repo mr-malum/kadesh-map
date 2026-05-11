@@ -87,14 +87,14 @@ html, body {
 
 /* Right-side panel parchment offset */
 #app-panel.right::before {
-  left: -240px;
-  right: -60px;
+  left: -280px;
+  right: -20px;
 }
 
 /* Left-side panel parchment offset */
 #app-panel.left::before {
-  left: -60px;
-  right: -240px;
+  left: -20px;
+  right: -280px;
 }
 
 #app-panel-header,
@@ -105,7 +105,7 @@ html, body {
 
 /* Panel opens from left */
 #app-panel.left {
-  left: 20px;
+  left: 0px;
   right: auto;
   transform: translateX(-120%);
 }
@@ -116,7 +116,7 @@ html, body {
 
 /* Panel opens from right */
 #app-panel.right {
-  right: 20px;
+  right: 0px;
   left: auto;
   transform: translateX(120%);
 }
