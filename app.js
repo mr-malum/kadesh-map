@@ -524,6 +524,11 @@ document.getElementById('atlas-close')
     closeAtlas();
   });
 
+document.getElementById('atlas-back')
+  .addEventListener('click', function () {
+    // Atlas history will be wired here later.
+  });
+
 document.getElementById('atlas-overlay')
   .addEventListener('click', function (event) {
     if (event.target === this) {
