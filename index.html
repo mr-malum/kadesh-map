@@ -218,7 +218,7 @@
             return `<li>
   <button
     class="panel-link"
-    onclick="renderPoiScreen('${row.POI_ID}')"
+    onclick="pushPanelScreen(() => renderPoiScreen('${row.POI_ID}'))"
   >
     ${escapeHtml(label || "Unnamed")}
   </button>
@@ -310,7 +310,7 @@
               <li>
                 <button
                   class="panel-link"
-                  onclick="renderNpcScreen('${npc.NPC_ID}')"
+                  onclick="pushPanelScreen(() => renderNpcScreen('${npc.NPC_ID}'))"
                 >
                   ${escapeHtml(npc.Name)}
                 </button>
@@ -350,7 +350,16 @@
   `;
 }
 
-  window.openPanelForHex = openPanelForHex;
+  function openPanelForHex(hexId) {
+  panelHistory = [];
+  pushPanelScreen(() => renderHexScreen(hexId));
+}
+
+window.openPanelForHex = openPanelForHex;
+window.renderPoiScreen = renderPoiScreen;
+window.renderNpcScreen = renderNpcScreen;
+window.goBackPanel = goBackPanel;
+window.pushPanelScreen = pushPanelScreen;
 
   for (let xxx = 300; xxx < 350; xxx++) {
     for (let yyy = 300; yyy < 350; yyy++) {
