@@ -242,6 +242,8 @@ function setCodexTitle(title) {
 
 function setCodexContent(html, breadcrumbs = []) {
   const content = document.getElementById("codex-content");
+  
+  content.className = "";
 
   const breadcrumbHtml = breadcrumbs.length
     ? `
