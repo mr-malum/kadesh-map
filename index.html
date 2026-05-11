@@ -316,9 +316,12 @@
       </p>
 
       <p>
-        <strong>DM Journal:</strong><br>
-        ${escapeHtml(hex?.DM_Journal || "No journal entries.")}
+        <strong>DM Journal:</strong>
       </p>
+
+      <div class="panel-text-block">
+        ${escapeHtml(poi.DM_Journal || "No journal entries.")}
+      </div>
 
       ${renderList(
         "Points of Interest",
@@ -372,16 +375,21 @@
       </p>
 
       <p>
-        <strong>Lore:</strong><br>
-        ${escapeHtml(poi.Lore || "No lore recorded.")}
-      
+        <strong>Lore:</strong>
       </p>
+
+      <div class="panel-text-block">
+        ${escapeHtml(poi.Lore || "No lore recorded.")}
+      </div>
+      
       
       <p>
-        <strong>DM Journal:</strong><br>
-        ${escapeHtml(poi.DM_Journal || "No journal entries.")}
-        
+        <strong>DM Journal:</strong>
       </p>
+
+      <div class="panel-text-block">
+        ${escapeHtml(poi.DM_Journal || "No journal entries.")}
+      </div>
 
       <h3>NPCs</h3>
 
@@ -447,15 +455,20 @@
       </p>
 
       <p>
-        <strong>Lore:</strong><br>
-        ${escapeHtml(npc.Lore || "No lore recorded.")}
-        
+        <strong>Lore:</strong>
       </p>
 
+      <div class="panel-text-block">
+        ${escapeHtml(poi.Lore || "No lore recorded.")}
+      </div>
+
       <p>
-        <strong>DM Journal:</strong><br>
-        ${escapeHtml(npc.DM_Journal || "No journal entries.")}
+        <strong>DM Journal:</strong>
       </p>
+
+      <div class="panel-text-block">
+        ${escapeHtml(poi.DM_Journal || "No journal entries.")}
+      </div>
       
     `;
   }
