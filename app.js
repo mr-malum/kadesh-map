@@ -705,6 +705,7 @@ window.openCodex = openCodex;
 window.closeCodex = closeCodex;
 window.openCodexPage = openCodexPage;
 window.goBackCodex = goBackCodex;
+window.resetCodexToIndex = resetCodexToIndex;
 
 for (let xxx = 300; xxx < 350; xxx++) {
   for (let yyy = 300; yyy < 350; yyy++) {
