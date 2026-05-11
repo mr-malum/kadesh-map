@@ -480,6 +480,9 @@ map.on('click', function () {
   document.getElementById('app-panel')
     .classList.remove('open');
 
+  document.getElementById('codex-button')
+    .classList.remove('codex-label-visible');
+
   if (selectedHex) {
     selectedHex.setStyle(defaultStyle);
     selectedHex = null;
@@ -516,6 +519,15 @@ document.getElementById('mobile-panel-back')
 document.getElementById('codex-button')
   .addEventListener('click', function (event) {
     event.stopPropagation();
+
+    const codexButton = document.getElementById('codex-button');
+
+    if (isTouchDevice && !codexButton.classList.contains('codex-label-visible')) {
+      codexButton.classList.add('codex-label-visible');
+      return;
+    }
+
+    codexButton.classList.remove('codex-label-visible');
     openCodex();
   });
 
