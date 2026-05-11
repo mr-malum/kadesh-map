@@ -90,65 +90,65 @@
       [centerY, centerX + width],                         // Right
       [centerY + height * 0.5, centerX + width * 0.5],  // Bottom-right
       [centerY + height * 0.5, centerX - width * 0.5],  // Bottom-left
-      [centerY, centerX - width],                         // Left
+      [centerY, centerX - width],                        // Left
       [centerY - height * 0.5, centerX - width * 0.5],  // Top-left
       [centerY - height * 0.5, centerX + width * 0.5]   // Top-right
     ];
   }
 
-// ============================================
-// PROCEDURAL HEX GRID TEST
-// Draws a 5x5 test section starting at 300:300
-// ============================================
+  // ============================================
+  // PROCEDURAL HEX GRID TEST
+  // Draws a 5x5 test section starting at 300:300
+  // ============================================
 
-const startX = centerX;
-const startY = centerY;
+  const startX = centerX;
+  const startY = centerY;
 
-// Estimated spacing
-const rowStepY = 162;
-const oddColX = 163.5;
-const oddColY = -81;
-const colStepX = 327;
+  // Estimated spacing
+  const rowStepY = 162;   // 300:300 → 301:300
+  const oddColX = 169;    // 300:300 → 300:301
+  const oddColY = -81;    // negative because Leaflet Y is inverted visually
+  const colStepX = 338;   // 300:300 → 300:302
 
-function getHexCenter(xxx, yyy) {
-  const row = xxx - 300;
-  const col = yyy - 300;
+  function getHexCenter(xxx, yyy) {
+    const row = xxx - 300;
+    const col = yyy - 300;
 
-  const pair = Math.floor(col / 2);
-  const odd = col % 2;
+    const pair = Math.floor(col / 2);
+    const odd = col % 2;
 
-  const x =
-    startX +
-    (pair * colStepX) +
-    (odd * oddColX);
+    const x =
+      startX +
+      (pair * colStepX) +
+      (odd * oddColX);
 
-  const y =
-    startY +
-    (row * rowStepY) +
-    (odd * oddColY);
+    const y =
+      startY -
+      (row * rowStepY) +
+      (odd * oddColY);
 
-  return { x, y };
-}
-
-for (let xxx = 300; xxx < 350; xxx++) {
-  for (let yyy = 300; yyy < 350; yyy++) {
-    const { x, y } = getHexCenter(xxx, yyy);
-    const hexId = `${xxx}:${yyy}`;
-
-    const hex = L.polygon(
-      makeHex(x, y, hexWidth, hexHeight),
-      {
-        color: 'red',
-        weight: 1,
-        fillColor: 'yellow',
-        fillOpacity: 0.06,
-        opacity: 0.85
-      }
-    ).addTo(map);
-
-    hex.bindPopup(hexId);
+    return { x, y };
   }
-}
+
+  for (let xxx = 300; xxx < 305; xxx++) {
+    for (let yyy = 300; yyy < 305; yyy++) {
+      const { x, y } = getHexCenter(xxx, yyy);
+      const hexId = `${xxx}:${yyy}`;
+
+      const hex = L.polygon(
+        makeHex(x, y, hexWidth, hexHeight),
+        {
+          color: 'red',
+          weight: 2,
+          fillColor: 'yellow',
+          fillOpacity: 0.12,
+          opacity: 1
+        }
+      ).addTo(map);
+
+      hex.bindPopup(hexId);
+    }
+  }
 
   // Zoom to test hex
   map.setView([centerY, centerX], 2);
