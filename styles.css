@@ -64,8 +64,6 @@ html, body {
   transition: transform 220ms ease;
 
   font-family: 'Cormorant Garamond', Georgia, serif;
-
-  pointer-events: none;
 }
 
 #app-panel::before {
