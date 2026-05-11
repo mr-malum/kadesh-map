@@ -558,7 +558,12 @@ function renderCodexNpcsIndex() {
     "No NPCs recorded.",
     "npc",
     "NPC_ID",
-    row => [row.Name, row.Race, row.Occupation].filter(Boolean).join(" — ")
+    row => {
+      const home = row.Home_ID_Ref ? db?.poisById?.[row.Home_ID_Ref] : null;
+      const homeLabel = home?.Name || row.Home_ID_Ref;
+
+      return [row.Name, row.Race, row.Occupation, homeLabel].filter(Boolean).join(" — ");
+    }
   ));
 }
 
