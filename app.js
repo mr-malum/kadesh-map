@@ -36,6 +36,12 @@ function updatePanBounds() {
 }
 
 map.on('zoomend', updatePanBounds);
+map.on('load', updatePanBounds);
+
+map.whenReady(function () {
+  updatePanBounds();
+});
+
 updatePanBounds();
 
 const isTouchDevice =
