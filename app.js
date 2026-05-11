@@ -726,18 +726,20 @@ function renderCodexPoisIndex() {
         </select>
       </label>
 
-      <label>
-        Sort
-      
-        <button
-          id="codex-poi-direction"
-          class="codex-sort-direction"
-          type="button"
-          data-direction="asc"
-        >
-          ↑ ASC
-        </button>
-      
+      <label class="codex-sort-label">
+        <span class="codex-sort-topline">
+          Sort
+
+          <button
+            id="codex-poi-direction"
+            class="codex-sort-direction"
+            type="button"
+            data-direction="asc"
+          >
+            ↑ ASC
+          </button>
+        </span>
+
         <select id="codex-poi-sort">
           <option value="name">Name</option>
           <option value="type">Type</option>
@@ -759,19 +761,21 @@ function renderCodexPoisIndex() {
   ]);
 
   document.getElementById("codex-poi-type-filter").addEventListener("change", renderPoiListIntoContainer);
+
   document.getElementById("codex-poi-sort").addEventListener("change", renderPoiListIntoContainer);
+
   document.getElementById("codex-poi-direction").addEventListener("click", function () {
-  const current = this.dataset.direction || "asc";
-  const next = current === "asc" ? "desc" : "asc";
+    const current = this.dataset.direction || "asc";
+    const next = current === "asc" ? "desc" : "asc";
 
-  this.dataset.direction = next;
+    this.dataset.direction = next;
 
-  this.textContent = next === "asc"
-    ? "↑ ASC"
-    : "↓ DESC";
+    this.textContent = next === "asc"
+      ? "↑ ASC"
+      : "↓ DESC";
 
-  renderPoiListIntoContainer();
-});
+    renderPoiListIntoContainer();
+  });
 
   renderPoiListIntoContainer();
 }
