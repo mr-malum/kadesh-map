@@ -42,6 +42,8 @@ html, body {
   width: min(50vw, 640px);
   height: 100vh;
 
+  padding: 70px 90px;
+
   z-index: 2000;
 
   display: flex;
@@ -66,22 +68,19 @@ html, body {
   content: "";
 
   position: absolute;
+  top: -40px;
+  bottom: -40px;
 
-  top: -220px;
-  bottom: -220px;
-
-  left: -180px;
-  right: -180px;
+  left: -140px;
+  right: -140px;
 
   background-image: url('assets/Parchment_Panel.png');
-  background-repeat: no-repeat;
+  background-size: 115% 100%;
   background-position: center;
-  background-size: cover;
+  background-repeat: no-repeat;
 
   pointer-events: none;
-
-  z-index: 0;
-
+  z-index: -1;
   opacity: 0.97;
 }
 
