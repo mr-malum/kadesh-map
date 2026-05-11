@@ -53,11 +53,12 @@
 
 <script>
   // Create map
-  const map = L.map('map', {
-    crs: L.CRS.Simple,
-    minZoom: -3,
-    maxZoom: 0
-  });
+const map = L.map('map', {
+  crs: L.CRS.Simple,
+  minZoom: -3,
+  maxZoom: 0.5,
+  maxBoundsViscosity: 1.0
+});
 
   // Image dimensions
   const imageWidth = 8192;
