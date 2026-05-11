@@ -64,6 +64,8 @@ html, body {
   transition: transform 220ms ease;
 
   font-family: 'Cormorant Garamond', Georgia, serif;
+
+  pointer-events: none;
 }
 
 #app-panel-inner {
@@ -74,6 +76,8 @@ html, body {
 
   display: flex;
   flex-direction: column;
+
+  pointer-events: auto;
 }
 
 #app-panel::before {
