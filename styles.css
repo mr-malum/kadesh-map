@@ -301,8 +301,8 @@ button.panel-link.mobile-nav-back {
   opacity: 0.95;
 }
 
-/* Panel Bottom Nav */
-#mobile-panel-nav {
+/* Shared Panel Bottom Nav */
+.panel-nav {
   display: flex;
 
   margin-top: auto;
@@ -325,7 +325,10 @@ button.panel-link.mobile-nav-back {
   z-index: 9999;
 }
 
-#mobile-panel-nav button {
+.panel-nav button {
+  appearance: none;
+  -webkit-appearance: none;
+
   border: none;
   background: transparent;
 
@@ -335,6 +338,22 @@ button.panel-link.mobile-nav-back {
   font-size: 1.05rem;
 
   cursor: pointer;
+
+  outline: none;
+  box-shadow: none;
+}
+
+.panel-nav button:focus,
+.panel-nav button:focus-visible,
+.panel-nav button:active {
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+}
+
+.panel-nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 /* Mobile */
@@ -400,11 +419,11 @@ button.panel-link.mobile-nav-back {
     font-size: 2rem;
   }
 
-  #mobile-panel-nav {
-  margin-left: 24px;
-  margin-right: 24px;
-  margin-bottom: calc(96px + env(safe-area-inset-bottom));
-}
+  .panel-nav {
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
 }
 
 /* Atlas Button */
@@ -629,62 +648,6 @@ button.panel-link.mobile-nav-back {
   transform: scale(0.98);
 }
 
-/* Atlas Bottom Nav */
-#atlas-nav {
-  display: flex;
-
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-
-  margin-top: auto;
-
-  padding: 12px 16px;
-
-  background: rgba(232, 196, 137, 0.96);
-  border: 1px solid rgba(94, 55, 22, 0.35);
-  border-radius: 14px;
-
-  box-shadow: 0 4px 18px rgba(45, 25, 8, 0.28);
-
-  z-index: 9999;
-}
-
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-
-  padding: 12px 16px;
-
-  background: rgba(232, 196, 137, 0.96);
-  border: 1px solid rgba(94, 55, 22, 0.35);
-  border-radius: 14px;
-
-  box-shadow: 0 4px 18px rgba(45, 25, 8, 0.28);
-
-  z-index: 9999;
-}
-
-#atlas-nav button {
-  appearance: none;
-  -webkit-appearance: none;
-
-  border: none;
-  background: transparent;
-
-  color: #3a2614;
-
-  font-family: 'Marcellus SC', Georgia, serif;
-  font-size: 1.05rem;
-
-  cursor: pointer;
-}
-
-#atlas-nav button:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-
 @media (max-width: 700px) {
 
   #atlas-overlay {
@@ -717,12 +680,6 @@ button.panel-link.mobile-nav-back {
   .atlas-section-button {
     padding: 16px 18px;
     font-size: 1.05rem;
-  }
-
-  #atlas-nav {
-    left: 24px;
-    right: 24px;
-    bottom: calc(96px + env(safe-area-inset-bottom));
   }
 
 }
