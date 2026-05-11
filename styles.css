@@ -309,7 +309,7 @@ button.panel-link.mobile-nav-back {
   margin-left: 24px;
   margin-right: 24px;
   margin-bottom: 96px;
-  
+
   justify-content: space-between;
   align-items: center;
   gap: 16px;
@@ -426,9 +426,9 @@ button.panel-link.mobile-nav-back {
   }
 }
 
-/* Atlas Button */
+/* Codex Button */
 
-#atlas-button {
+#codex-button {
   position: fixed;
 
   bottom: 28px;
@@ -470,15 +470,15 @@ button.panel-link.mobile-nav-back {
     drop-shadow(0 0 12px rgba(255, 225, 160, 0.12));
 }
 
-#atlas-button:focus,
-#atlas-button:focus-visible,
-#atlas-button:active {
+#codex-button:focus,
+#codex-button:focus-visible,
+#codex-button:active {
   outline: none;
   box-shadow: none;
   background-color: transparent;
 }
 
-#atlas-button:hover {
+#codex-button:hover {
   transform: scale(1.045);
 
   filter:
@@ -487,13 +487,13 @@ button.panel-link.mobile-nav-back {
     drop-shadow(0 0 16px rgba(255, 225, 160, 0.16));
 }
 
-#atlas-button:active {
+#codex-button:active {
   transform: scale(0.985);
 }
 
 @media (max-width: 700px) {
 
-  #atlas-button {
+  #codex-button {
     width: 110px;
     height: 110px;
 
@@ -503,9 +503,9 @@ button.panel-link.mobile-nav-back {
 
 }
 
-/* Atlas Modal */
+/* Codex Modal */
 
-#atlas-overlay {
+#codex-overlay {
   position: fixed;
   inset: 0;
 
@@ -524,18 +524,18 @@ button.panel-link.mobile-nav-back {
   transition: opacity 180ms ease;
 }
 
-#atlas-overlay.open {
+#codex-overlay.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-#atlas-modal {
+#codex-modal {
   position: relative;
 
   width: min(84vw, 1080px);
   height: 100vh;
 
-  padding: 70px 72px;
+  padding: 70px 90px;
 
   color: #3a2614;
 
@@ -549,15 +549,15 @@ button.panel-link.mobile-nav-back {
   flex-direction: column;
 }
 
-#atlas-modal::before {
+#codex-modal::before {
   content: "";
 
   position: absolute;
   top: -120px;
   bottom: -40px;
 
-  left: -120px;
-  right: -120px;
+  left: -140px;
+  right: -140px;
 
   background-image: url("assets/Parchment_Panel.png");
   background-size: 100% 100%;
@@ -570,20 +570,12 @@ button.panel-link.mobile-nav-back {
   pointer-events: none;
 }
 
-#atlas-header {
+#codex-header {
   text-align: center;
   margin-bottom: 34px;
 }
 
-#atlas-subtitle {
-  font-family: 'Marcellus SC', Georgia, serif;
-  font-size: 13px;
-  opacity: 0.7;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-#atlas-title {
+#codex-title {
   margin: 0;
 
   font-family: 'Marcellus SC', Georgia, serif;
@@ -593,7 +585,7 @@ button.panel-link.mobile-nav-back {
   color: #2f1d10;
 }
 
-#atlas-header::after {
+#codex-header::after {
   content: "";
 
   display: block;
@@ -612,7 +604,7 @@ button.panel-link.mobile-nav-back {
   );
 }
 
-#atlas-content {
+#codex-content {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
@@ -623,7 +615,7 @@ button.panel-link.mobile-nav-back {
   overflow-y: auto;
 }
 
-.atlas-section-button {
+.codex-section-button {
   padding: 18px 20px;
 
   border-radius: 14px;
@@ -643,45 +635,58 @@ button.panel-link.mobile-nav-back {
     transform 0.12s ease;
 }
 
-.atlas-section-button:hover {
+.codex-section-button:hover {
   background: rgba(94, 55, 22, 0.14);
   border-color: rgba(94, 55, 22, 0.32);
 }
 
-.atlas-section-button:active {
+.codex-section-button:active {
   transform: scale(0.98);
 }
 
 @media (max-width: 700px) {
 
-  #atlas-overlay {
+  #codex-overlay {
     align-items: stretch;
     justify-content: stretch;
   }
 
-  #atlas-modal {
+  #codex-modal {
     width: 100vw;
     height: 100vh;
 
-    padding: 88px 34px calc(170px + env(safe-area-inset-bottom)) 34px;
+    padding: 0;
 
     box-sizing: border-box;
   }
 
-  #atlas-modal::before {
-    inset: -120px -80px;
+  #codex-modal::before {
+    top: -120px;
+    bottom: -120px;
+    left: -80px;
+    right: -80px;
   }
 
-  #atlas-title {
+  #codex-header {
+    padding: 88px 36px 28px;
+    margin-bottom: 0;
+  }
+
+  #codex-title {
     font-size: 2.1rem;
   }
 
-  #atlas-content {
+  #codex-content {
     grid-template-columns: 1fr;
     gap: 14px;
+
+    max-width: none;
+    margin: 0;
+
+    padding: 18px 36px calc(170px + env(safe-area-inset-bottom)) 36px;
   }
 
-  .atlas-section-button {
+  .codex-section-button {
     padding: 16px 18px;
     font-size: 1.05rem;
   }
