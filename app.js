@@ -737,7 +737,7 @@ function renderCodexPoisIndex() {
 
       <button
         id="codex-poi-direction"
-        class="codex-section-button codex-sort-direction"
+        class="codex-sort-direction"
         type="button"
         data-direction="asc"
       >
