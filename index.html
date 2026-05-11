@@ -130,22 +130,22 @@
     return { x, y };
   }
 
-  for (let xxx = 300; xxx < 305; xxx++) {
-    for (let yyy = 300; yyy < 305; yyy++) {
+  for (let xxx = 300; xxx < 350; xxx++) {
+    for (let yyy = 300; yyy < 350; yyy++) {
       const { x, y } = getHexCenter(xxx, yyy);
       const hexId = `${xxx}:${yyy}`;
-
+  
       const hex = L.polygon(
         makeHex(x, y, hexWidth, hexHeight),
         {
           color: 'red',
-          weight: 2,
+          weight: 1,
           fillColor: 'yellow',
-          fillOpacity: 0.12,
-          opacity: 1
+          fillOpacity: 0.06,
+          opacity: 0.85
         }
       ).addTo(map);
-
+  
       hex.bindPopup(hexId);
     }
   }
