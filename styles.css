@@ -516,7 +516,7 @@ button.panel-link.mobile-nav-back {
   width: min(84vw, 1080px);
   height: min(88vh, 840px);
 
-  padding: 78px 110px 132px;
+  padding: 56px 72px 112px;
 
   color: #3a2614;
 
@@ -525,6 +525,9 @@ button.panel-link.mobile-nav-back {
   isolation: isolate;
   overflow: hidden;
   box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 }
 
 #atlas-modal::before {
@@ -630,10 +633,22 @@ button.panel-link.mobile-nav-back {
 #atlas-nav {
   display: flex;
 
-  position: absolute;
-  left: 110px;
-  right: 110px;
-  bottom: 72px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  margin-top: auto;
+
+  padding: 12px 16px;
+
+  background: rgba(232, 196, 137, 0.96);
+  border: 1px solid rgba(94, 55, 22, 0.35);
+  border-radius: 14px;
+
+  box-shadow: 0 4px 18px rgba(45, 25, 8, 0.28);
+
+  z-index: 9999;
+}
 
   justify-content: space-between;
   align-items: center;
