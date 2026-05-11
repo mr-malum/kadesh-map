@@ -728,21 +728,22 @@ function renderCodexPoisIndex() {
 
       <label>
         Sort
+      
+        <button
+          id="codex-poi-direction"
+          class="codex-sort-direction"
+          type="button"
+          data-direction="asc"
+        >
+          ↑ ASC
+        </button>
+      
         <select id="codex-poi-sort">
           <option value="name">Name</option>
           <option value="type">Type</option>
           <option value="notoriety">Notoriety</option>
         </select>
       </label>
-
-      <button
-        id="codex-poi-direction"
-        class="codex-sort-direction"
-        type="button"
-        data-direction="asc"
-      >
-        ↑ ASC
-      </button>
     </div>
 
     <div id="codex-poi-list"></div>
