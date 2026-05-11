@@ -183,7 +183,7 @@ html, body {
   position: absolute;
 
   top: 34px;
-  left: 50%;
+  left: calc(50% - 3px);
 
   transform: translateX(-50%);
 
