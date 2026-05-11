@@ -1095,3 +1095,47 @@ text-shadow:
     margin-top: 6px;
   }
 }
+
+/* =========================================================
+   CODEX BREADCRUMBS
+   ========================================================= */
+
+#codex-breadcrumbs {
+  margin: 0 auto 22px;
+  width: min(100%, 860px);
+
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+
+  color: rgba(58, 38, 20, 0.72);
+}
+
+.codex-breadcrumb-button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  background: none;
+  border: none;
+  padding: 0;
+
+  color: rgba(58, 38, 20, 0.82);
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.95rem;
+
+  cursor: pointer;
+
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.codex-breadcrumb-button:hover {
+  color: rgba(94, 55, 22, 1);
+}
+
+.codex-breadcrumb-separator {
+  margin: 0 8px;
+  opacity: 0.45;
+}
