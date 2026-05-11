@@ -301,12 +301,16 @@ function renderCodexPage(type, id) {
 function renderCodexIndex() {
   setCodexTitle("The Codex of Kadesh");
 
-  setCodexContent(`
+  const content = document.getElementById("codex-content");
+
+  content.className = "codex-home";
+
+  content.innerHTML = `
     <button class="codex-section-button" type="button" onclick="openCodexPage('search')">Search</button>
     <button class="codex-section-button" type="button" onclick="openCodexPage('regions')">Regions</button>
     <button class="codex-section-button" type="button" onclick="openCodexPage('pois')">Points of Interest</button>
     <button class="codex-section-button" type="button" onclick="openCodexPage('npcs')">NPCs</button>
-  `);
+  `;
 }
 
 function renderCodexHexPage(hexId) {
