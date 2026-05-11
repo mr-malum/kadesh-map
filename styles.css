@@ -439,8 +439,15 @@ button.panel-link:active {
 
   z-index: 1500;
   cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
+#atlas-button:focus,
+#atlas-button:focus-visible {
+  outline: none;
+}
 #atlas-button img {
   width: 100%;
   height: 100%;
