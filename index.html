@@ -71,6 +71,9 @@
   map.on('zoomend', updatePanBounds);
   updatePanBounds();
 
+  const isTouchDevice =
+    window.matchMedia('(pointer: coarse)').matches;
+
   const centerX = (1.33 / 100) * imageWidth;
   const centerY = imageHeight - ((1 / 100) * imageHeight);
 
@@ -140,8 +143,47 @@
     weight: 8
   };
 
+  function selectHex(hex) {
+    if (selectedHex && selectedHex !== hex) {
+      selectedHex.setStyle(defaultStyle);
+    }
+
+    selectedHex = hex;
+    hex.setStyle(selectedStyle);
+  }
+
+  function openPanelForHex(hexId) {
+    const data = hexData?.[hexId];
+
+    document.getElementById('app-panel')
+      .classList.add('open');
+
+    document.getElementById('panel-title')
+      .textContent = data?.name || hexId;
+
+    document.getElementById('panel-subtitle')
+      .textContent = `Hex ${hexId}`;
+
+    document.getElementById('panel-content').innerHTML = `
+      <p><strong>Hex:</strong> ${hexId}</p>
+
+      <p>
+        <strong>Terrain:</strong>
+        ${data?.terrain || 'Unknown'}
+      </p>
+
+      <p>
+        <strong>Description:</strong><br>
+        ${data?.description || 'No known point of interest.'}
+      </p>
+    `;
+  }
+
+  window.openPanelForHex = openPanelForHex;
+
   for (let xxx = 300; xxx < 350; xxx++) {
     for (let yyy = 300; yyy < 350; yyy++) {
+
       const { x, y } = getHexCenter(xxx, yyy);
       const hexId = `${xxx}:${yyy}`;
 
@@ -151,50 +193,62 @@
       ).addTo(map);
 
       hex.on('mouseover', function () {
-        if (this !== selectedHex) {
+        if (!isTouchDevice && this !== selectedHex) {
           this.setStyle(hoverStyle);
         }
       });
 
       hex.on('mouseout', function () {
-        if (this !== selectedHex) {
+        if (!isTouchDevice && this !== selectedHex) {
           this.setStyle(defaultStyle);
         }
       });
 
       hex.on('click', function (e) {
+
         L.DomEvent.stopPropagation(e);
 
-        if (selectedHex && selectedHex !== this) {
-          selectedHex.setStyle(defaultStyle);
-        }
-
-        selectedHex = this;
-        this.setStyle(selectedStyle);
-
-        document.getElementById('app-panel').classList.add('open');
+        selectHex(this);
 
         const data = hexData?.[hexId];
 
-        document.getElementById('panel-title').textContent =
-          data?.name || hexId;
+        if (isTouchDevice) {
 
-        document.getElementById('panel-subtitle').textContent =
-          `Hex ${hexId}`;
+          this.bindPopup(`
+            <div style="min-width:180px;">
+              <strong>${data?.name || hexId}</strong><br>
+              ${data?.terrain || 'Unknown'}<br><br>
 
-        document.getElementById('panel-content').innerHTML = `
-          <p><strong>Hex:</strong> ${hexId}</p>
-          <p><strong>Terrain:</strong> ${data?.terrain || 'Unknown'}</p>
-          <p><strong>Description:</strong><br>
-            ${data?.description || 'No known point of interest.'}
-          </p>
-        `;
+              <button
+                onclick="openPanelForHex('${hexId}')"
+                style="
+                  width:100%;
+                  padding:10px;
+                  border:none;
+                  border-radius:8px;
+                  background:#4a3720;
+                  color:#f4e6c8;
+                  cursor:pointer;
+                "
+              >
+                Open Details
+              </button>
+            </div>
+          `).openPopup();
+
+        } else {
+
+          openPanelForHex(hexId);
+
+        }
       });
     }
   }
 
   map.on('click', function () {
-    document.getElementById('app-panel').classList.remove('open');
+
+    document.getElementById('app-panel')
+      .classList.remove('open');
 
     if (selectedHex) {
       selectedHex.setStyle(defaultStyle);
@@ -202,14 +256,17 @@
     }
   });
 
-  document.getElementById('panel-close').addEventListener('click', function () {
-    document.getElementById('app-panel').classList.remove('open');
+  document.getElementById('panel-close')
+    .addEventListener('click', function () {
 
-    if (selectedHex) {
-      selectedHex.setStyle(defaultStyle);
-      selectedHex = null;
-    }
-  });
+      document.getElementById('app-panel')
+        .classList.remove('open');
+
+      if (selectedHex) {
+        selectedHex.setStyle(defaultStyle);
+        selectedHex = null;
+      }
+    });
 </script>
 
 </body>
