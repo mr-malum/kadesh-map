@@ -1229,6 +1229,8 @@ text-shadow:
 .codex-filter-row label {
   display: flex;
   flex-direction: column;
+  justify-content: flex-end;
+  
   gap: 5px;
 
   font-family: 'Marcellus SC', Georgia, serif;
