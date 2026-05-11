@@ -17,6 +17,7 @@
 
 <div id="parchment-bg"></div>
 <div id="map"></div>
+
 <div id="side-panel">
   <h2 id="panel-title">Select a Hex</h2>
   <div id="panel-content">
@@ -167,57 +168,36 @@
 
       hex.on('click', function (e) {
         L.DomEvent.stopPropagation(e);
-      
+
         if (selectedHex && selectedHex !== this) {
           selectedHex.setStyle(defaultStyle);
         }
-      
+
         selectedHex = this;
         this.setStyle(selectedStyle);
+
+        const data = hexData?.[hexId];
+
+        document.getElementById('panel-title').textContent =
+          data?.name || hexId;
+
+        document.getElementById('panel-content').innerHTML = `
+          <p><strong>Hex:</strong> ${hexId}</p>
+          <p><strong>Terrain:</strong> ${data?.terrain || 'Unknown'}</p>
+          <p><strong>Description:</strong><br>
+            ${data?.description || 'No known point of interest.'}
+          </p>
+        `;
       });
-
-      const data = hexData[hexId];
-
-        if (data) {
-          hex.bindPopup(`
-            <strong>${data.name}</strong><br>
-            ${data.terrain}<br><br>
-            ${data.description}
-          `);
-        } else {
-         hex.on('click', function (e) {
-  L.DomEvent.stopPropagation(e);
-
-  if (selectedHex && selectedHex !== this) {
-    selectedHex.setStyle(defaultStyle);
-  }
-
-  selectedHex = this;
-  this.setStyle(selectedStyle);
-
-  const data = hexData?.[hexId];
-
-  document.getElementById('panel-title').textContent =
-    data?.name || hexId;
-
-  document.getElementById('panel-content').innerHTML = `
-    <p><strong>Hex:</strong> ${hexId}</p>
-    <p><strong>Terrain:</strong> ${data?.terrain || 'Unknown'}</p>
-    <p><strong>Description:</strong><br>
-      ${data?.description || 'No known point of interest.'}
-    </p>
-  `;
-});
-        }
-
-      map.on('click', function () {
-        if (selectedHex) {
-      selectedHex.setStyle(defaultStyle);
-      selectedHex = null;
-  }
-});
     }
   }
+
+  map.on('click', function () {
+    if (selectedHex) {
+      selectedHex.setStyle(defaultStyle);
+      selectedHex = null;
+    }
+  });
 </script>
 
 </body>
