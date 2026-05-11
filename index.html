@@ -214,10 +214,6 @@
       db?.poisByHexId?.[hexId] ||
       getRowsByField(db?.raw?.pois, "Hex_ID_Ref", hexId);
 
-    const settlements =
-      db?.settlementsByHexId?.[hexId] ||
-      getRowsByField(db?.raw?.settlements, "Hex_ID_Ref", hexId);
-
     document.getElementById('app-panel')
       .classList.add('open');
 
@@ -239,13 +235,6 @@
         <strong>Region:</strong>
         ${escapeHtml(region?.Region_Name || hex?.Region_ID_Ref || 'Unknown')}
       </p>
-
-      ${renderList(
-        "Settlements",
-        settlements,
-        "No known settlements in this hex.",
-        ["Name", "Population"]
-      )}
 
       ${renderList(
         "Points of Interest",
