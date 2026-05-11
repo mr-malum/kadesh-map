@@ -619,14 +619,23 @@ function renderCodexRegionsIndex() {
 }
 
 function getPoiNotorietyRank(value) {
-  const order = {
-    "Local": 1,
-    "Regional": 2,
+  const clean = String(value || "").trim();
+
+  const numberMatch = clean.match(/\d+/);
+
+  if (numberMatch) {
+    return Number(numberMatch[0]);
+  }
+
+  const fallbackOrder = {
+    "Mythic": 1,
+    "Legendary": 2,
     "Major": 3,
-    "Legendary": 4
+    "Regional": 4,
+    "Local": 5
   };
 
-  return order[value] || 0;
+  return fallbackOrder[clean] || 999;
 }
 
 function renderPoiListIntoContainer() {
@@ -648,11 +657,11 @@ function renderPoiListIntoContainer() {
     pois.sort((a, b) => String(a.POI_Type || "").localeCompare(String(b.POI_Type || "")));
   }
 
-  if (sortMode === "notoriety") {
-    pois.sort((a, b) => {
-      return getPoiNotorietyRank(b["Notoriety Tier"]) - getPoiNotorietyRank(a["Notoriety Tier"]);
-    });
-  }
+if (sortMode === "notoriety") {
+  pois.sort((a, b) => {
+    return getPoiNotorietyRank(a["Notoriety Tier"]) - getPoiNotorietyRank(b["Notoriety Tier"]);
+  });
+}
 
   listEl.innerHTML = renderCodexLinkedList(
     pois,
