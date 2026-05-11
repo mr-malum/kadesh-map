@@ -398,13 +398,13 @@ function openPanelForHex(hexId) {
   pushPanelScreen(() => renderHexScreen(hexId));
 }
 
-function openAtlas() {
-  document.getElementById('atlas-overlay')
+function openCodex() {
+  document.getElementById('codex-overlay')
     .classList.add('open');
 }
 
-function closeAtlas() {
-  document.getElementById('atlas-overlay')
+function closeCodex() {
+  document.getElementById('codex-overlay')
     .classList.remove('open');
 }
 
@@ -413,8 +413,8 @@ window.renderPoiScreen = renderPoiScreen;
 window.renderNpcScreen = renderNpcScreen;
 window.goBackPanel = goBackPanel;
 window.pushPanelScreen = pushPanelScreen;
-window.openAtlas = openAtlas;
-window.closeAtlas = closeAtlas;
+window.openCodex = openCodex;
+window.closeCodex = closeCodex;
 
 for (let xxx = 300; xxx < 350; xxx++) {
   for (let yyy = 300; yyy < 350; yyy++) {
@@ -513,25 +513,25 @@ document.getElementById('mobile-panel-back')
     goBackPanel();
   });
 
-document.getElementById('atlas-button')
+document.getElementById('codex-button')
   .addEventListener('click', function (event) {
     event.stopPropagation();
-    openAtlas();
+    openCodex();
   });
 
-document.getElementById('atlas-close')
+document.getElementById('codex-close')
   .addEventListener('click', function () {
-    closeAtlas();
+    closeCodex();
   });
 
-document.getElementById('atlas-back')
+document.getElementById('codex-back')
   .addEventListener('click', function () {
-    // Atlas history will be wired here later.
+    // Codex history will be wired here later.
   });
 
-document.getElementById('atlas-overlay')
+document.getElementById('codex-overlay')
   .addEventListener('click', function (event) {
     if (event.target === this) {
-      closeAtlas();
+      closeCodex();
     }
   });
