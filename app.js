@@ -22,12 +22,23 @@ map.fitBounds(bounds);
 
 function updatePanBounds() {
   const zoom = map.getZoom();
+  const isMobile = window.innerWidth <= 768;
 
-  const padding =
-    zoom < -2 ? 2000 :
-    zoom < -1 ? 1200 :
-    zoom < 0  ? 700  :
-                300;
+  let padding;
+
+  if (isMobile) {
+    padding =
+      zoom < -2 ? 2600 :
+      zoom < -1 ? 1100 :
+      zoom < 0  ? 700  :
+                  350;
+  } else {
+    padding =
+      zoom < -2 ? 5200 :
+      zoom < -1 ? 1700 :
+      zoom < 0  ? 1100 :
+                  600;
+  }
 
   map.setMaxBounds([
     [-padding, -padding],
@@ -36,6 +47,12 @@ function updatePanBounds() {
 }
 
 map.on('zoomend', updatePanBounds);
+map.on('load', updatePanBounds);
+
+map.whenReady(function () {
+  updatePanBounds();
+});
+
 updatePanBounds();
 
 const isTouchDevice =
@@ -398,13 +415,13 @@ function openPanelForHex(hexId) {
   pushPanelScreen(() => renderHexScreen(hexId));
 }
 
-function openAtlas() {
-  document.getElementById('atlas-overlay')
+function openCodex() {
+  document.getElementById('codex-overlay')
     .classList.add('open');
 }
 
-function closeAtlas() {
-  document.getElementById('atlas-overlay')
+function closeCodex() {
+  document.getElementById('codex-overlay')
     .classList.remove('open');
 }
 
@@ -413,8 +430,8 @@ window.renderPoiScreen = renderPoiScreen;
 window.renderNpcScreen = renderNpcScreen;
 window.goBackPanel = goBackPanel;
 window.pushPanelScreen = pushPanelScreen;
-window.openAtlas = openAtlas;
-window.closeAtlas = closeAtlas;
+window.openCodex = openCodex;
+window.closeCodex = closeCodex;
 
 for (let xxx = 300; xxx < 350; xxx++) {
   for (let yyy = 300; yyy < 350; yyy++) {
@@ -441,31 +458,48 @@ for (let xxx = 300; xxx < 350; xxx++) {
     hex.on('click', function (e) {
       L.DomEvent.stopPropagation(e);
 
+      document.getElementById('codex-button')
+        .classList.remove('codex-label-visible');
+
       selectHex(this);
 
       const data = db?.hexesById?.[hexId];
 
       if (isTouchDevice) {
-        this.bindPopup(`
-          <div style="min-width:180px;">
-            <strong>${escapeHtml(hexId)}</strong><br>
-            ${escapeHtml(data?.Terrain || 'Unknown')}<br><br>
+        const poisInHex =
+          db?.poisByHexId?.[hexId] || [];
 
-            <button
-              onclick="openPanelForHex('${escapeJsString(hexId)}')"
-              style="
-                width:100%;
-                padding:10px;
-                border:none;
-                border-radius:8px;
-                background:#4a3720;
-                color:#f4e6c8;
-                cursor:pointer;
-              "
-            >
-              Open Details
-            </button>
+        const poiCount =
+          poisInHex.length;
+
+        const npcCount =
+          poisInHex.reduce((total, poi) => {
+            return total + (db?.npcsByHomeId?.[poi.POI_ID] || []).length;
+          }, 0);
+
+        const countText = [
+          poiCount > 0 ? `${poiCount} POI${poiCount !== 1 ? "s" : ""}` : "",
+          npcCount > 0 ? `${npcCount} NPC${npcCount !== 1 ? "s" : ""}` : ""
+        ].filter(Boolean).join(" • ");
+
+        this.bindPopup(`
+          <strong>${escapeHtml(hexId)}</strong>
+
+          <div class="hex-popup-terrain">
+            ${escapeHtml(data?.Terrain || 'Unknown')}
           </div>
+
+          ${
+            countText
+              ? `<div class="hex-popup-counts">${escapeHtml(countText)}</div>`
+              : ""
+          }
+
+          <button
+            onclick="openPanelForHex('${escapeJsString(hexId)}')"
+          >
+            Open Details
+          </button>
         `).openPopup();
       } else {
         setPanelSideFromClick(e);
@@ -479,6 +513,9 @@ for (let xxx = 300; xxx < 350; xxx++) {
 map.on('click', function () {
   document.getElementById('app-panel')
     .classList.remove('open');
+
+  document.getElementById('codex-button')
+    .classList.remove('codex-label-visible');
 
   if (selectedHex) {
     selectedHex.setStyle(defaultStyle);
@@ -513,20 +550,36 @@ document.getElementById('mobile-panel-back')
     goBackPanel();
   });
 
-document.getElementById('atlas-button')
+document.getElementById('codex-button')
   .addEventListener('click', function (event) {
     event.stopPropagation();
-    openAtlas();
+
+    map.closePopup();
+
+    const codexButton = document.getElementById('codex-button');
+
+    if (isTouchDevice && !codexButton.classList.contains('codex-label-visible')) {
+      codexButton.classList.add('codex-label-visible');
+      return;
+    }
+
+    codexButton.classList.remove('codex-label-visible');
+    openCodex();
   });
 
-document.getElementById('atlas-close')
+document.getElementById('codex-close')
   .addEventListener('click', function () {
-    closeAtlas();
+    closeCodex();
   });
 
-document.getElementById('atlas-overlay')
+document.getElementById('codex-back')
+  .addEventListener('click', function () {
+    // Codex history will be wired here later.
+  });
+
+document.getElementById('codex-overlay')
   .addEventListener('click', function (event) {
     if (event.target === this) {
-      closeAtlas();
+      closeCodex();
     }
   });
