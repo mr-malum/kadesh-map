@@ -22,7 +22,6 @@ map.fitBounds(bounds);
 
 function updatePanBounds() {
   const zoom = map.getZoom();
-
   const isMobile = window.innerWidth <= 768;
 
   let padding;
@@ -31,7 +30,7 @@ function updatePanBounds() {
     padding =
       zoom < -2 ? 2600 :
       zoom < -1 ? 1100 :
-      zoom < 0  ? 700 :
+      zoom < 0  ? 700  :
                   350;
   } else {
     padding =
@@ -456,91 +455,51 @@ for (let xxx = 300; xxx < 350; xxx++) {
       }
     });
 
-hex.on('click', function (e) {
-  L.DomEvent.stopPropagation(e);
+    hex.on('click', function (e) {
+      L.DomEvent.stopPropagation(e);
 
-  document.getElementById('codex-button')
-    .classList.remove('codex-label-visible');
+      document.getElementById('codex-button')
+        .classList.remove('codex-label-visible');
 
-  selectHex(this);
+      selectHex(this);
 
       const data = db?.hexesById?.[hexId];
 
       if (isTouchDevice) {
+        const poisInHex =
+          db?.poisByHexId?.[hexId] || [];
+
+        const poiCount =
+          poisInHex.length;
+
+        const npcCount =
+          poisInHex.reduce((total, poi) => {
+            return total + (db?.npcsByHomeId?.[poi.POI_ID] || []).length;
+          }, 0);
+
+        const countText = [
+          poiCount > 0 ? `${poiCount} POI${poiCount !== 1 ? "s" : ""}` : "",
+          npcCount > 0 ? `${npcCount} NPC${npcCount !== 1 ? "s" : ""}` : ""
+        ].filter(Boolean).join(" • ");
+
         this.bindPopup(`
-          <div style="min-width:180px;">
-            <div
-  style="
-    font-family:'Marcellus SC', Georgia, serif;
-    font-size:1.05rem;
-    letter-spacing:0.04em;
-    margin-bottom:6px;
-  "
->
-  ${escapeHtml(hexId)}
-</div>
+          <strong>${escapeHtml(hexId)}</strong>
 
-<div
-  style="
-    font-family:'Marcellus SC', Georgia, serif;
-    font-size:1.15rem;
-    color:#2f1d10;
-    margin-bottom:10px;
-  "
->
-  ${escapeHtml(data?.Terrain || 'Unknown')}
-</div>
-
-${
-  (() => {
-    const poiCount =
-      (db?.poisByHexId?.[hexId] || []).length;
-
-    const npcCount =
-      (db?.npcsByHexId?.[hexId] || []).length;
-
-    let info = [];
-
-    if (poiCount > 0) {
-      info.push(`${poiCount} POI${poiCount !== 1 ? 's' : ''}`);
-    }
-
-    if (npcCount > 0) {
-      info.push(`${npcCount} NPC${npcCount !== 1 ? 's' : ''}`);
-    }
-
-    if (!info.length) return "";
-
-    return `
-      <div
-        style="
-          opacity:0.78;
-          margin-bottom:12px;
-          font-size:0.95rem;
-        "
-      >
-        ${info.join(" • ")}
-      </div>
-    `;
-  })()
-}
-            
-
-            <button
-              onclick="openPanelForHex('${escapeJsString(hexId)}')"
-              style="
-                width:100%;
-                padding:10px;
-                border:none;
-                border-radius:8px;
-                background:#4a3720;
-                color:#f4e6c8;
-                cursor:pointer;
-              "
-            >
-              Open Details
-            </button>
+          <div class="hex-popup-terrain">
+            ${escapeHtml(data?.Terrain || 'Unknown')}
           </div>
+
+          ${
+            countText
+              ? `<div class="hex-popup-counts">${escapeHtml(countText)}</div>`
+              : ""
+          }
+
+          <button
+            onclick="openPanelForHex('${escapeJsString(hexId)}')"
+          >
+            Open Details
+          </button>
         `).openPopup();
       } else {
         setPanelSideFromClick(e);
@@ -594,6 +553,8 @@ document.getElementById('mobile-panel-back')
 document.getElementById('codex-button')
   .addEventListener('click', function (event) {
     event.stopPropagation();
+
+    map.closePopup();
 
     const codexButton = document.getElementById('codex-button');
 
