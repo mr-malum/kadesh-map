@@ -398,8 +398,9 @@ function renderCodexHexPage(hexId) {
 function renderCodexRegionPage(regionId) {
   const region = db?.regionsById?.[regionId];
   const hexes = getRowsByField(db?.raw?.hexes, "Region_ID_Ref", regionId);
+  const regionName = region?.Region_Name || regionId || "Unknown Region";
 
-  setCodexTitle(region?.Region_Name || regionId || "Unknown Region");
+  setCodexTitle(regionName);
 
   setCodexContent(`
     <h3>Region Notes</h3>
@@ -409,15 +410,30 @@ function renderCodexRegionPage(regionId) {
     ${renderCodexLinkedList(hexes, "No hexes currently assigned to this region.", "hex", "Hex_ID", row => {
       return `Hex ${row.Hex_ID} — ${row.Terrain || "Unknown Terrain"}`;
     })}
-  `);
+  `, [
+    {
+      label: "Codex",
+      clickable: true,
+      onclick: "resetCodexToIndex()"
+    },
+    {
+      label: "Regions",
+      clickable: true,
+      onclick: "openCodexPage('regions')"
+    },
+    {
+      label: regionName
+    }
+  ]);
 }
 
 function renderCodexPoiPage(poiId) {
   const poi = db?.poisById?.[poiId];
   const npcs = getNpcsForPoi(poiId);
   const hexId = poi?.Hex_ID_Ref;
+  const poiName = poi?.Name || poiId || "Unknown POI";
 
-  setCodexTitle(poi?.Name || poiId || "Unknown POI");
+  setCodexTitle(poiName);
 
   setCodexContent(`
     <p><strong>Type:</strong> ${escapeHtml(poi?.POI_Type || "Unknown")}</p>
@@ -445,14 +461,29 @@ function renderCodexPoiPage(poiId) {
     ${renderCodexLinkedList(npcs, "No known NPCs at this location.", "npc", "NPC_ID", row => {
       return [row.Name, row.Race, row.Occupation].filter(Boolean).join(" — ");
     })}
-  `);
+  `, [
+    {
+      label: "Codex",
+      clickable: true,
+      onclick: "resetCodexToIndex()"
+    },
+    {
+      label: "Points of Interest",
+      clickable: true,
+      onclick: "openCodexPage('pois')"
+    },
+    {
+      label: poiName
+    }
+  ]);
 }
 
 function renderCodexNpcPage(npcId) {
   const npc = db?.npcsById?.[npcId];
   const home = npc?.Home_ID_Ref ? db?.poisById?.[npc.Home_ID_Ref] : null;
+  const npcName = npc?.Name || npcId || "Unknown NPC";
 
-  setCodexTitle(npc?.Name || npcId || "Unknown NPC");
+  setCodexTitle(npcName);
 
   setCodexContent(`
     <p>
@@ -472,7 +503,21 @@ function renderCodexNpcPage(npcId) {
 
     <h3>DM Journal</h3>
     <p>${escapeHtml(npc?.DM_Journal || "No journal entries.")}</p>
-  `);
+  `, [
+    {
+      label: "Codex",
+      clickable: true,
+      onclick: "resetCodexToIndex()"
+    },
+    {
+      label: "NPCs",
+      clickable: true,
+      onclick: "openCodexPage('npcs')"
+    },
+    {
+      label: npcName
+    }
+  ]);
 }
 
 function renderCodexRegionsIndex() {
