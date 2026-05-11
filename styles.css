@@ -71,13 +71,21 @@ html, body {
 #app-panel-inner {
   position: relative;
 
-  width: 100%;
+  width: calc(100% + 50px);
   height: 100%;
 
   display: flex;
   flex-direction: column;
 
   pointer-events: auto;
+}
+
+#app-panel.right #app-panel-inner {
+  margin-left: -25px;
+}
+
+#app-panel.left #app-panel-inner {
+  margin-left: -25px;
 }
 
 #app-panel::before {
