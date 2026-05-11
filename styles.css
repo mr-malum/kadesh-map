@@ -533,9 +533,9 @@ button.panel-link.mobile-nav-back {
   position: relative;
 
   width: min(84vw, 1080px);
-  height: 108vh;
+  height: 100vh;
 
-  padding: 86px 72px 34px;
+  padding: 70px 72px;
 
   color: #3a2614;
 
@@ -553,7 +553,11 @@ button.panel-link.mobile-nav-back {
   content: "";
 
   position: absolute;
-  inset: -90px -120px;
+  top: -120px;
+  bottom: -40px;
+
+  left: -120px;
+  right: -120px;
 
   background-image: url("assets/Parchment_Panel.png");
   background-size: 100% 100%;
