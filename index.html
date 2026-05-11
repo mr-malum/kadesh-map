@@ -161,14 +161,58 @@ map.fitBounds(bounds);
       const hex = L.polygon(
         makeHex(x, y, hexWidth, hexHeight),
         {
-          color: 'red',
-          weight: 1,
-          fillColor: 'yellow',
-          fillOpacity: 0.06,
-          opacity: 0.85
+          color: '#ffffff',
+          weight: 2,
+          opacity: 0.18,
+      
+          fillColor: '#ffffff',
+          fillOpacity: 0.03,
+      
+          className: 'hex-glow'
         }
       ).addTo(map);
-  
+      
+      // Hover effect
+      hex.on('mouseover', function () {
+        this.setStyle({
+          opacity: 0.45,
+          fillOpacity: 0.10,
+          weight: 3
+        });
+      });
+      
+      // Mouse leave
+      hex.on('mouseout', function () {
+        if (!this.selected) {
+          this.setStyle({
+            opacity: 0.18,
+            fillOpacity: 0.03,
+            weight: 2
+          });
+        }
+      });
+      
+      // Click/select effect
+      hex.on('click', function () {
+      
+        // Toggle selected state
+        this.selected = !this.selected;
+      
+        if (this.selected) {
+          this.setStyle({
+            opacity: 0.85,
+            fillOpacity: 0.18,
+            weight: 4
+          });
+        } else {
+          this.setStyle({
+            opacity: 0.18,
+            fillOpacity: 0.03,
+            weight: 2
+          });
+        }
+      });
+      
       hex.bindPopup(hexId);
     }
   }
