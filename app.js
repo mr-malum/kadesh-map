@@ -1638,6 +1638,22 @@ document.getElementById("codex-button").addEventListener("click", function (even
   resetCodexToIndex();
 });
 
+document.getElementById("map-reset-button").addEventListener("click", function (event) {
+  event.stopPropagation();
+
+  closePanel({
+    clearSelection: true
+  });
+
+  closeCodex();
+  map.closePopup();
+
+  map.fitBounds(bounds, {
+    animate: true,
+    duration: 0.5
+  });
+});
+
 document.getElementById("codex-close").addEventListener("click", function () {
   closeCodex();
 });
