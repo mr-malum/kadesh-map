@@ -103,13 +103,13 @@ html, body {
   opacity: 0.97;
 }
 
-#app-panel-header,
+#app-panel-,
 #panel-content {
   position: relative;
   z-index: 1;
 }
 
-/* Header */
+/*  */
 #app-panel-header {
   position: relative;
 
@@ -497,7 +497,7 @@ button.panel-link.mobile-nav-back {
   border: none;
 
   background-color: transparent;
-  background-image: url("assets/Atlas_Compass.png");
+  background-image: url("assets/Codex_Book_Button.png");
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
@@ -608,6 +608,87 @@ text-shadow:
   #codex-button::before {
     font-size: 1.7rem;
     letter-spacing: 0.18em;
+  }
+
+}
+
+/* Map Reset Button */
+
+#map-reset-button {
+  position: fixed;
+
+  bottom: 156px;
+  left: 42px;
+
+  width: 116px;
+  height: 116px;
+
+  padding: 0;
+  border: none;
+
+  background-color: transparent;
+  background-image: url("assets/Atlas_Compass.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  z-index: 1500;
+  cursor: pointer;
+
+  touch-action: manipulation;
+
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+
+  user-select: none;
+
+  outline: none;
+  box-shadow: none;
+
+  transition:
+    transform 0.14s ease,
+    filter 0.14s ease;
+
+  filter:
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.46))
+    drop-shadow(0 3px 5px rgba(0, 0, 0, 0.32))
+    drop-shadow(0 0 10px rgba(255, 225, 160, 0.10));
+}
+
+#map-reset-button:hover {
+  transform: scale(1.045);
+
+  filter:
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.52))
+    drop-shadow(0 4px 7px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 14px rgba(255, 225, 160, 0.14));
+}
+
+#map-reset-button:active {
+  transform: scale(0.94) rotate(-2deg);
+
+  filter:
+    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.50))
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.36))
+    drop-shadow(0 0 8px rgba(255, 225, 160, 0.10));
+}
+
+#map-reset-button:focus,
+#map-reset-button:focus-visible {
+  outline: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+@media (max-width: 700px) {
+
+  #map-reset-button {
+    width: 88px;
+    height: 88px;
+
+    bottom: 118px;
+    left: 29px;
   }
 
 }
@@ -1089,6 +1170,28 @@ text-shadow:
   opacity: 0.7;
 }
 
+.codex-superheader {
+  margin: 0 0 -4px;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  opacity: 0.72;
+}
+
+.codex-subheader {
+  margin: 0 0 -4px;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  opacity: 0.72;
+}
+
 /* Themed scrollbars */
 #codex-content,
 #panel-content {
@@ -1273,8 +1376,12 @@ text-shadow:
   appearance: none;
   -webkit-appearance: none;
 
-  height: 26px;
+  height: 34px;
   min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   padding: 0 8px;
 
@@ -1306,6 +1413,9 @@ text-shadow:
     border-color 0.15s ease,
     transform 0.12s ease;
 }
+}
+
+
 
 .codex-sort-direction:hover {
   background:
@@ -1319,6 +1429,89 @@ text-shadow:
 
 .codex-sort-direction:active {
   transform: scale(0.96);
+}
+
+.codex-sort-label {
+  margin-left: auto;
+}
+
+.codex-dynamic-filter {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 6px;
+
+  overflow: visible;
+}
+
+.codex-filter-field-select {
+  appearance: none;
+  -webkit-appearance: none;
+
+  display: block;
+
+  height: 34px;
+  min-height: 0;
+
+  line-height: 1;
+
+  width: auto;
+  min-width: 0;
+
+  padding: 0 24px 2px 8px;
+  padding-top: 0;
+
+  border-radius: 8px;
+  border: 1px solid rgba(94, 55, 22, 0.32);
+
+  background:
+    linear-gradient(
+      rgba(255, 231, 174, 0.78),
+      rgba(166, 108, 41, 0.32)
+    );
+
+  color: #3a2614;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 1px 2px rgba(255, 241, 202, 0.35),
+    0 1px 4px rgba(45, 25, 8, 0.10);
+}
+
+.codex-dynamic-filter .codex-filter-field-select {
+  align-self: flex-start;
+}
+
+.codex-dynamic-filter 
+select:not(.codex-filter-field-select) 
+{
+  width: 260px;
+  max-width: 260px;
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  align-self: flex-start;
+}
+
+.codex-filter-field-select,
+.codex-dynamic-filter select,
+.codex-sort-label select {
+  color-scheme: light;
+  background-color: #ecd6a7;
+}
+
+option {
+  background: #ecd6a7;
+  color: #3a2614;
 }
 
 /* =========================================================

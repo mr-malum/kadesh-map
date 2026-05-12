@@ -440,6 +440,10 @@ function renderCodexIndex() {
   `;
 }
 
+// ======================
+// CODEX LABEL HELPERS
+// ======================
+
 function joinCodexLabel(title, meta = []) {
   return [
     title,
@@ -534,6 +538,110 @@ function buildSearchResultLabel(result) {
     result.meta || []
   );
 }
+
+// ======================
+// SORT / FILTER HELPERS
+// ======================
+
+function compareText(a, b) {
+  return String(a || "").localeCompare(String(b || ""));
+}
+
+function applySortDirection(result, direction) {
+  return direction === "desc" ? -result : result;
+}
+
+function sortRows(rows, compareFn, direction = "asc") {
+  return [...rows].sort((a, b) => {
+    return applySortDirection(compareFn(a, b), direction);
+  });
+}
+
+function applyFilters(rows, filters) {
+  return rows.filter(row => {
+    return filters.every(filter => {
+      if (!filter.value || filter.value === "all") {
+        return true;
+      }
+
+      const rowValue = filter.getValue
+        ? filter.getValue(row)
+        : row?.[filter.field];
+
+      return String(rowValue || "") === String(filter.value);
+    });
+  });
+}
+
+function renderCodexSelectOptions(options, selectedValue = null) {
+  return options.map(option => {
+    const value = typeof option === "string" ? option : option.value;
+    const label = typeof option === "string" ? option : option.label;
+
+    return `
+      <option
+        value="${escapeHtml(value)}"
+        ${selectedValue === value ? "selected" : ""}
+      >
+        ${escapeHtml(label)}
+      </option>
+    `;
+  }).join("");
+}
+
+function renderCodexListControls(config) {
+  const filters = config.filters || [];
+
+  return `
+    <div class="codex-filter-row">
+      ${filters.map(filter => `
+        <label class="codex-dynamic-filter">
+          <select
+            id="${escapeHtml(filter.fieldId || `${filter.id}-field`)}"
+            class="codex-filter-field-select"
+          >
+              ${renderCodexSelectOptions(
+                filter.fieldOptions || [
+                  {
+                    value: filter.fieldValue || filter.id,
+                    label: filter.label
+                  }
+                ],
+                filter.fieldValue || filter.id
+              )}
+          </select>
+
+          <select id="${escapeHtml(filter.id)}">
+            ${renderCodexSelectOptions(filter.options, filter.selectedValue)}
+          </select>
+        </label>
+      `).join("")}
+
+      <label class="codex-sort-label">
+        <span class="codex-sort-topline">
+          Sort
+
+          <button
+            id="${escapeHtml(config.directionId)}"
+            class="codex-sort-direction"
+            type="button"
+            data-direction="${escapeHtml(config.direction || "asc")}"
+          >
+            ${config.direction === "desc" ? "↓ DESC" : "↑ ASC"}
+          </button>
+        </span>
+
+        <select id="${escapeHtml(config.sortId)}">
+          ${renderCodexSelectOptions(config.sortOptions, config.selectedSort)}
+        </select>
+      </label>
+    </div>
+  `;
+}
+
+// ======================
+// PAGE RENDERER HELPERS
+// ======================
 
 function renderCodexHexPage(hexId) {
   const hex = db?.hexesById?.[hexId];
@@ -695,12 +803,6 @@ function renderCodexPoiPage(poiId) {
         : ""
     }
 
-    <h3>Lore</h3>
-    <p>${escapeHtml(poi?.Lore || "No lore recorded.")}</p>
-
-    <h3>DM Journal</h3>
-    <p>${escapeHtml(poi?.DM_Journal || "No journal entries.")}</p>
-
     <h3>NPCs</h3>
     ${renderCodexLinkedList(
       npcs,
@@ -709,6 +811,12 @@ function renderCodexPoiPage(poiId) {
       "NPC_ID",
       buildNpcListLabel
     )}
+
+    <h3>DM Journal</h3>
+    <p>${escapeHtml(poi?.DM_Journal || "No journal entries.")}</p>
+
+    <h3>Lore</h3>
+    <p>${escapeHtml(poi?.Lore || "No lore recorded.")}</p>
   `, [
     {
       label: "Codex",
@@ -731,40 +839,44 @@ function renderCodexNpcPage(npcId) {
   const home = npc?.Home_ID_Ref ? db?.poisById?.[npc.Home_ID_Ref] : null;
   const npcName = npc?.Name || npcId || "Unknown NPC";
 
-  setCodexTitle(npcName);
+document.getElementById("codex-title").innerHTML = `
+  ${npc?.Title ? `
+    <div class="codex-superheader">
+      ${escapeHtml(npc.Title)}
+    </div>
+  ` : ""}
+
+  <div class="codex-mainheader">
+    ${escapeHtml(npcName)}
+  </div>
+
+  ${npc?.Organization ? `
+    <div class="codex-subheader">
+      ${escapeHtml(npc.Organization)}
+    </div>
+  ` : ""}
+`;
 
   setCodexContent(`
-    <p>
-      <strong>Home:</strong>
-      ${
-        home
-          ? `<button class="codex-link-button" type="button" onclick="openCodexPage('poi', '${escapeJsString(home.POI_ID)}')">${escapeHtml(home.Name)}</button>`
-          : escapeHtml(npc?.Home_ID_Ref || "Unknown")
-      }
-    </p>
+    <p><strong>Home:</strong> ${
+      home
+        ? `<button class="codex-link-button" type="button" onclick="openCodexPage('poi', '${escapeJsString(home.POI_ID)}')">${escapeHtml(home.Name)}</button>`
+        : escapeHtml(npc?.Home_ID_Ref || "Unknown")
+    }</p>
 
     <p><strong>Race:</strong> ${escapeHtml(npc?.Race || "Unknown")}</p>
-    <p><strong>Occupation:</strong> ${escapeHtml(npc?.Occupation || "Unknown")}</p>
 
-    <h3>Lore</h3>
-    <p>${escapeHtml(npc?.Lore || "No lore recorded.")}</p>
+    <p><strong>Occupation:</strong> ${escapeHtml(npc?.Occupation || "Unknown")}</p>
 
     <h3>DM Journal</h3>
     <p>${escapeHtml(npc?.DM_Journal || "No journal entries.")}</p>
+
+    <h3>Lore</h3>
+    <p>${escapeHtml(npc?.Lore || "No lore recorded.")}</p>
   `, [
-    {
-      label: "Codex",
-      clickable: true,
-      onclick: "resetCodexToIndex()"
-    },
-    {
-      label: "NPCs",
-      clickable: true,
-      onclick: "openCodexPage('npcs')"
-    },
-    {
-      label: npcName
-    }
+    { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
+    { label: "NPCs", clickable: true, onclick: "openCodexPage('npcs')" },
+    { label: npcName }
   ]);
 }
 
@@ -802,36 +914,103 @@ function getPoiNotorietyRank(value) {
   return fallbackOrder[clean] || 999;
 }
 
+function getNpcHomeLabel(npc) {
+  const home = npc.Home_ID_Ref
+    ? db?.poisById?.[npc.Home_ID_Ref]
+    : null;
+
+  return home?.Name || npc.Home_ID_Ref || "";
+}
+
+function getNpcFilterValue(npc, field) {
+  if (field === "Race") return npc.Race || "";
+  if (field === "Occupation") return npc.Occupation || "";
+  if (field === "Organization") return npc?.Organization || "";
+  if (field === "Home") return getNpcHomeLabel(npc);
+
+  return "";
+}
+
+function getUniqueValues(rows, getValue) {
+  return [...new Set(
+    rows
+      .map(getValue)
+      .filter(Boolean)
+  )].sort();
+}
+
+function getNpcFilterOptions(field) {
+  const npcs = db?.raw?.npcs || [];
+
+  return [
+    { value: "all", label: "All" },
+    ...getUniqueValues(npcs, npc => getNpcFilterValue(npc, field)).map(value => ({
+      value,
+      label: value
+    }))
+  ];
+}
+
+function updateNpcFilterValueOptions(fieldSelectId, valueSelectId) {
+  const field = document.getElementById(fieldSelectId)?.value || "Race";
+  const valueSelect = document.getElementById(valueSelectId);
+
+  if (!valueSelect) return;
+
+  valueSelect.innerHTML = renderCodexSelectOptions(
+    getNpcFilterOptions(field),
+    "all"
+  );
+}
+
 function renderPoiListIntoContainer() {
   const listEl = document.getElementById("codex-poi-list");
   const typeFilter = document.getElementById("codex-poi-type-filter")?.value || "all";
+  const notorietyFilter = document.getElementById("codex-poi-notoriety-filter")?.value || "all";
   const sortMode = document.getElementById("codex-poi-sort")?.value || "name";
   const directionButton = document.getElementById("codex-poi-direction");
-
-  const sortDirection =
-    directionButton?.dataset?.direction || "asc";
+  const sortDirection = directionButton?.dataset?.direction || "asc";
 
   let pois = [...(db?.raw?.pois || [])];
 
-  if (typeFilter !== "all") {
-    pois = pois.filter(poi => poi.POI_Type === typeFilter);
-  }
+  pois = applyFilters(pois, [
+    {
+      field: "POI_Type",
+      value: typeFilter
+    },
+    {
+      field: "Notoriety Tier",
+      value: notorietyFilter
+    }
+  ]);
 
   let compareFn = null;
 
   if (sortMode === "name") {
     compareFn = (a, b) =>
-      String(a.Name || "").localeCompare(String(b.Name || ""));
+      compareText(a.Name, b.Name);
   }
 
   if (sortMode === "type") {
     compareFn = (a, b) => {
-      const primary =
-        String(a.POI_Type || "").localeCompare(String(b.POI_Type || ""));
+      const primary = compareText(a.POI_Type, b.POI_Type);
 
-      if (primary !== 0) return primary;
+      return primary !== 0
+        ? primary
+        : compareText(a.Name, b.Name);
+    };
+  }
 
-      return String(a.Name || "").localeCompare(String(b.Name || ""));
+  if (sortMode === "population") {
+    compareFn = (a, b) => {
+      const aPop = Number(String(a.Population || "").replace(/[^\d]/g, "")) || 0;
+      const bPop = Number(String(b.Population || "").replace(/[^\d]/g, "")) || 0;
+
+      const primary = aPop - bPop;
+
+      return primary !== 0
+        ? primary
+        : compareText(a.Name, b.Name);
     };
   }
 
@@ -841,17 +1020,14 @@ function renderPoiListIntoContainer() {
         getPoiNotorietyRank(a["Notoriety Tier"]) -
         getPoiNotorietyRank(b["Notoriety Tier"]);
 
-      if (primary !== 0) return primary;
-
-      return String(a.Name || "").localeCompare(String(b.Name || ""));
+      return primary !== 0
+        ? primary
+        : compareText(a.Name, b.Name);
     };
   }
 
   if (compareFn) {
-    pois.sort((a, b) => {
-      const result = compareFn(a, b);
-      return sortDirection === "desc" ? -result : result;
-    });
+    pois = sortRows(pois, compareFn, sortDirection);
   }
 
   listEl.innerHTML = renderCodexLinkedList(
@@ -860,6 +1036,65 @@ function renderPoiListIntoContainer() {
     "poi",
     "POI_ID",
     buildPoiListLabel
+  );
+}
+
+function renderNpcListIntoContainer() {
+  const listEl = document.getElementById("codex-npc-list");
+
+  const fieldOne = document.getElementById("codex-npc-filter-1-field")?.value || "Race";
+  const valueOne = document.getElementById("codex-npc-filter-1-value")?.value || "all";
+
+  const fieldTwo = document.getElementById("codex-npc-filter-2-field")?.value || "Occupation";
+  const valueTwo = document.getElementById("codex-npc-filter-2-value")?.value || "all";
+
+  const sortMode = document.getElementById("codex-npc-sort")?.value || "name";
+  const directionButton = document.getElementById("codex-npc-direction");
+  const sortDirection = directionButton?.dataset?.direction || "asc";
+
+  let npcs = [...(db?.raw?.npcs || [])];
+
+  npcs = applyFilters(npcs, [
+    {
+      value: valueOne,
+      getValue: npc => getNpcFilterValue(npc, fieldOne)
+    },
+    {
+      value: valueTwo,
+      getValue: npc => getNpcFilterValue(npc, fieldTwo)
+    }
+  ]);
+
+  let compareFn = null;
+
+  if (sortMode === "name") {
+    compareFn = (a, b) => compareText(a.Name, b.Name);
+  }
+
+  if (sortMode === "race") {
+    compareFn = (a, b) => {
+      const primary = compareText(a.Race, b.Race);
+      return primary !== 0 ? primary : compareText(a.Name, b.Name);
+    };
+  }
+
+  if (sortMode === "occupation") {
+    compareFn = (a, b) => {
+      const primary = compareText(a.Occupation, b.Occupation);
+      return primary !== 0 ? primary : compareText(a.Name, b.Name);
+    };
+  }
+
+  if (compareFn) {
+    npcs = sortRows(npcs, compareFn, sortDirection);
+  }
+
+  listEl.innerHTML = renderCodexLinkedList(
+    npcs,
+    "No NPCs match these filters.",
+    "npc",
+    "NPC_ID",
+    buildNpcListLabel
   );
 }
 
@@ -872,41 +1107,64 @@ function renderCodexPoisIndex() {
       .filter(Boolean)
   )].sort();
 
+  const poiNotorietyTiers = [...new Set(
+    pois
+      .map(poi => poi["Notoriety Tier"])
+      .filter(Boolean)
+  )].sort();
+
   setCodexTitle("Points of Interest");
 
   setCodexContent(`
-    <div class="codex-filter-row">
-      <label>
-        Type
-        <select id="codex-poi-type-filter">
-          <option value="all">All</option>
-          ${poiTypes.map(type => `
-            <option value="${escapeHtml(type)}">${escapeHtml(type)}</option>
-          `).join("")}
-        </select>
-      </label>
+    ${renderCodexListControls({
+      filters: [
+        {
+          id: "codex-poi-type-filter",
+          label: "Type",
+          fieldValue: "Type",
+          fieldOptions: [
+            { value: "Type", label: "Type" },
+            { value: "Notoriety", label: "Notoriety" }
+          ],
+          selectedValue: "all",
+          options: [
+            { value: "all", label: "All" },
+            ...poiTypes.map(type => ({
+              value: type,
+              label: type
+            }))
+          ]
+        },
 
-      <label class="codex-sort-label">
-        <span class="codex-sort-topline">
-          Sort
-
-          <button
-            id="codex-poi-direction"
-            class="codex-sort-direction"
-            type="button"
-            data-direction="asc"
-          >
-            ↑ ASC
-          </button>
-        </span>
-
-        <select id="codex-poi-sort">
-          <option value="name">Name</option>
-          <option value="type">Type</option>
-          <option value="notoriety">Notoriety</option>
-        </select>
-      </label>
-    </div>
+        {
+          id: "codex-poi-notoriety-filter",
+          label: "Notoriety",
+          fieldValue: "Notoriety",
+          fieldOptions: [
+            { value: "Type", label: "Type" },
+            { value: "Notoriety", label: "Notoriety" }
+          ],
+          selectedValue: "all",
+          options: [
+            { value: "all", label: "All" },
+            ...poiNotorietyTiers.map(tier => ({
+              value: tier,
+              label: tier
+            }))
+          ]
+        }
+      ],
+      sortId: "codex-poi-sort",
+      selectedSort: "name",
+      sortOptions: [
+        { value: "name", label: "Name" },
+        { value: "type", label: "Type" },
+        { value: "notoriety", label: "Notoriety" },
+        { value: "population", label: "Population" }
+      ],
+      directionId: "codex-poi-direction",
+      direction: "asc"
+    })}
 
     <div id="codex-poi-list"></div>
   `, [
@@ -920,38 +1178,152 @@ function renderCodexPoisIndex() {
     }
   ]);
 
-  document.getElementById("codex-poi-type-filter").addEventListener("change", renderPoiListIntoContainer);
+  document.getElementById("codex-poi-type-filter").addEventListener(
+    "change",
+    renderPoiListIntoContainer
+  );
 
-  document.getElementById("codex-poi-sort").addEventListener("change", renderPoiListIntoContainer);
+  document.getElementById("codex-poi-notoriety-filter").addEventListener(
+    "change",
+    renderPoiListIntoContainer
+  );
 
-  document.getElementById("codex-poi-direction").addEventListener("click", function () {
-    const current = this.dataset.direction || "asc";
-    const next = current === "asc" ? "desc" : "asc";
+  document.getElementById("codex-poi-sort").addEventListener(
+    "change",
+    renderPoiListIntoContainer
+  );
 
-    this.dataset.direction = next;
+  document.getElementById("codex-poi-direction").addEventListener(
+    "click",
+    function () {
+      const current = this.dataset.direction || "asc";
+      const next = current === "asc" ? "desc" : "asc";
 
-    this.textContent = next === "asc"
-      ? "↑ ASC"
-      : "↓ DESC";
+      this.dataset.direction = next;
 
-    renderPoiListIntoContainer();
-  });
+      this.textContent = next === "asc"
+        ? "↑ ASC"
+        : "↓ DESC";
+
+      renderPoiListIntoContainer();
+    }
+  );
 
   renderPoiListIntoContainer();
 }
 
 function renderCodexNpcsIndex() {
-  const npcs = db?.raw?.npcs || [];
+  const npcFieldOptions = [
+    { value: "Race", label: "Race" },
+    { value: "Occupation", label: "Occupation" },
+    { value: "Organization", label: "Organization" },
+    { value: "Home", label: "Home" }
+  ];
 
   setCodexTitle("NPCs");
 
-  setCodexContent(renderCodexLinkedList(
-    npcs,
-    "No NPCs recorded.",
-    "npc",
-    "NPC_ID",
-    buildNpcListLabel
-  ));
+  setCodexContent(`
+    ${renderCodexListControls({
+      filters: [
+        {
+          id: "codex-npc-filter-1-value",
+          fieldId: "codex-npc-filter-1-field",
+          label: "Race",
+          fieldValue: "Race",
+          fieldOptions: npcFieldOptions,
+          selectedValue: "all",
+          options: getNpcFilterOptions("Race")
+        },
+
+        {
+          id: "codex-npc-filter-2-value",
+          fieldId: "codex-npc-filter-2-field",
+          label: "Occupation",
+          fieldValue: "Occupation",
+          fieldOptions: npcFieldOptions,
+          selectedValue: "all",
+          options: getNpcFilterOptions("Occupation")
+        }
+      ],
+      sortId: "codex-npc-sort",
+      selectedSort: "name",
+      sortOptions: [
+        { value: "name", label: "Name" },
+        { value: "race", label: "Race" },
+        { value: "occupation", label: "Occupation" }
+      ],
+      directionId: "codex-npc-direction",
+      direction: "asc"
+    })}
+
+    <div id="codex-npc-list"></div>
+  `, [
+    {
+      label: "Codex",
+      clickable: true,
+      onclick: "resetCodexToIndex()"
+    },
+    {
+      label: "NPCs"
+    }
+  ]);
+
+  document.getElementById("codex-npc-filter-1-field").addEventListener(
+    "change",
+    function () {
+      updateNpcFilterValueOptions(
+        "codex-npc-filter-1-field",
+        "codex-npc-filter-1-value"
+      );
+
+      renderNpcListIntoContainer();
+    }
+  );
+
+  document.getElementById("codex-npc-filter-2-field").addEventListener(
+    "change",
+    function () {
+      updateNpcFilterValueOptions(
+        "codex-npc-filter-2-field",
+        "codex-npc-filter-2-value"
+      );
+
+      renderNpcListIntoContainer();
+    }
+  );
+
+  document.getElementById("codex-npc-filter-1-value").addEventListener(
+    "change",
+    renderNpcListIntoContainer
+  );
+
+  document.getElementById("codex-npc-filter-2-value").addEventListener(
+    "change",
+    renderNpcListIntoContainer
+  );
+
+  document.getElementById("codex-npc-sort").addEventListener(
+    "change",
+    renderNpcListIntoContainer
+  );
+
+  document.getElementById("codex-npc-direction").addEventListener(
+    "click",
+    function () {
+      const current = this.dataset.direction || "asc";
+      const next = current === "asc" ? "desc" : "asc";
+
+      this.dataset.direction = next;
+
+      this.textContent = next === "asc"
+        ? "↑ ASC"
+        : "↓ DESC";
+
+      renderNpcListIntoContainer();
+    }
+  );
+
+  renderNpcListIntoContainer();
 }
 
 function renderCodexSearchPage() {
@@ -1054,25 +1426,29 @@ function renderCodexSearchResults(query) {
     }
   });
 
-  (db?.raw?.npcs || []).forEach(npc => {
-    const haystack = [
-      npc.NPC_ID,
-      npc.Name,
-      npc.Race,
-      npc.Occupation,
-      npc.Home_ID_Ref,
-      npc.Lore,
-      npc.DM_Journal
-    ].join(" ").toLowerCase();
+(db?.raw?.npcs || []).forEach(npc => {
 
-    if (haystack.includes(cleanQuery)) {
-      results.push({
-        type: "npc",
-        id: npc.NPC_ID,
-        label: buildNpcListLabel(npc)
-      });
-    }
-  });
+  const haystack = [
+    npc.NPC_ID,
+    npc.Name,
+    npc.Title,
+    npc.Race,
+    npc.Organization,
+    npc.Occupation,
+    npc.Home_ID_Ref,
+    getNpcHomeLabel(npc),
+    npc.Lore,
+    npc.DM_Journal
+  ].join(" ").toLowerCase();
+
+  if (haystack.includes(cleanQuery)) {
+    results.push({
+      type: "npc",
+      id: npc.NPC_ID,
+      label: buildNpcListLabel(npc)
+    });
+  }
+});
 
   if (!results.length) {
     resultsEl.innerHTML = `<p>No matching records found.</p>`;
@@ -1262,6 +1638,22 @@ document.getElementById("codex-button").addEventListener("click", function (even
   codexButton.classList.remove("codex-label-visible");
 
   resetCodexToIndex();
+});
+
+document.getElementById("map-reset-button").addEventListener("click", function (event) {
+  event.stopPropagation();
+
+  closePanel({
+    clearSelection: true
+  });
+
+  closeCodex();
+  map.closePopup();
+
+  map.fitBounds(bounds, {
+    animate: true,
+    duration: 0.5
+  });
 });
 
 document.getElementById("codex-close").addEventListener("click", function () {
