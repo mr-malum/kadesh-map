@@ -1299,6 +1299,30 @@ sortOptions: [
   })
 };
 
+function renderCodexListPage(config) {
+  setCodexTitle(config.title);
+
+  setCodexContent(`
+    ${renderCodexListControls({
+      filters: config.filters.map(filter => ({
+        ...filter,
+        fieldOptions: config.fieldOptions,
+        options: config.getFilterOptions(filter.fieldValue)
+      })),
+      sortId: config.sortId,
+      selectedSort: config.selectedSort,
+      sortOptions: config.sortOptions,
+      directionId: config.directionId,
+      direction: "asc"
+    })}
+
+    <div id="${escapeHtml(config.listId)}"></div>
+  `, config.breadcrumbs);
+
+  config.bindControls();
+  config.renderList();
+}
+
 function renderCodexPoisIndex() {
 
   setCodexTitle("Points of Interest");
