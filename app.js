@@ -899,6 +899,8 @@ function getPoiNotorietyRank(value) {
 function renderPoiListIntoContainer() {
   const listEl = document.getElementById("codex-poi-list");
   const typeFilter = document.getElementById("codex-poi-type-filter")?.value || "all";
+  const notorietyFilter =
+    document.getElementById("codex-poi-notoriety-filter")?.value || "all";
   const sortMode = document.getElementById("codex-poi-sort")?.value || "name";
   const directionButton = document.getElementById("codex-poi-direction");
 
@@ -907,9 +909,16 @@ function renderPoiListIntoContainer() {
 
   let pois = [...(db?.raw?.pois || [])];
 
-  if (typeFilter !== "all") {
-    pois = pois.filter(poi => poi.POI_Type === typeFilter);
+pois = applyFilters(pois, [
+  {
+    field: "POI_Type",
+    value: typeFilter
+  },
+  {
+    field: "Notoriety Tier",
+    value: notorietyFilter
   }
+]);
 
   let compareFn = null;
 
@@ -1022,24 +1031,43 @@ function renderCodexPoisIndex() {
       .filter(Boolean)
   )].sort();
 
+  const poiNotorietyTiers = [...new Set(
+  pois
+    .map(poi => poi["Notoriety Tier"])
+    .filter(Boolean)
+  )].sort();
+  
   setCodexTitle("Points of Interest");
 
   setCodexContent(`
-    ${renderCodexListControls({
-      filters: [
-        {
-          id: "codex-poi-type-filter",
-          label: "Type",
-          selectedValue: "all",
-          options: [
-            { value: "all", label: "All" },
-            ...poiTypes.map(type => ({
-              value: type,
-              label: type
-            }))
-          ]
-        }
-      ],
+${renderCodexListControls({
+  filters: [
+    {
+      id: "codex-poi-type-filter",
+      label: "Type",
+      selectedValue: "all",
+      options: [
+        { value: "all", label: "All" },
+        ...poiTypes.map(type => ({
+          value: type,
+          label: type
+        }))
+      ]
+    },
+
+    {
+      id: "codex-poi-notoriety-filter",
+      label: "Notoriety",
+      selectedValue: "all",
+      options: [
+        { value: "all", label: "All" },
+        ...poiNotorietyTiers.map(tier => ({
+          value: tier,
+          label: tier
+        }))
+      ]
+    }
+  ],
       sortId: "codex-poi-sort",
       selectedSort: "name",
       sortOptions: [
@@ -1066,6 +1094,11 @@ function renderCodexPoisIndex() {
   document.getElementById("codex-poi-type-filter").addEventListener(
     "change",
     renderPoiListIntoContainer
+  );
+
+  document.getElementById("codex-poi-notoriety-filter").addEventListener(
+  "change",
+  renderPoiListIntoContainer
   );
 
   document.getElementById("codex-poi-sort").addEventListener(
