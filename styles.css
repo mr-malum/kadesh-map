@@ -1354,6 +1354,7 @@ text-shadow:
   min-width: 0;
 
   padding: 0 24px 0 8px;
+  padding-top: 1px;
 
   border-radius: 8px;
   border: 1px solid rgba(94, 55, 22, 0.32);
