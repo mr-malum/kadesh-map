@@ -1263,6 +1263,12 @@ text-shadow:
 
 /* Mobile Codex polish */
 @media (max-width: 700px) {
+  #codex-back,
+  #mobile-panel-back {
+    width: 68px;
+    min-width: 68px;
+  }
+  
   #codex-content {
     width: auto;
     max-width: none;
