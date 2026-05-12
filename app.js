@@ -1143,20 +1143,13 @@ function renderNpcListIntoContainer() {
   );
 }
 
+
 function renderCodexPoisIndex() {
-  const pois = db?.raw?.pois || [];
-
-  const poiTypes = [...new Set(
-    pois
-      .map(poi => poi.POI_Type)
-      .filter(Boolean)
-  )].sort();
-
-  const poiNotorietyTiers = [...new Set(
-    pois
-      .map(poi => poi["Notoriety Tier"])
-      .filter(Boolean)
-  )].sort();
+  const poiFieldOptions = [
+    { value: "Type", label: "Type" },
+    { value: "Notoriety", label: "Notoriety" },
+    { value: "Region", label: "Region" }
+  ];
 
   setCodexTitle("Points of Interest");
 
@@ -1164,39 +1157,22 @@ function renderCodexPoisIndex() {
     ${renderCodexListControls({
       filters: [
         {
-          id: "codex-poi-type-filter",
+          id: "codex-poi-filter-1-value",
+          fieldId: "codex-poi-filter-1-field",
           label: "Type",
           fieldValue: "Type",
-          fieldOptions: [
-            { value: "Type", label: "Type" },
-            { value: "Notoriety", label: "Notoriety" }
-          ],
+          fieldOptions: poiFieldOptions,
           selectedValue: "all",
-          options: [
-            { value: "all", label: "All" },
-            ...poiTypes.map(type => ({
-              value: type,
-              label: type
-            }))
-          ]
+          options: getPoiFilterOptions("Type")
         },
-
         {
-          id: "codex-poi-notoriety-filter",
+          id: "codex-poi-filter-2-value",
+          fieldId: "codex-poi-filter-2-field",
           label: "Notoriety",
           fieldValue: "Notoriety",
-          fieldOptions: [
-            { value: "Type", label: "Type" },
-            { value: "Notoriety", label: "Notoriety" }
-          ],
+          fieldOptions: poiFieldOptions,
           selectedValue: "all",
-          options: [
-            { value: "all", label: "All" },
-            ...poiNotorietyTiers.map(tier => ({
-              value: tier,
-              label: tier
-            }))
-          ]
+          options: getPoiFilterOptions("Notoriety")
         }
       ],
       sortId: "codex-poi-sort",
@@ -1205,30 +1181,46 @@ function renderCodexPoisIndex() {
         { value: "name", label: "Name" },
         { value: "type", label: "Type" },
         { value: "notoriety", label: "Notoriety" },
-        { value: "population", label: "Population" }
+        { value: "population", label: "Population" },
+        { value: "npc-count", label: "NPC Count" }
       ],
       directionId: "codex-poi-direction",
       direction: "asc"
     })}
-
     <div id="codex-poi-list"></div>
   `, [
-    {
-      label: "Codex",
-      clickable: true,
-      onclick: "resetCodexToIndex()"
-    },
-    {
-      label: "Points of Interest"
-    }
+    { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
+    { label: "Points of Interest" }
   ]);
 
-  document.getElementById("codex-poi-type-filter").addEventListener(
+  document.getElementById("codex-poi-filter-1-field").addEventListener(
+    "change",
+    function () {
+      updatePoiFilterValueOptions(
+        "codex-poi-filter-1-field",
+        "codex-poi-filter-1-value"
+      );
+      renderPoiListIntoContainer();
+    }
+  );
+
+  document.getElementById("codex-poi-filter-2-field").addEventListener(
+    "change",
+    function () {
+      updatePoiFilterValueOptions(
+        "codex-poi-filter-2-field",
+        "codex-poi-filter-2-value"
+      );
+      renderPoiListIntoContainer();
+    }
+  );
+
+  document.getElementById("codex-poi-filter-1-value").addEventListener(
     "change",
     renderPoiListIntoContainer
   );
 
-  document.getElementById("codex-poi-notoriety-filter").addEventListener(
+  document.getElementById("codex-poi-filter-2-value").addEventListener(
     "change",
     renderPoiListIntoContainer
   );
@@ -1245,10 +1237,7 @@ function renderCodexPoisIndex() {
       const next = current === "asc" ? "desc" : "asc";
 
       this.dataset.direction = next;
-
-      this.textContent = next === "asc"
-        ? "↑ ASC"
-        : "↓ DESC";
+      this.textContent = next === "asc" ? "↑ ASC" : "↓ DESC";
 
       renderPoiListIntoContainer();
     }
