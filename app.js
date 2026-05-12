@@ -1230,56 +1230,30 @@ function renderCodexPoisIndex() {
     { label: "Points of Interest" }
   ]);
 
-  document.getElementById("codex-poi-filter-1-field").addEventListener(
-    "change",
-    function () {
-      updatePoiFilterValueOptions(
-        "codex-poi-filter-1-field",
-        "codex-poi-filter-1-value"
-      );
-      renderPoiListIntoContainer();
-    }
-  );
-
-  document.getElementById("codex-poi-filter-2-field").addEventListener(
-    "change",
-    function () {
-      updatePoiFilterValueOptions(
-        "codex-poi-filter-2-field",
-        "codex-poi-filter-2-value"
-      );
-      renderPoiListIntoContainer();
-    }
-  );
-
-  document.getElementById("codex-poi-filter-1-value").addEventListener(
-    "change",
-    renderPoiListIntoContainer
-  );
-
-  document.getElementById("codex-poi-filter-2-value").addEventListener(
-    "change",
-    renderPoiListIntoContainer
-  );
-
-  document.getElementById("codex-poi-sort").addEventListener(
-    "change",
-    renderPoiListIntoContainer
-  );
-
-  document.getElementById("codex-poi-direction").addEventListener(
-    "click",
-    function () {
-      const current = this.dataset.direction || "asc";
-      const next = current === "asc" ? "desc" : "asc";
-
-      this.dataset.direction = next;
-      this.textContent = next === "asc" ? "↑ ASC" : "↓ DESC";
-
-      renderPoiListIntoContainer();
-    }
-  );
-
+bindCodexListControls({
+    filters: [
+      {
+        fieldId: "codex-poi-filter-1-field",
+        valueId: "codex-poi-filter-1-value",
+        updateOptions: () => updatePoiFilterValueOptions(
+          "codex-poi-filter-1-field",
+          "codex-poi-filter-1-value"
+        )
+      },
+      {
+        fieldId: "codex-poi-filter-2-field",
+        valueId: "codex-poi-filter-2-value",
+        updateOptions: () => updatePoiFilterValueOptions(
+          "codex-poi-filter-2-field",
+          "codex-poi-filter-2-value"
+        )
+      }
+    ],
+    sortId: "codex-poi-sort",
+    directionId: "codex-poi-direction",
+    render: renderPoiListIntoContainer
+  });
+  
   renderPoiListIntoContainer();
 }
 
