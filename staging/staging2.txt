@@ -1,1 +1,10 @@
 
+if (sortMode === "race") {
+  compareFn = compareByTextThenName(row => row.Race);
+}
+
+....... 
+
+if (sortMode === "occupation") {
+  compareFn = compareByTextThenName(row => row.Occupation);
+}
