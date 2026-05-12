@@ -42,7 +42,7 @@ html, body {
   top: 0;
   right: 0;
 
-  width: min(42vw, 540px);
+  width: min(32vw, 405px);
   height: 100vh;
 
   padding: 70px 90px;
@@ -151,7 +151,10 @@ html, body {
 
 /* Desktop corner close is replaced by bottom nav */
 #panel-close {
-  display: none;
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 /* Subtitle */
