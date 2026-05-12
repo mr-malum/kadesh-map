@@ -1325,13 +1325,15 @@ text-shadow:
   display: flex;
   flex-direction: column;
   gap: 6px;
+
+  overflow: visible;
 }
 
 .codex-filter-field-select {
   appearance: none;
   -webkit-appearance: none;
 
-  height: 26px;
+  height: 34px;
   min-height: 0;
 
   padding: 0 24px 0 8px;
