@@ -1252,46 +1252,20 @@ const npcCodexListConfig = {
 };
 
 function renderCodexPoisIndex() {
-  const poiFieldOptions = [
-    { value: "Type", label: "Type" },
-    { value: "Notoriety", label: "Notoriety" },
-    { value: "Region", label: "Region" }
-  ];
 
   setCodexTitle("Points of Interest");
 
   setCodexContent(`
     ${renderCodexListControls({
-      filters: [
-        {
-          id: "codex-poi-filter-1-value",
-          fieldId: "codex-poi-filter-1-field",
-          label: "Type",
-          fieldValue: "Type",
-          fieldOptions: poiFieldOptions,
-          selectedValue: "all",
-          options: getPoiFilterOptions("Type")
-        },
-        {
-          id: "codex-poi-filter-2-value",
-          fieldId: "codex-poi-filter-2-field",
-          label: "Notoriety",
-          fieldValue: "Notoriety",
-          fieldOptions: poiFieldOptions,
-          selectedValue: "all",
-          options: getPoiFilterOptions("Notoriety")
-        }
-      ],
-      sortId: "codex-poi-sort",
-      selectedSort: "name",
-      sortOptions: [
-        { value: "name", label: "Name" },
-        { value: "type", label: "Type" },
-        { value: "notoriety", label: "Notoriety" },
-        { value: "population", label: "Population" },
-        { value: "npc-count", label: "NPC Count" }
-      ],
-      directionId: "codex-poi-direction",
+      filters: poiCodexListConfig.filters.map(filter => ({
+              ...filter,
+              fieldOptions: poiCodexListConfig.fieldOptions,
+              options: getPoiFilterOptions(filter.fieldValue)
+            })),
+            sortId: poiCodexListConfig.sortId,
+            selectedSort: poiCodexListConfig.selectedSort,
+            sortOptions: poiCodexListConfig.sortOptions,
+            directionId: poiCodexListConfig.directionId,
       direction: "asc"
     })}
     <div id="codex-poi-list"></div>
@@ -1328,46 +1302,20 @@ bindCodexListControls({
 }
 
 function renderCodexNpcsIndex() {
-  const npcFieldOptions = [
-    { value: "Race", label: "Race" },
-    { value: "Occupation", label: "Occupation" },
-    { value: "Organization", label: "Organization" },
-    { value: "Home", label: "Home" }
-  ];
 
   setCodexTitle("NPCs");
 
   setCodexContent(`
     ${renderCodexListControls({
-      filters: [
-        {
-          id: "codex-npc-filter-1-value",
-          fieldId: "codex-npc-filter-1-field",
-          label: "Race",
-          fieldValue: "Race",
-          fieldOptions: npcFieldOptions,
-          selectedValue: "all",
-          options: getNpcFilterOptions("Race")
-        },
-
-        {
-          id: "codex-npc-filter-2-value",
-          fieldId: "codex-npc-filter-2-field",
-          label: "Occupation",
-          fieldValue: "Occupation",
-          fieldOptions: npcFieldOptions,
-          selectedValue: "all",
-          options: getNpcFilterOptions("Occupation")
-        }
-      ],
-      sortId: "codex-npc-sort",
-      selectedSort: "name",
-      sortOptions: [
-        { value: "name", label: "Name" },
-        { value: "race", label: "Race" },
-        { value: "occupation", label: "Occupation" }
-      ],
-      directionId: "codex-npc-direction",
+      filters: npcCodexListConfig.filters.map(filter => ({
+              ...filter,
+              fieldOptions: npcCodexListConfig.fieldOptions,
+              options: getNpcFilterOptions(filter.fieldValue)
+            })),
+            sortId: npcCodexListConfig.sortId,
+            selectedSort: npcCodexListConfig.selectedSort,
+            sortOptions: npcCodexListConfig.sortOptions,
+            directionId: npcCodexListConfig.directionId,
       direction: "asc"
     })}
 
