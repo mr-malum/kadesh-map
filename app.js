@@ -1086,10 +1086,7 @@ function renderPoiListIntoContainer() {
   }
 
   if (sortMode === "type") {
-    compareFn = (a, b) => {
-      const primary = compareText(a.POI_Type, b.POI_Type);
-      return primary !== 0 ? primary : compareText(a.Name, b.Name);
-    };
+    compareFn = compareByTextThenName(row => row.POI_Type);
   }
 
   if (sortMode === "notoriety") {
@@ -1103,23 +1100,15 @@ function renderPoiListIntoContainer() {
   }
 
   if (sortMode === "population") {
-    compareFn = (a, b) => {
-      const aPop = Number(String(a.Population || "").replace(/[^\d]/g, "")) || 0;
-      const bPop = Number(String(b.Population || "").replace(/[^\d]/g, "")) || 0;
-      const primary = aPop - bPop;
-
-      return primary !== 0 ? primary : compareText(a.Name, b.Name);
-    };
+    compareFn = compareByNumberThenName(row =>
+      Number(String(row.Population || "").replace(/[^\d]/g, "")) || 0
+    );
   }
 
   if (sortMode === "npc-count") {
-    compareFn = (a, b) => {
-      const primary =
-        getNpcsForPoi(a.POI_ID).length -
-        getNpcsForPoi(b.POI_ID).length;
-
-      return primary !== 0 ? primary : compareText(a.Name, b.Name);
-    };
+    compareFn = compareByNumberThenName(row =>
+      getNpcsForPoi(row.POI_ID).length
+    );
   }
 
   if (compareFn) {
