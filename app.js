@@ -31,9 +31,13 @@ function updatePanBounds() {
     padding = zoom < -2 ? 5200 : zoom < -1 ? 1700 : zoom < 0 ? 1100 : 600;
   }
 
+  const rightPadding = isMobile
+    ? padding
+    : padding * 1.75;
+
   map.setMaxBounds([
     [-padding, -padding],
-    [imageHeight + padding, imageWidth + padding]
+    [imageHeight + padding, imageWidth + rightPadding]
   ]);
 }
 
