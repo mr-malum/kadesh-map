@@ -1313,61 +1313,30 @@ function renderCodexNpcsIndex() {
     }
   ]);
 
-  document.getElementById("codex-npc-filter-1-field").addEventListener(
-    "change",
-    function () {
-      updateNpcFilterValueOptions(
-        "codex-npc-filter-1-field",
-        "codex-npc-filter-1-value"
-      );
-
-      renderNpcListIntoContainer();
-    }
-  );
-
-  document.getElementById("codex-npc-filter-2-field").addEventListener(
-    "change",
-    function () {
-      updateNpcFilterValueOptions(
-        "codex-npc-filter-2-field",
-        "codex-npc-filter-2-value"
-      );
-
-      renderNpcListIntoContainer();
-    }
-  );
-
-  document.getElementById("codex-npc-filter-1-value").addEventListener(
-    "change",
-    renderNpcListIntoContainer
-  );
-
-  document.getElementById("codex-npc-filter-2-value").addEventListener(
-    "change",
-    renderNpcListIntoContainer
-  );
-
-  document.getElementById("codex-npc-sort").addEventListener(
-    "change",
-    renderNpcListIntoContainer
-  );
-
-  document.getElementById("codex-npc-direction").addEventListener(
-    "click",
-    function () {
-      const current = this.dataset.direction || "asc";
-      const next = current === "asc" ? "desc" : "asc";
-
-      this.dataset.direction = next;
-
-      this.textContent = next === "asc"
-        ? "↑ ASC"
-        : "↓ DESC";
-
-      renderNpcListIntoContainer();
-    }
-  );
-
+bindCodexListControls({
+    filters: [
+      {
+        fieldId: "codex-npc-filter-1-field",
+        valueId: "codex-npc-filter-1-value",
+        updateOptions: () => updateNpcFilterValueOptions(
+          "codex-npc-filter-1-field",
+          "codex-npc-filter-1-value"
+        )
+      },
+      {
+        fieldId: "codex-npc-filter-2-field",
+        valueId: "codex-npc-filter-2-value",
+        updateOptions: () => updateNpcFilterValueOptions(
+          "codex-npc-filter-2-field",
+          "codex-npc-filter-2-value"
+        )
+      }
+    ],
+    sortId: "codex-npc-sort",
+    directionId: "codex-npc-direction",
+    render: renderNpcListIntoContainer
+  });
+  
   renderNpcListIntoContainer();
 }
 
