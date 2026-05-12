@@ -557,6 +557,10 @@ function sortRows(rows, compareFn, direction = "asc") {
   });
 }
 
+// ======================
+// PAGE RENDERERS
+// ======================
+
 function renderCodexHexPage(hexId) {
   const hex = db?.hexesById?.[hexId];
   const region = hex?.Region_ID_Ref ? db?.regionsById?.[hex.Region_ID_Ref] : null;
