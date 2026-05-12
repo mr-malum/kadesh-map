@@ -1424,27 +1424,29 @@ function renderCodexSearchResults(query) {
     }
   });
 
-      const haystack = [
-        npc.NPC_ID,
-        npc.Name,
-        npc.Title,
-        npc.Race,
-        npc.Organization,
-        npc.Occupation,
-        npc.Home_ID_Ref,
-        getNpcHomeLabel(npc),
-        npc.Lore,
-        npc.DM_Journal
-      ].join(" ").toLowerCase();
+(db?.raw?.npcs || []).forEach(npc => {
 
-    if (haystack.includes(cleanQuery)) {
-      results.push({
-        type: "npc",
-        id: npc.NPC_ID,
-        label: buildNpcListLabel(npc)
-      });
-    }
-  });
+  const haystack = [
+    npc.NPC_ID,
+    npc.Name,
+    npc.Title,
+    npc.Race,
+    npc.Organization,
+    npc.Occupation,
+    npc.Home_ID_Ref,
+    getNpcHomeLabel(npc),
+    npc.Lore,
+    npc.DM_Journal
+  ].join(" ").toLowerCase();
+
+  if (haystack.includes(cleanQuery)) {
+    results.push({
+      type: "npc",
+      id: npc.NPC_ID,
+      label: buildNpcListLabel(npc)
+    });
+  }
+});
 
   if (!results.length) {
     resultsEl.innerHTML = `<p>No matching records found.</p>`;
