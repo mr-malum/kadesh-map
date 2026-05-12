@@ -1119,37 +1119,8 @@ function renderPoiListIntoContainer() {
     }
   ]);
 
-  let compareFn = null;
-
-  if (sortMode === "name") {
-    compareFn = (a, b) => compareText(a.Name, b.Name);
-  }
-
-  if (sortMode === "type") {
-    compareFn = compareByTextThenName(row => row.POI_Type);
-  }
-
-  if (sortMode === "notoriety") {
-    compareFn = (a, b) => {
-      const primary =
-        getPoiNotorietyRank(a["Notoriety Tier"]) -
-        getPoiNotorietyRank(b["Notoriety Tier"]);
-
-      return primary !== 0 ? primary : compareText(a.Name, b.Name);
-    };
-  }
-
-  if (sortMode === "population") {
-    compareFn = compareByNumberThenName(row =>
-      Number(String(row.Population || "").replace(/[^\d]/g, "")) || 0
-    );
-  }
-
-  if (sortMode === "npc-count") {
-    compareFn = compareByNumberThenName(row =>
-      getNpcsForPoi(row.POI_ID).length
-    );
-  }
+   const compareFn =
+    poiCodexListConfig.sortComparators?.[sortMode] || null;
 
   pois = applyConfiguredSort(
       pois,
@@ -1191,20 +1162,9 @@ function renderNpcListIntoContainer() {
     }
   ]);
 
-  let compareFn = null;
-
-  if (sortMode === "name") {
-    compareFn = (a, b) => compareText(a.Name, b.Name);
-  }
-
-  if (sortMode === "race") {
-    compareFn = compareByTextThenName(row => row.Race);
-  }
-
-  if (sortMode === "occupation") {
-    compareFn = compareByTextThenName(row => row.Occupation);
-  }
-
+  const compareFn =
+    npcCodexListConfig.sortComparators?.[sortMode] || null;
+  
   npcs = applyConfiguredSort(
       npcs,
       compareFn,
@@ -1256,6 +1216,30 @@ sortOptions: [
     { value: "population", label: "Population" },
     { value: "npc-count", label: "NPC Count" }
   ],
+
+    sortComparators: {
+    name: (a, b) => compareText(a.Name, b.Name),
+
+    type: compareByTextThenName(row => row.POI_Type),
+
+    notoriety: (a, b) => {
+      const primary =
+        getPoiNotorietyRank(a["Notoriety Tier"]) -
+        getPoiNotorietyRank(b["Notoriety Tier"]);
+
+      return primary !== 0
+        ? primary
+        : compareText(a.Name, b.Name);
+    },
+
+    population: compareByNumberThenName(row =>
+      Number(String(row.Population || "").replace(/[^\d]/g, "")) || 0
+    ),
+
+    "npc-count": compareByNumberThenName(row =>
+      getNpcsForPoi(row.POI_ID).length
+    )
+  },
 
   bindControls: () => bindCodexListControls({
     filters: [
@@ -1317,6 +1301,14 @@ sortOptions: [
     { value: "occupation", label: "Occupation" }
   ],
 
+  sortComparators: {
+    name: (a, b) => compareText(a.Name, b.Name),
+
+    race: compareByTextThenName(row => row.Race),
+
+    occupation: compareByTextThenName(row => row.Occupation)
+  },
+  
   bindControls: () => bindCodexListControls({
     filters: [
       {
