@@ -853,7 +853,7 @@ function renderPoiListIntoContainer() {
   if (sortMode === "type") {
     compareFn = (a, b) => {
       const primary =
-        String(a.POI_Type || "").localeCompare(String(b.POI_Type || ""));
+        compareText(a.POI_Type, b.POI_Type);
 
       if (primary !== 0) return primary;
 
@@ -869,16 +869,17 @@ function renderPoiListIntoContainer() {
 
       if (primary !== 0) return primary;
 
-      return String(a.Name || "").localeCompare(String(b.Name || ""));
+      return compareText(a.Name, b.Name);
     };
   }
 
-  if (compareFn) {
-    pois.sort((a, b) => {
-      const result = compareFn(a, b);
-      return sortDirection === "desc" ? -result : result;
-    });
-  }
+      if (compareFn) {
+        pois = sortRows(
+          pois,
+          compareFn,
+          sortDirection
+        );
+      }
 
   listEl.innerHTML = renderCodexLinkedList(
     pois,
