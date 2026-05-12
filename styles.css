@@ -1259,15 +1259,40 @@ text-shadow:
    CODEX BREADCRUMBS
    ========================================================= */
 
+.codex-panel-nav {
+  align-items: center;
+}
+
 #codex-breadcrumbs {
-  margin: 0 auto 22px;
-  width: min(100%, 860px);
+  flex: 1 1 auto;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0 8px;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  direction: rtl;
+  text-align: center;
 
   font-family: 'Spectral', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   letter-spacing: 0.02em;
 
   color: rgba(58, 38, 20, 0.72);
+}
+
+#codex-breadcrumbs-inner {
+  display: inline-block;
+  max-width: 100%;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  direction: ltr;
 }
 
 .codex-breadcrumb-button {
