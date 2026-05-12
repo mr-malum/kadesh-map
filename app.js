@@ -1189,12 +1189,18 @@ for (let xxx = 300; xxx < 350; xxx++) {
 
       selectHex(this);
 
-      if (isTouchDevice) {
-        this.bindPopup(buildMobilePopupHtml(hexId)).openPopup();
-      } else {
-        renderHexPreview(hexId);
+    if (isTouchDevice) {
+      this.bindPopup(buildMobilePopupHtml(hexId)).openPopup();
+    } else {
+      renderHexPreview(hexId);
+    
+      const panelWidth =
+        document.getElementById("app-panel").offsetWidth;
+    
+      if (panelWidth / window.innerWidth > 0.32) {
         panHexIntoInspectorView(hexId);
       }
+    }
     });
   }
 }
