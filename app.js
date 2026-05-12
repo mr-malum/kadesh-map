@@ -215,23 +215,6 @@ function clearSelectedHex() {
   }
 }
 
-function setPanelSideFromClick(event) {
-  const panel = document.getElementById("app-panel");
-  const clickX = event.originalEvent.clientX;
-  const screenWidth = window.innerWidth;
-
-  panel.classList.remove("open");
-  panel.classList.remove("left", "right");
-
-  if (clickX > screenWidth / 2) {
-    panel.classList.add("left");
-  } else {
-    panel.classList.add("right");
-  }
-
-  void panel.offsetWidth;
-}
-
 function closePanel(options = {}) {
   document.getElementById("app-panel").classList.remove("open");
 
@@ -1190,7 +1173,6 @@ for (let xxx = 300; xxx < 350; xxx++) {
       if (isTouchDevice) {
         this.bindPopup(buildMobilePopupHtml(hexId)).openPopup();
       } else {
-        setPanelSideFromClick(e);
         renderHexPreview(hexId);
       }
     });
