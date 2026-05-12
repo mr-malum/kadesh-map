@@ -63,6 +63,7 @@ const oddColY = rowStepY / -2;
 const oddColX = colStepX / 2;
 
 let selectedHex = null;
+let selectedHexId = null;
 let codexHistory = [];
 
 const defaultStyle = {
@@ -222,6 +223,10 @@ function clearSelectedHex() {
 function closePanel(options = {}) {
   document.getElementById("app-panel").classList.remove("open");
 
+  if (options.centerSelected && selectedHexId) {
+    centerHexInView(selectedHexId);
+  }
+
   if (options.clearSelection) {
     clearSelectedHex();
     map.closePopup();
@@ -287,6 +292,19 @@ function panHexIntoInspectorView(hexId) {
     animate: true,
     duration: 0.35
   });
+}
+
+function centerHexInView(hexId) {
+  const [xxx, yyy] = hexId.split(":").map(Number);
+  const center = getHexCenter(xxx, yyy);
+
+  map.panTo(
+    L.latLng(center.y, center.x),
+    {
+      animate: true,
+      duration: 0.35
+    }
+  );
 }
 
 function openCodex() {
@@ -1192,6 +1210,7 @@ for (let xxx = 300; xxx < 350; xxx++) {
       document.getElementById("codex-button").classList.remove("codex-label-visible");
 
       selectHex(this);
+      selectedHexId = hexId;
 
     if (isTouchDevice) {
       this.bindPopup(buildMobilePopupHtml(hexId)).openPopup();
@@ -1218,7 +1237,10 @@ map.on("click", function () {
 });
 
 document.getElementById("mobile-panel-close").addEventListener("click", function () {
-  closePanel({ clearSelection: true });
+  closePanel({
+  clearSelection: true,
+  centerSelected: true
+});
 });
 
 map.on("popupclose", function () {
