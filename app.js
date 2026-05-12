@@ -1154,6 +1154,24 @@ function renderCodexNpcsIndex() {
       .filter(Boolean)
   )].sort();
 
+  const npcFactions = [...new Set(
+  npcs
+    .map(npc => npc.Faction)
+    .filter(Boolean)
+)].sort();
+
+  const npcHomes = [...new Set(
+    npcs
+      .map(npc => {
+        const home = npc.Home_ID_Ref
+          ? db?.poisById?.[npc.Home_ID_Ref]
+          : null;
+
+      return home?.Name || npc.Home_ID_Ref;
+    })
+    .filter(Boolean)
+)].sort();
+
   setCodexTitle("NPCs");
 
   setCodexContent(`
