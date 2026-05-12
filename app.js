@@ -595,8 +595,16 @@ function renderCodexListControls(config) {
   return `
     <div class="codex-filter-row">
       ${filters.map(filter => `
-        <label>
-          ${escapeHtml(filter.label)}
+        <label class="codex-dynamic-filter">
+          <select
+            id="${escapeHtml(filter.fieldId || `${filter.id}-field`)}"
+            class="codex-filter-field-select"
+          >
+            <option value="${escapeHtml(filter.fieldValue || filter.id)}">
+              ${escapeHtml(filter.label)}
+            </option>
+          </select>
+
           <select id="${escapeHtml(filter.id)}">
             ${renderCodexSelectOptions(filter.options, filter.selectedValue)}
           </select>
