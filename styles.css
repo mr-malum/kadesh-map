@@ -279,8 +279,8 @@ button.panel-link.mobile-nav-back {
   appearance: none;
   -webkit-appearance: none;
 
-  min-width: 56px;
-  min-height: 52px;
+  width: 72px;
+  min-width: 72px;
 
   padding: 10px 18px;
 
@@ -313,6 +313,12 @@ button.panel-link.mobile-nav-back {
     box-shadow 0.15s ease;
 
   outline: none;
+}
+
+#codex-back,
+#mobile-panel-back {
+  width: 72px;
+  min-width: 72px;
 }
 
 .panel-nav button:hover {
@@ -479,6 +485,31 @@ button.panel-link.mobile-nav-back {
 
   #codex-breadcrumbs {
     margin-bottom: 28px;
+  }
+}
+
+@media (max-width: 700px) {
+  .codex-breadcrumbs-desktop {
+    display: none !important;
+  }
+
+  .codex-breadcrumbs-mobile {
+    display: inline-block;
+    max-width: 100%;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  #codex-breadcrumbs {
+    padding: 0 8px;
+    font-size: 0.95rem;
+  }
+
+  .panel-nav button {
+    width: 76px;
+    min-width: 76px;
   }
 }
 
@@ -1268,17 +1299,16 @@ text-shadow:
   min-width: 0;
 
   margin: 0;
-  padding: 0 8px;
+  padding: 0 12px;
 
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 
-  direction: rtl;
   text-align: center;
 
   font-family: 'Spectral', Georgia, serif;
-  font-size: 1.02rem;
+  font-size: 1.05rem;
   letter-spacing: 0.02em;
 
   color: rgba(58, 38, 20, 0.72);
@@ -1291,8 +1321,14 @@ text-shadow:
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
 
-  direction: ltr;
+.codex-breadcrumbs-mobile {
+  display: none;
+}
+
+.codex-breadcrumb-ellipsis {
+  opacity: 0.7;
 }
 
 .codex-breadcrumb-button {
