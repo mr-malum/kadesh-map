@@ -1326,6 +1326,10 @@ text-shadow:
   transform: scale(0.96);
 }
 
+.codex-sort-label {
+  margin-left: auto;
+}
+
 .codex-dynamic-filter {
   display: flex;
   flex: 0 0 auto;
