@@ -1353,7 +1353,7 @@ text-shadow:
   width: auto;
   min-width: 0;
 
-  padding: 0 24px 0 8px;
+  padding: 0 24px 2px 8px;
   padding-top: 0;
 
   border-radius: 8px;
