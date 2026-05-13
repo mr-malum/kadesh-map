@@ -1409,6 +1409,8 @@ function renderCodexListPage(config) {
     </div>
   `, config.breadcrumbs);
 
+  document.getElementById("codex-content").classList.add("codex-list-page");
+  
   config.bindControls();
   config.renderList();
 }
