@@ -887,9 +887,9 @@ function renderCodexPoiPage(poiId) {
                 [npc.Title, npc.Name].filter(Boolean).join(" "),
                 [
                   [
+                    npc.Organization,
                     npc.Race,
-                    npc.Occupation,
-                    npc.Organization
+                    npc.Occupation 
                   ].filter(Boolean).join(" • ")
                 ]
               )
@@ -1959,11 +1959,11 @@ let retroCodexSequence = "";
 window.addEventListener("keydown", event => {
   retroCodexSequence += event.key.toLowerCase();
 
-  if (retroCodexSequence.length > 5) {
-    retroCodexSequence = retroCodexSequence.slice(-5);
+  if (retroCodexSequence.length > 2) {
+    retroCodexSequence = retroCodexSequence.slice(-2);
   }
 
-  if (retroCodexSequence === "win95") {
+  if (retroCodexSequence === "95") {
     toggleRetroCodexMode();
     retroCodexSequence = "";
   }
