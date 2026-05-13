@@ -1516,24 +1516,20 @@ function renderCodexListPage(config) {
         Filter & Sort
       </button>
 
-      <div class="codex-list-controls-shell">
-        ${controlsHtml}
-      </div>
-
-      <div class="codex-mobile-controls-overlay" id="codex-mobile-controls-overlay">
-        <div class="codex-mobile-controls-panel">
+      <div class="codex-list-controls-shell" id="codex-list-controls-shell">
+        <div class="codex-mobile-controls-heading">
           <h3>Filter & Sort</h3>
-
-          ${controlsHtml}
-
-          <button
-            class="codex-mobile-controls-apply"
-            type="button"
-            onclick="closeCodexMobileControls()"
-          >
-            Apply
-          </button>
         </div>
+
+        ${controlsHtml}
+
+        <button
+          class="codex-mobile-controls-apply"
+          type="button"
+          onclick="closeCodexMobileControls()"
+        >
+          Apply
+        </button>
       </div>
 
       <div class="codex-list-scroll-shell codex-scroll-fade">
@@ -1876,13 +1872,13 @@ function buildMobilePopupHtml(hexId) {
 
 function openCodexMobileControls() {
   document
-    .getElementById("codex-mobile-controls-overlay")
+    .getElementById("codex-list-controls-shell")
     ?.classList.add("open");
 }
 
 function closeCodexMobileControls() {
   document
-    .getElementById("codex-mobile-controls-overlay")
+    .getElementById("codex-list-controls-shell")
     ?.classList.remove("open");
 }
 
