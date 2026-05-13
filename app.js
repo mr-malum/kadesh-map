@@ -1517,9 +1517,11 @@ function renderCodexListPage(config) {
       </button>
 
       <div class="codex-list-controls-shell" id="codex-list-controls-shell">
+        <div class="codex-mobile-controls-panel">
+
         <div class="codex-mobile-controls-heading">
           <h3>Filter & Sort</h3>
-        </div>
+         </div>
 
         ${controlsHtml}
 
@@ -1530,6 +1532,7 @@ function renderCodexListPage(config) {
         >
           Apply
         </button>
+        </div>
       </div>
 
       <div class="codex-list-scroll-shell codex-scroll-fade">
