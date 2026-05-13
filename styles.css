@@ -1404,11 +1404,45 @@ text-shadow:
 
 /* Codex filter controls */
 .codex-filter-row {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
   display: flex;
   gap: 14px;
   margin: 0 0 22px;
   align-items: end;
   flex-wrap: wrap;
+
+  padding: 10px 0 14px;
+
+  background:
+    linear-gradient(
+      rgba(229, 196, 137, 0.94),
+      rgba(229, 196, 137, 0.82),
+      rgba(229, 196, 137, 0)
+    );
+}
+
+.codex-filter-row::after {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      rgba(72, 43, 18, 0.35),
+      transparent
+    );
+
+  pointer-events: none;
 }
 
 .codex-filter-row label {
@@ -1455,7 +1489,10 @@ text-shadow:
 
 @media (max-width: 768px) {
   .codex-filter-row {
+    top: 0;
     gap: 10px;
+    padding-top: 8px;
+    padding-bottom: 12px;
   }
 
   .codex-filter-row label {
