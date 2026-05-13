@@ -2,6 +2,58 @@
    CODEX DETAIL / INDEX PAGES
    ========================================================= */
 
+function codexRootBreadcrumb() {
+  return {
+    label: "Codex",
+    clickable: true,
+    onclick: "resetCodexToIndex()"
+  };
+}
+
+function codexSectionBreadcrumb(label, pageType) {
+  return {
+    label,
+    clickable: true,
+    onclick: `openCodexPage('${pageType}')`
+  };
+}
+
+function codexCurrentBreadcrumb(label) {
+  return { label };
+}
+
+function buildCodexBreadcrumbTrail(currentLabel, section = null) {
+  return [
+    codexRootBreadcrumb(),
+    section ? codexSectionBreadcrumb(section.label, section.pageType) : null,
+    codexCurrentBreadcrumb(currentLabel)
+  ].filter(Boolean);
+}
+
+function renderCodexInlineLink(type, id, label) {
+  return `
+    <button
+      class="codex-link-button"
+      type="button"
+      onclick="openCodexPage('${escapeJsString(type)}', '${escapeJsString(id)}')"
+    >
+      ${escapeHtml(label)}
+    </button>
+  `;
+}
+
+function renderCodexDetailTextPanel(title, text, fallback) {
+  return `
+    <section class="codex-detail-scroll-panel">
+      <h3>${escapeHtml(title)}</h3>
+
+      <div class="codex-detail-scrollbox codex-scroll-fade">
+        <p>${escapeHtml(text || fallback)}</p>
+      </div>
+    </section>
+  `;
+}
+
 function renderCodexHexPage(hexId) {
   const hex = db?.hexesById?.[hexId];
   const region = hex?.Region_ID_Ref ? db?.regionsById?.[hex.Region_ID_Ref] : null;
@@ -17,7 +69,7 @@ function renderCodexHexPage(hexId) {
       <strong>Region:</strong>
       ${
         region
-          ? `<button class="codex-link-button" type="button" onclick="openCodexPage('region', '${escapeJsString(region.Region_ID)}')">${escapeHtml(region.Region_Name)}</button>`
+          ? renderCodexInlineLink("region", region.Region_ID, region.Region_Name)
           : escapeHtml(hex?.Region_ID_Ref || "Unknown")
       }
     </p>
@@ -42,16 +94,7 @@ function renderCodexHexPage(hexId) {
       "NPC_ID",
       buildNpcListLabel
     )}
-  `, [
-    {
-      label: "Codex",
-      clickable: true,
-      onclick: "resetCodexToIndex()"
-    },
-    {
-      label: `Hex ${hexId}`
-    }
-  ]);
+  `, buildCodexBreadcrumbTrail(`Hex ${hexId}`));
 }
 
 function renderCodexRegionPage(regionId) {
@@ -121,21 +164,10 @@ function renderCodexRegionPage(regionId) {
       "Hex_ID",
       buildHexListLabel
     )}
-  `, [
-    {
-      label: "Codex",
-      clickable: true,
-      onclick: "resetCodexToIndex()"
-    },
-    {
-      label: "Regions",
-      clickable: true,
-      onclick: "openCodexPage('regions')"
-    },
-    {
-      label: regionName
-    }
-  ]);
+  `, buildCodexBreadcrumbTrail(regionName, {
+    label: "Regions",
+    pageType: "regions"
+  }));
 }
 
 function renderCodexPoiPage(poiId) {
@@ -157,7 +189,7 @@ function renderCodexPoiPage(poiId) {
 
           ${
             hexId
-              ? `<p><strong>Hex:</strong> <button class="codex-link-button" type="button" onclick="openCodexPage('hex', '${escapeJsString(hexId)}')">${escapeHtml(hexId)}</button></p>`
+              ? `<p><strong>Hex:</strong> ${renderCodexInlineLink("hex", hexId, hexId)}</p>`
               : ""
           }
 
@@ -193,38 +225,23 @@ function renderCodexPoiPage(poiId) {
       </div>
 
       <div class="codex-detail-scroll-grid">
-        <section class="codex-detail-scroll-panel">
-          <h3>DM Journal</h3>
+        ${renderCodexDetailTextPanel(
+          "DM Journal",
+          poi?.DM_Journal,
+          "No journal entries."
+        )}
 
-          <div class="codex-detail-scrollbox codex-scroll-fade">
-            <p>${escapeHtml(poi?.DM_Journal || "No journal entries.")}</p>
-          </div>
-        </section>
-
-        <section class="codex-detail-scroll-panel">
-          <h3>Lore</h3>
-
-          <div class="codex-detail-scrollbox codex-scroll-fade">
-            <p>${escapeHtml(poi?.Lore || "No lore recorded.")}</p>
-          </div>
-        </section>
+        ${renderCodexDetailTextPanel(
+          "Lore",
+          poi?.Lore,
+          "No lore recorded."
+        )}
       </div>
     </div>
-  `, [
-    {
-      label: "Codex",
-      clickable: true,
-      onclick: "resetCodexToIndex()"
-    },
-    {
-      label: "Points of Interest",
-      clickable: true,
-      onclick: "openCodexPage('pois')"
-    },
-    {
-      label: poiName
-    }
-  ]);
+  `, buildCodexBreadcrumbTrail(poiName, {
+    label: "Points of Interest",
+    pageType: "pois"
+  }));
 
   document.getElementById("codex-content").classList.add("codex-detail-page");
 }
@@ -263,7 +280,7 @@ function renderCodexNpcPage(npcId) {
         <div class="codex-detail-meta">
           <p><strong>Home:</strong> ${
             home
-              ? `<button class="codex-link-button" type="button" onclick="openCodexPage('poi', '${escapeJsString(home.POI_ID)}')">${escapeHtml(home.Name)}</button>`
+              ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
               : escapeHtml(npc?.Home_ID_Ref || "Unknown")
           }</p>
 
@@ -278,42 +295,23 @@ function renderCodexNpcPage(npcId) {
       </div>
 
       <div class="codex-detail-scroll-grid">
-        <section class="codex-detail-scroll-panel">
-          <h3>DM Journal</h3>
+        ${renderCodexDetailTextPanel(
+          "DM Journal",
+          npc?.DM_Journal,
+          "No journal entries."
+        )}
 
-          <div class="codex-detail-scrollbox codex-scroll-fade">
-            <p>${escapeHtml(
-              npc?.DM_Journal || "No journal entries."
-            )}</p>
-          </div>
-        </section>
-
-        <section class="codex-detail-scroll-panel">
-          <h3>Lore</h3>
-
-          <div class="codex-detail-scrollbox codex-scroll-fade">
-            <p>${escapeHtml(
-              npc?.Lore || "No lore recorded."
-            )}</p>
-          </div>
-        </section>
+        ${renderCodexDetailTextPanel(
+          "Lore",
+          npc?.Lore,
+          "No lore recorded."
+        )}
       </div>
     </div>
-  `, [
-    {
-      label: "Codex",
-      clickable: true,
-      onclick: "resetCodexToIndex()"
-    },
-    {
-      label: "NPCs",
-      clickable: true,
-      onclick: "openCodexPage('npcs')"
-    },
-    {
-      label: npcName
-    }
-  ]);
+  `, buildCodexBreadcrumbTrail(npcName, {
+    label: "NPCs",
+    pageType: "npcs"
+  }));
 
   document
     .getElementById("codex-content")
