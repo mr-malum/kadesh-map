@@ -1475,6 +1475,10 @@ text-shadow:
   }
 }
 
+#codex-content.codex-list-page {
+  overflow: hidden;
+}
+
 .codex-list-page-shell {
   height: calc(100vh - 285px);
   min-height: 0;
