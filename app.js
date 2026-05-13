@@ -65,6 +65,8 @@ const oddColX = colStepX / 2;
 let selectedHex = null;
 let selectedHexId = null;
 let codexHistory = [];
+let codexSearchQuery = "";
+let retroCodexMode = false;
 
 const defaultStyle = {
   color: "#ffffff",
@@ -294,6 +296,13 @@ function panHexIntoInspectorView(hexId) {
   });
 }
 
+function resetMapToAtlasView() {
+  map.closePopup();
+  clearSelectedHex();
+  selectedHexId = null;
+  map.fitBounds(bounds, { animate: true, duration: 0.5 });
+}
+
 function centerHexInView(hexId) {
   const [xxx, yyy] = hexId.split(":").map(Number);
   const center = getHexCenter(xxx, yyy);
@@ -307,11 +316,32 @@ function centerHexInView(hexId) {
   );
 }
 
+function toggleRetroCodexMode() {
+  retroCodexMode = !retroCodexMode;
+
+  const codexButton = document.getElementById("codex-button");
+
+  if (retroCodexMode) {
+    codexButton.style.backgroundImage =
+      "url('assets/Win95SwordShield_Upscaled.png')";
+  
+    codexButton.style.backgroundSize = "75%";
+  }
+  else {
+    codexButton.style.backgroundImage =
+      "url('assets/Codex_Book_Button.png')";
+  
+    codexButton.style.backgroundSize = "";
+  }
+}
+
 function openCodex() {
   document.getElementById("codex-overlay").classList.add("open");
 }
 
 function closeCodex() {
+  codexSearchQuery = "";
+
   document.getElementById("codex-overlay").classList.remove("open");
   map.closePopup();
   clearSelectedHex();
@@ -321,46 +351,90 @@ function setCodexTitle(title) {
   document.getElementById("codex-title").textContent = title;
 }
 
+function getCodexBreadcrumbLabel(label) {
+  if (label === "Points of Interest") return "POIs";
+  return label;
+}
+
+function getCodexBreadcrumbLabel(label) {
+  if (label === "Points of Interest") return "POIs";
+  return label;
+}
+
+function renderCodexBreadcrumbs(breadcrumbs = []) {
+  const breadcrumbsEl = document.getElementById("codex-breadcrumbs");
+  if (!breadcrumbsEl) return;
+
+  if (!breadcrumbs.length) {
+    breadcrumbsEl.innerHTML = "";
+    return;
+  }
+
+  const displayCrumbs = breadcrumbs.map(crumb => ({
+    ...crumb,
+    label: getCodexBreadcrumbLabel(crumb.label)
+  }));
+
+  const desktopHtml = displayCrumbs.map((crumb, index) => {
+    const isLast = index === displayCrumbs.length - 1;
+
+    return `
+      ${crumb.clickable && !isLast
+        ? `<button class="codex-breadcrumb-button" type="button" onclick="${crumb.onclick}">
+            ${escapeHtml(crumb.label)}
+          </button>`
+        : `<span>${escapeHtml(crumb.label)}</span>`
+      }
+      ${!isLast ? `<span class="codex-breadcrumb-separator">/</span>` : ""}
+    `;
+  }).join("");
+
+  const mobileCrumbs = displayCrumbs.slice(-2);
+
+  const mobileHtml = `
+    ${displayCrumbs.length > 2
+      ? `<span class="codex-breadcrumb-ellipsis">...</span><span class="codex-breadcrumb-separator">/</span>`
+      : ""
+    }
+
+    ${mobileCrumbs.map((crumb, index) => {
+      const isLast = index === mobileCrumbs.length - 1;
+
+      return `
+        ${crumb.clickable && !isLast
+          ? `<button class="codex-breadcrumb-button" type="button" onclick="${crumb.onclick}">
+              ${escapeHtml(crumb.label)}
+            </button>`
+          : `<span>${escapeHtml(crumb.label)}</span>`
+        }
+
+        ${!isLast
+          ? `<span class="codex-breadcrumb-separator">/</span>`
+          : ""
+        }
+      `;
+    }).join("")}
+  `;
+
+  breadcrumbsEl.innerHTML = `
+    <div id="codex-breadcrumbs-inner" class="codex-breadcrumbs-desktop">
+      ${desktopHtml}
+    </div>
+
+    <div class="codex-breadcrumbs-mobile">
+      ${mobileHtml}
+    </div>
+  `;
+}
+
 function setCodexContent(html, breadcrumbs = []) {
   const content = document.getElementById("codex-content");
-
   content.className = "";
+  content.scrollTop = 0;
 
-  const breadcrumbHtml = breadcrumbs.length
-    ? `
-      <div id="codex-breadcrumbs">
-        ${breadcrumbs.map((crumb, index) => {
-          const isLast = index === breadcrumbs.length - 1;
+  renderCodexBreadcrumbs(breadcrumbs);
 
-          return `
-            ${
-              crumb.clickable && !isLast
-                ? `
-                  <button
-                    class="codex-breadcrumb-button"
-                    type="button"
-                    onclick="${crumb.onclick}"
-                  >
-                    ${escapeHtml(crumb.label)}
-                  </button>
-                `
-                : `
-                  <span>${escapeHtml(crumb.label)}</span>
-                `
-            }
-
-            ${
-              !isLast
-                ? `<span class="codex-breadcrumb-separator">/</span>`
-                : ""
-            }
-          `;
-        }).join("")}
-      </div>
-    `
-    : "";
-
-  content.innerHTML = breadcrumbHtml + html;
+  content.innerHTML = html;
 }
 
 function updateCodexBackButton() {
@@ -378,9 +452,8 @@ function updateCodexBackButton() {
 function openCodexPage(type = "index", id = null, options = {}) {
   const shouldPush = options.push !== false;
 
-  map.closePopup();
-  closePanel();
-
+  closePanel({ clearSelection: true });
+  resetMapToAtlasView();
   openCodex();
 
   if (shouldPush) {
@@ -427,9 +500,11 @@ function renderCodexPage(type, id) {
 
 function renderCodexIndex() {
   setCodexTitle("The Codex of Kadesh");
+  renderCodexBreadcrumbs([]);
+
+  codexSearchQuery = "";
 
   const content = document.getElementById("codex-content");
-
   content.className = "codex-home";
 
   content.innerHTML = `
@@ -788,35 +863,69 @@ function renderCodexPoiPage(poiId) {
   setCodexTitle(poiName);
 
   setCodexContent(`
-    <p><strong>Type:</strong> ${escapeHtml(poi?.POI_Type || "Unknown")}</p>
-    <p><strong>Notoriety Tier:</strong> ${escapeHtml(poi?.["Notoriety Tier"] || "Unknown")}</p>
+    <div class="codex-detail-page-shell">
+      <div class="codex-detail-fixed codex-detail-fixed-poi">
+        <div class="codex-detail-portrait-slot"></div>
 
-    ${
-      hexId
-        ? `<p><strong>Hex:</strong> <button class="codex-link-button" type="button" onclick="openCodexPage('hex', '${escapeJsString(hexId)}')">${escapeHtml(hexId)}</button></p>`
-        : ""
-    }
+        <div class="codex-detail-meta">
+          <p><strong>Type:</strong> ${escapeHtml(poi?.POI_Type || "Unknown")}</p>
+          <p><strong>Notoriety Tier:</strong> ${escapeHtml(poi?.["Notoriety Tier"] || "Unknown")}</p>
 
-    ${
-      poi?.POI_Type === "Settlement"
-        ? `<p><strong>Population:</strong> ${escapeHtml(poi?.Population || "Unknown")}</p>`
-        : ""
-    }
+          ${
+            hexId
+              ? `<p><strong>Hex:</strong> <button class="codex-link-button" type="button" onclick="openCodexPage('hex', '${escapeJsString(hexId)}')">${escapeHtml(hexId)}</button></p>`
+              : ""
+          }
 
-    <h3>NPCs</h3>
-    ${renderCodexLinkedList(
-      npcs,
-      "No known NPCs at this location.",
-      "npc",
-      "NPC_ID",
-      buildNpcListLabel
-    )}
+          ${
+            poi?.POI_Type === "Settlement"
+              ? `<p><strong>Population:</strong> ${escapeHtml(poi?.Population || "Unknown")}</p>`
+              : ""
+          }
+        </div>
 
-    <h3>DM Journal</h3>
-    <p>${escapeHtml(poi?.DM_Journal || "No journal entries.")}</p>
+        <section class="codex-detail-npc-panel">
+          <h3>NPCs</h3>
 
-    <h3>Lore</h3>
-    <p>${escapeHtml(poi?.Lore || "No lore recorded.")}</p>
+          <div class="codex-detail-upper-scrollbox codex-scroll-fade">
+            ${renderCodexLinkedList(
+              npcs,
+              "No known NPCs at this location.",
+              "npc",
+              "NPC_ID",
+              npc => joinCodexLabel(
+                [npc.Title, npc.Name].filter(Boolean).join(" "),
+                [
+                  [
+                    npc.Organization,
+                    npc.Race,
+                    npc.Occupation 
+                  ].filter(Boolean).join(" • ")
+                ]
+              )
+            )}
+          </div>
+        </section>
+      </div>
+
+      <div class="codex-detail-scroll-grid">
+        <section class="codex-detail-scroll-panel">
+          <h3>DM Journal</h3>
+
+          <div class="codex-detail-scrollbox codex-scroll-fade">
+            <p>${escapeHtml(poi?.DM_Journal || "No journal entries.")}</p>
+          </div>
+        </section>
+
+        <section class="codex-detail-scroll-panel">
+          <h3>Lore</h3>
+
+          <div class="codex-detail-scrollbox codex-scroll-fade">
+            <p>${escapeHtml(poi?.Lore || "No lore recorded.")}</p>
+          </div>
+        </section>
+      </div>
+    </div>
   `, [
     {
       label: "Codex",
@@ -832,52 +941,99 @@ function renderCodexPoiPage(poiId) {
       label: poiName
     }
   ]);
+
+  document.getElementById("codex-content").classList.add("codex-detail-page");
 }
 
 function renderCodexNpcPage(npcId) {
   const npc = db?.npcsById?.[npcId];
-  const home = npc?.Home_ID_Ref ? db?.poisById?.[npc.Home_ID_Ref] : null;
+  const home = npc?.Home_ID_Ref
+    ? db?.poisById?.[npc.Home_ID_Ref]
+    : null;
+
   const npcName = npc?.Name || npcId || "Unknown NPC";
 
-document.getElementById("codex-title").innerHTML = `
-  ${npc?.Title ? `
-    <div class="codex-superheader">
-      ${escapeHtml(npc.Title)}
-    </div>
-  ` : ""}
+  document.getElementById("codex-title").innerHTML = `
+    ${npc?.Title ? `
+      <div class="codex-superheader">
+        ${escapeHtml(npc.Title)}
+      </div>
+    ` : ""}
 
-  <div class="codex-mainheader">
-    ${escapeHtml(npcName)}
-  </div>
-
-  ${npc?.Organization ? `
-    <div class="codex-subheader">
-      ${escapeHtml(npc.Organization)}
+    <div class="codex-mainheader">
+      ${escapeHtml(npcName)}
     </div>
-  ` : ""}
-`;
+
+    ${npc?.Organization ? `
+      <div class="codex-subheader">
+        ${escapeHtml(npc.Organization)}
+      </div>
+    ` : ""}
+  `;
 
   setCodexContent(`
-    <p><strong>Home:</strong> ${
-      home
-        ? `<button class="codex-link-button" type="button" onclick="openCodexPage('poi', '${escapeJsString(home.POI_ID)}')">${escapeHtml(home.Name)}</button>`
-        : escapeHtml(npc?.Home_ID_Ref || "Unknown")
-    }</p>
+    <div class="codex-detail-page-shell">
+      <div class="codex-detail-fixed">
+        <div class="codex-detail-portrait-slot"></div>
 
-    <p><strong>Race:</strong> ${escapeHtml(npc?.Race || "Unknown")}</p>
+        <div class="codex-detail-meta">
+          <p><strong>Home:</strong> ${
+            home
+              ? `<button class="codex-link-button" type="button" onclick="openCodexPage('poi', '${escapeJsString(home.POI_ID)}')">${escapeHtml(home.Name)}</button>`
+              : escapeHtml(npc?.Home_ID_Ref || "Unknown")
+          }</p>
 
-    <p><strong>Occupation:</strong> ${escapeHtml(npc?.Occupation || "Unknown")}</p>
+          <p><strong>Race:</strong> ${escapeHtml(
+            npc?.Race || "Unknown"
+          )}</p>
 
-    <h3>DM Journal</h3>
-    <p>${escapeHtml(npc?.DM_Journal || "No journal entries.")}</p>
+          <p><strong>Occupation:</strong> ${escapeHtml(
+            npc?.Occupation || "Unknown"
+          )}</p>
+        </div>
+      </div>
 
-    <h3>Lore</h3>
-    <p>${escapeHtml(npc?.Lore || "No lore recorded.")}</p>
+      <div class="codex-detail-scroll-grid">
+        <section class="codex-detail-scroll-panel">
+          <h3>DM Journal</h3>
+
+          <div class="codex-detail-scrollbox codex-scroll-fade">
+            <p>${escapeHtml(
+              npc?.DM_Journal || "No journal entries."
+            )}</p>
+          </div>
+        </section>
+
+        <section class="codex-detail-scroll-panel">
+          <h3>Lore</h3>
+
+          <div class="codex-detail-scrollbox codex-scroll-fade">
+            <p>${escapeHtml(
+              npc?.Lore || "No lore recorded."
+            )}</p>
+          </div>
+        </section>
+      </div>
+    </div>
   `, [
-    { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
-    { label: "NPCs", clickable: true, onclick: "openCodexPage('npcs')" },
-    { label: npcName }
+    {
+      label: "Codex",
+      clickable: true,
+      onclick: "resetCodexToIndex()"
+    },
+    {
+      label: "NPCs",
+      clickable: true,
+      onclick: "openCodexPage('npcs')"
+    },
+    {
+      label: npcName
+    }
   ]);
+
+  document
+    .getElementById("codex-content")
+    .classList.add("codex-detail-page");
 }
 
 function renderCodexRegionsIndex() {
@@ -1338,22 +1494,30 @@ function renderCodexListPage(config) {
   setCodexTitle(config.title);
 
   setCodexContent(`
-    ${renderCodexListControls({
-      filters: config.filters.map(filter => ({
-        ...filter,
-        fieldOptions: config.fieldOptions,
-        options: config.getFilterOptions(filter.fieldValue)
-      })),
-      sortId: config.sortId,
-      selectedSort: config.selectedSort,
-      sortOptions: config.sortOptions,
-      directionId: config.directionId,
-      direction: "asc"
-    })}
+    <div class="codex-list-page-shell">
+      <div class="codex-list-controls-shell">
+        ${renderCodexListControls({
+          filters: config.filters.map(filter => ({
+            ...filter,
+            fieldOptions: config.fieldOptions,
+            options: config.getFilterOptions(filter.fieldValue)
+          })),
+          sortId: config.sortId,
+          selectedSort: config.selectedSort,
+          sortOptions: config.sortOptions,
+          directionId: config.directionId,
+          direction: "asc"
+        })}
+      </div>
 
-    <div id="${escapeHtml(config.listId)}"></div>
+      <div class="codex-list-scroll-shell codex-scroll-fade">
+        <div id="${escapeHtml(config.listId)}"></div>
+      </div>
+    </div>
   `, config.breadcrumbs);
 
+  document.getElementById("codex-content").classList.add("codex-list-page");
+  
   config.bindControls();
   config.renderList();
 }
@@ -1399,84 +1563,96 @@ function renderCodexNpcsIndex() {
 function renderCodexSearchPage() {
   setCodexTitle("Search the Codex");
 
-  const content = document.getElementById("codex-content");
+  renderCodexBreadcrumbs([
+    { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
+    { label: "Search" }
+  ]);
 
+  const content = document.getElementById("codex-content");
   content.className = "codex-search-page";
 
   content.innerHTML = `
-    <div class="codex-search-shell">
-      <input
-        id="codex-search-input"
-        type="search"
-        placeholder="Search regions, POIs, NPCs..."
-        autocomplete="off"
-      />
-    </div>
+    <div class="codex-search-page-shell">
+      <div class="codex-search-controls-shell">
+        <div class="codex-search-shell">
+          <input
+            id="codex-search-input"
+            type="search"
+            placeholder="Search records..."
+            autocomplete="off"
+            value="${escapeHtml(codexSearchQuery)}"
+          >
+        </div>
+      </div>
 
-    <div id="codex-search-results">
-      <p>Begin typing to search the records of Kadesh.</p>
+      <div id="codex-search-results" class="codex-search-results-shell">
+        <p>Begin typing to search the records of Kadesh.</p>
+      </div>
     </div>
   `;
 
   const input = document.getElementById("codex-search-input");
 
   input.addEventListener("input", function () {
+    codexSearchQuery = input.value;
     renderCodexSearchResults(input.value);
   });
 
+  if (codexSearchQuery.trim()) {
+    renderCodexSearchResults(codexSearchQuery);
+  }
+
   input.focus();
 }
-
 function renderCodexSearchResults(query) {
   const resultsEl = document.getElementById("codex-search-results");
   const cleanQuery = query.trim().toLowerCase();
 
   if (!cleanQuery) {
-    resultsEl.innerHTML = `<p>Begin typing to search the records of Kadesh.</p>`;
+    resultsEl.innerHTML = `
+      <p>Begin typing to search the records of Kadesh.</p>
+    `;
     return;
   }
 
   const results = [];
+  const resultKeys = new Set();
+
+  function addSearchResult(type, id, label) {
+    const key = `${type}:${id}`;
+    if (resultKeys.has(key)) return;
+
+    resultKeys.add(key);
+    results.push({ type, id, label });
+  }
+
+  function textMatches(values) {
+    return values.join(" ").toLowerCase().includes(cleanQuery);
+  }
+
+  const matchingRegionIds = new Set();
+  const matchingPoiHexIds = new Set();
+  const matchingNpcHexIds = new Set();
 
   (db?.raw?.regions || []).forEach(region => {
-    const haystack = [
+    if (textMatches([
       region.Region_ID,
       region.Region_Name,
       region.Lore,
       region.DM_Journal
-    ].join(" ").toLowerCase();
+    ])) {
+      matchingRegionIds.add(region.Region_ID);
 
-    if (haystack.includes(cleanQuery)) {
-      results.push({
-        type: "region",
-        id: region.Region_ID,
-        label: joinCodexLabel(
-          region.Region_Name || region.Region_ID,
-          ["Region"]
-        )
-      });
-    }
-  });
-
-  (db?.raw?.hexes || []).forEach(hex => {
-    const haystack = [
-      hex.Hex_ID,
-      hex.Terrain,
-      hex.Region_ID_Ref,
-      hex.DM_Journal
-    ].join(" ").toLowerCase();
-
-    if (haystack.includes(cleanQuery)) {
-      results.push({
-        type: "hex",
-        id: hex.Hex_ID,
-        label: buildHexListLabel(hex)
-      });
+      addSearchResult(
+        "region",
+        region.Region_ID,
+        joinCodexLabel(region.Region_Name || region.Region_ID, ["Region"])
+      );
     }
   });
 
   (db?.raw?.pois || []).forEach(poi => {
-    const haystack = [
+    if (textMatches([
       poi.POI_ID,
       poi.Name,
       poi.POI_Type,
@@ -1485,54 +1661,105 @@ function renderCodexSearchResults(query) {
       poi["Notoriety Tier"],
       poi.Lore,
       poi.DM_Journal
-    ].join(" ").toLowerCase();
+    ])) {
+      if (poi.Hex_ID_Ref) {
+        matchingPoiHexIds.add(poi.Hex_ID_Ref);
+      }
 
-    if (haystack.includes(cleanQuery)) {
-      results.push({
-        type: "poi",
-        id: poi.POI_ID,
-        label: buildPoiListLabel(poi)
-      });
+      addSearchResult(
+        "poi",
+        poi.POI_ID,
+        buildPoiListLabel(poi)
+      );
     }
   });
 
-(db?.raw?.npcs || []).forEach(npc => {
+  (db?.raw?.npcs || []).forEach(npc => {
+    const home = npc.Home_ID_Ref ? db?.poisById?.[npc.Home_ID_Ref] : null;
 
-  const haystack = [
-    npc.NPC_ID,
-    npc.Name,
-    npc.Title,
-    npc.Race,
-    npc.Organization,
-    npc.Occupation,
-    npc.Home_ID_Ref,
-    getNpcHomeLabel(npc),
-    npc.Lore,
-    npc.DM_Journal
-  ].join(" ").toLowerCase();
+    if (textMatches([
+      npc.NPC_ID,
+      npc.Name,
+      npc.Title,
+      npc.Race,
+      npc.Organization,
+      npc.Occupation,
+      npc.Home_ID_Ref,
+      getNpcHomeLabel(npc),
+      npc.Lore,
+      npc.DM_Journal
+    ])) {
+      if (home?.Hex_ID_Ref) {
+        matchingNpcHexIds.add(home.Hex_ID_Ref);
+      }
 
-  if (haystack.includes(cleanQuery)) {
-    results.push({
-      type: "npc",
-      id: npc.NPC_ID,
-      label: buildNpcListLabel(npc)
-    });
-  }
-});
+      addSearchResult(
+        "npc",
+        npc.NPC_ID,
+        buildNpcListLabel(npc)
+      );
+    }
+  });
 
-  if (!results.length) {
-    resultsEl.innerHTML = `<p>No matching records found.</p>`;
-    return;
-  }
+  (db?.raw?.hexes || []).forEach(hex => {
+    const directMatch = textMatches([
+      hex.Hex_ID,
+      hex.Terrain,
+      hex.Region_ID_Ref,
+      hex.DM_Journal
+    ]);
 
-  resultsEl.innerHTML = renderCodexLinkedList(
-    results,
-    "No matching records found.",
-    null,
-    "id",
-    row => row.label,
-    row => row.type
-  );
+    const regionMatch = matchingRegionIds.has(hex.Region_ID_Ref);
+    const poiMatch = matchingPoiHexIds.has(hex.Hex_ID);
+    const npcMatch = matchingNpcHexIds.has(hex.Hex_ID);
+
+    if (directMatch || regionMatch || poiMatch || npcMatch) {
+      const matchReasons = [
+        regionMatch ? "Matching Region" : "",
+        poiMatch ? "Matching POI" : "",
+        npcMatch ? "Matching NPC" : ""
+      ].filter(Boolean);
+
+      const label = matchReasons.length
+        ? joinCodexLabel(`Hex ${hex.Hex_ID}`, [
+            hex.Terrain || "Unknown Terrain",
+            ...matchReasons
+          ])
+        : buildHexListLabel(hex);
+
+      addSearchResult("hex", hex.Hex_ID, label);
+    }
+  });
+
+  const resultGroups = [
+    { type: "hex", label: "Hexes" },
+    { type: "region", label: "Regions" },
+    { type: "poi", label: "POIs" },
+    { type: "npc", label: "NPCs" }
+  ];
+
+  resultsEl.innerHTML = resultGroups
+    .map(group => {
+      const groupRows = results.filter(result => result.type === group.type);
+
+      return `
+        <section class="codex-search-result-panel">
+          <h3 class="codex-search-result-heading">${escapeHtml(group.label)}</h3>
+
+          <div class="codex-search-group-scroll codex-scroll-fade">
+            ${renderCodexLinkedList(
+              groupRows,
+              `No matching ${group.label}.`,
+              null,
+              "id",
+              row => row.label,
+              row => row.type
+            )}
+          </div>
+        </section>
+      `;
+    })
+    .join("");
 }
 
 function renderCodexLinkedList(
@@ -1706,25 +1933,17 @@ document.getElementById("codex-button").addEventListener("click", function (even
   }
 
   codexButton.classList.remove("codex-label-visible");
-
+  resetMapToAtlasView();
   resetCodexToIndex();
 });
 
 document.getElementById("map-reset-button").addEventListener("click", function (event) {
   event.stopPropagation();
 
-  closePanel({
-    clearSelection: true
-  });
-
+  closePanel({ clearSelection: true });
   closeCodex();
-  map.closePopup();
-
-  map.fitBounds(bounds, {
-    animate: true,
-    duration: 0.5
+  resetMapToAtlasView();
   });
-});
 
 document.getElementById("codex-close").addEventListener("click", function () {
   closeCodex();
@@ -1743,4 +1962,58 @@ document.getElementById("codex-overlay").addEventListener("click", function (eve
   if (event.target === this) {
     closeCodex();
   }
+});
+
+let retroCodexSequence = "";
+
+window.addEventListener("keydown", event => {
+  retroCodexSequence += event.key.toLowerCase();
+
+  if (retroCodexSequence.length > 2) {
+    retroCodexSequence = retroCodexSequence.slice(-2);
+  }
+
+  if (retroCodexSequence === "95") {
+    toggleRetroCodexMode();
+    retroCodexSequence = "";
+  }
+});
+
+let codexLongPressTimer = null;
+let suppressNextCodexClick = false;
+
+function isMobileCodexLongPressEnabled() {
+  return window.matchMedia("(max-width: 700px), (pointer: coarse)").matches;
+}
+
+const codexLongPressButton = document.getElementById("codex-button");
+
+codexLongPressButton.addEventListener("pointerdown", event => {
+  if (!isMobileCodexLongPressEnabled()) return;
+
+  codexLongPressTimer = window.setTimeout(() => {
+    suppressNextCodexClick = true;
+    toggleRetroCodexMode();
+  }, 650);
+});
+
+codexLongPressButton.addEventListener("pointerup", () => {
+  window.clearTimeout(codexLongPressTimer);
+  codexLongPressTimer = null;
+});
+
+codexLongPressButton.addEventListener("pointercancel", () => {
+  window.clearTimeout(codexLongPressTimer);
+  codexLongPressTimer = null;
+});
+
+codexLongPressButton.addEventListener("pointerleave", () => {
+  window.clearTimeout(codexLongPressTimer);
+  codexLongPressTimer = null;
+});
+
+codexLongPressButton.addEventListener("contextmenu", event => {
+  if (!isMobileCodexLongPressEnabled()) return;
+
+  event.preventDefault();
 });

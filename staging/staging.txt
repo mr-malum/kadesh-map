@@ -1,55 +1,25 @@
-function readCodexSortState(config) {
-  const sortMode =
-    document.getElementById(config.sortId)?.value ||
-    config.selectedSort;
+const content = document.getElementById("codex-content");
+content.className = "";
+content.scrollTop = 0;
 
-  const direction =
-    document.getElementById(config.directionId)?.dataset?.direction ||
-    "asc";
+......... 
 
-  return {
-    sortMode,
-    direction
-  };
+.codex-scroll-fade {
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 12px,
+      black calc(100% - 10px),
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 12px,
+      black calc(100% - 10px),
+      transparent 100%
+    );
 }
-
-....... 
-
-const {
-    sortMode,
-    direction: sortDirection
-  } = readCodexSortState(poiCodexListConfig);
-
-....... 
-
-const {
-    sortMode,
-    direction: sortDirection
-  } = readCodexSortState(npcCodexListConfig);
-
-....... 
-
-function applyConfiguredSort(rows, compareFn, sortDirection) {
-  if (!compareFn) {
-    return rows;
-  }
-
-  return sortRows(rows, compareFn, sortDirection);
-}
-
-....... 
-
-
-pois = applyConfiguredSort(
-    pois,
-    compareFn,
-    sortDirection
-  );
-
-....... 
-
-npcs = applyConfiguredSort(
-    npcs,
-    compareFn,
-    sortDirection
-  );
