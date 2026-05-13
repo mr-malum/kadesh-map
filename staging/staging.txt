@@ -1,25 +1,173 @@
-const content = document.getElementById("codex-content");
-content.className = "";
-content.scrollTop = 0;
+We are continuing development of the Kadesh Map / Codex web app.
 
-......... 
+Current branch:
+"mobile-ux-refinement"
 
-.codex-scroll-fade {
-  mask-image:
-    linear-gradient(
-      to bottom,
-      transparent 0,
-      black 12px,
-      black calc(100% - 10px),
-      transparent 100%
-    );
+The first thing I will provide after this message is the CURRENT RAW CODE (primarily app.js and styles.css). Please analyze the actual existing implementation before proposing changes. Avoid assuming prior versions or abstract architecture that may no longer exist.
 
-  -webkit-mask-image:
-    linear-gradient(
-      to bottom,
-      transparent 0,
-      black 12px,
-      black calc(100% - 10px),
-      transparent 100%
-    );
-}
+Project overview:
+
+- Fantasy overworld hex map web app.
+- Leaflet-based map with parchment UI aesthetic.
+- The “Codex” acts as an in-world atlas/database browser for:
+  - Regions
+  - POIs
+  - NPCs
+  - Hexes
+- Heavy emphasis on immersive parchment UI, readable lore presentation, and app-like UX.
+
+Current architecture/state:
+
+- Codex uses shared rendering helpers:
+  - renderCodexLinkedList()
+  - renderCodexListControls()
+  - applyFilters()
+  - shared sort helpers
+  - shared label builders
+- Multi-filter AND logic implemented.
+- Dynamic filter-field selector system implemented.
+- Shared list-page architecture implemented.
+- Shared detail-page architecture implemented.
+- Search system implemented with grouped result sections:
+  - Hexes
+  - Regions
+  - POIs
+  - NPCs
+- Search caching/back-navigation behavior implemented.
+- Search now also returns:
+  - hexes containing matching NPCs/POIs
+  - hexes inside matching regions
+- Scroll fade masks implemented globally.
+- NPC/POI detail pages redesigned with:
+  - portrait slot area
+  - metadata area
+  - independent scroll regions
+  - lore/journal split panes
+- POI detail pages include compact NPC scrollbox in upper-right quadrant.
+- Mobile long-press easter egg implemented for Codex button.
+- “95” keyboard sequence toggles retro Win95 Codex icon on desktop.
+
+Outstanding broader roadmap (older long-term items NOT yet completed):
+
+1. Region index redesign
+   
+   - archival/tiled presentation
+   - future thumbnail support
+   - improved atlas feel
+   - hard A-Z sorting
+   - possible continent/zone grouping later
+
+2. Search refinement
+   
+   - relevance weighting
+   - exact-match prioritization
+   - match highlighting
+   - result counts
+   - possible fuzzy matching
+   - possible collapsible mobile search groups
+
+3. Hex detail enrichment
+   
+   - better summaries
+   - richer relational browsing
+   - region linkage improvements
+   - more “atlas entry” feel
+
+4. Thumbnail/image infrastructure
+   
+   - actual image rendering
+   - fallback art
+   - shared asset path conventions
+   - click-to-expand support later
+
+5. Region relational browsing
+   
+   - grouped POIs
+   - grouped NPCs
+   - more dossier-style region pages
+
+6. Eventual code organization refactor
+   (deferred intentionally until UX stabilizes)
+   
+   - codex-core.js
+   - codex-pages.js
+   - codex-query.js
+   - map-ui.js
+
+Current immediate roadmap for "mobile-ux-refinement":
+
+1. Mobile real-estate optimization pass
+   
+   - reduce wasted vertical spacing
+   - improve content density
+   - preserve parchment readability
+   - optimize control sizing
+   - tighten card/list spacing
+
+2. Mobile detail-page usability
+   
+   - Journal/Lore panes currently too shallow on some screens
+   - likely need hybrid scrolling approach:
+     - overall page scroll
+     - plus internal scroll regions
+   - improve portrait/meta spacing
+   - improve readability/truncation
+
+3. Mobile Search UX
+   
+   - currently grouped sections have internal scrollboxes
+   - overall page scrolling still needs refinement
+   - users cannot easily access all grouped results
+   - likely need:
+     - taller mobile result groups
+     - overall content scrolling
+     - maybe collapsible sections
+
+4. Mobile breadcrumb/button density pass
+   
+   - breadcrumb truncation
+   - avoid overlap/crowding
+   - preserve back/X usability
+
+Important design direction:
+
+- Desktop and mobile are intentionally diverging somewhat in layout.
+- Desktop favors immersive “atlas spread” layouts.
+- Mobile should feel more app-like and space-efficient.
+- Avoid breaking desktop UX while improving mobile.
+
+Important implementation philosophy:
+
+- Prefer surgical modifications over large rewrites.
+- Always inspect the existing live function/class before replacing.
+- Avoid duplicate IDs or duplicated control markup.
+- Avoid abstract assumptions about current code structure.
+
+Current notable mobile implementation:
+
+- Filter/sort controls on mobile are now a modal/popover opened via a “Filter & Sort” button.
+- The same controls shell is reused rather than duplicating controls.
+- Desktop behavior should remain unchanged.
+
+Known recent bug fixes:
+
+- Breadcrumb return scroll-position contamination fixed via content.scrollTop reset.
+- Top fade masks restored.
+- Mobile filter popup duplicate-control issue resolved.
+- Search state reset behavior refined.
+- Codex detail-page overflow handling improved.
+
+UI style direction:
+
+- Parchment fantasy atlas
+- Marcellus SC typography
+- Soft gold/brown gradients
+- Atmospheric but readable
+- Avoid modern flat-design aesthetics
+
+Please prioritize:
+
+- reading the actual code first
+- maintaining existing architecture
+- giving precise replacement instructions with context
+- avoiding assumptions about surrounding code

@@ -1493,21 +1493,46 @@ sortOptions: [
 function renderCodexListPage(config) {
   setCodexTitle(config.title);
 
+  const controlsHtml = renderCodexListControls({
+    filters: config.filters.map(filter => ({
+      ...filter,
+      fieldOptions: config.fieldOptions,
+      options: config.getFilterOptions(filter.fieldValue)
+    })),
+    sortId: config.sortId,
+    selectedSort: config.selectedSort,
+    sortOptions: config.sortOptions,
+    directionId: config.directionId,
+    direction: "asc"
+  });
+
   setCodexContent(`
     <div class="codex-list-page-shell">
-      <div class="codex-list-controls-shell">
-        ${renderCodexListControls({
-          filters: config.filters.map(filter => ({
-            ...filter,
-            fieldOptions: config.fieldOptions,
-            options: config.getFilterOptions(filter.fieldValue)
-          })),
-          sortId: config.sortId,
-          selectedSort: config.selectedSort,
-          sortOptions: config.sortOptions,
-          directionId: config.directionId,
-          direction: "asc"
-        })}
+      <button
+        class="codex-mobile-filter-toggle"
+        type="button"
+        onclick="openCodexMobileControls()"
+      >
+        Filter & Sort
+      </button>
+
+      <div class="codex-list-controls-shell" id="codex-list-controls-shell">
+        <div class="codex-mobile-controls-panel">
+
+        <div class="codex-mobile-controls-heading">
+          <h3>Filter & Sort</h3>
+         </div>
+
+        ${controlsHtml}
+
+        <button
+          class="codex-mobile-controls-apply"
+          type="button"
+          onclick="closeCodexMobileControls()"
+        >
+          Apply
+        </button>
+        </div>
       </div>
 
       <div class="codex-list-scroll-shell codex-scroll-fade">
@@ -1517,7 +1542,7 @@ function renderCodexListPage(config) {
   `, config.breadcrumbs);
 
   document.getElementById("codex-content").classList.add("codex-list-page");
-  
+
   config.bindControls();
   config.renderList();
 }
@@ -1848,12 +1873,26 @@ function buildMobilePopupHtml(hexId) {
   `;
 }
 
+function openCodexMobileControls() {
+  document
+    .getElementById("codex-list-controls-shell")
+    ?.classList.add("open");
+}
+
+function closeCodexMobileControls() {
+  document
+    .getElementById("codex-list-controls-shell")
+    ?.classList.remove("open");
+}
+
 window.openPanelForHex = openPanelForHex;
 window.openCodex = openCodex;
 window.closeCodex = closeCodex;
 window.openCodexPage = openCodexPage;
 window.goBackCodex = goBackCodex;
 window.resetCodexToIndex = resetCodexToIndex;
+window.openCodexMobileControls = openCodexMobileControls;
+window.closeCodexMobileControls = closeCodexMobileControls;
 
 for (let xxx = 300; xxx < 350; xxx++) {
   for (let yyy = 300; yyy < 350; yyy++) {
