@@ -1,19 +1,12 @@
-#codex-content .codex-detail-npc-panel h3 {
-  flex: 0 0 auto;
+if (retroCodexMode) {
+  codexButton.style.backgroundImage =
+    "url('assets/Win95SwordShield_Upscaled.png')";
 
-  margin: 0 0 8px;
-  padding: 0;
+  codexButton.style.backgroundSize = "75%";
 }
+else {
+  codexButton.style.backgroundImage =
+    "url('assets/Codex_Book_Button.png')";
 
-......... 
-
-npc => joinCodexLabel(
-  [npc.Title, npc.Name].filter(Boolean).join(" "),
-  [
-    [
-      npc.Race,
-      npc.Occupation,
-      npc.Organization
-    ].filter(Boolean).join(" • ")
-  ]
-)
+  codexButton.style.backgroundSize = "";
+}
