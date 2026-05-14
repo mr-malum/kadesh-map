@@ -46,6 +46,31 @@
     0 2px 8px rgba(45, 25, 8, 0.10);
 }
 
+.codex-placeholder-npc,
+.codex-placeholder-settlement,
+.codex-placeholder-poi,
+.codex-placeholder-region {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.codex-placeholder-npc {
+  background-image: url("../assets/placeholder/Placeholder_NPC.png");
+}
+
+.codex-placeholder-settlement {
+  background-image: url("../assets/placeholder/Placeholder_Settlement.png");
+}
+
+.codex-placeholder-poi {
+  background-image: url("../assets/placeholder/Placeholder_POI.png");
+}
+
+.codex-placeholder-region {
+  background-image: url("../assets/placeholder/Placeholder_Region.png");
+}
+
 .codex-detail-meta {
   flex: 0 0 auto;
 
