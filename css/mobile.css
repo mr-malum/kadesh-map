@@ -252,6 +252,8 @@
   }
 
   .codex-search-page-shell {
+    position: relative;
+
     height: calc(100dvh - 270px);
     min-height: 0;
 
@@ -263,6 +265,27 @@
 
     mask-image: none;
     -webkit-mask-image: none;
+  }
+
+  .codex-search-page-shell::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+
+    height: 26px;
+
+    pointer-events: none;
+
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(238, 201, 130, 0),
+        rgba(238, 201, 130, 0.88)
+      );
   }
 
   .codex-search-controls-shell {
@@ -305,21 +328,8 @@
 
     padding-bottom: calc(48px + env(safe-area-inset-bottom));
 
-    mask-image:
-      linear-gradient(
-        to bottom,
-        black 0,
-        black calc(100% - 22px),
-        transparent 100%
-      );
-
-    -webkit-mask-image:
-      linear-gradient(
-        to bottom,
-        black 0,
-        black calc(100% - 22px),
-        transparent 100%
-      );
+    mask-image: none;
+    -webkit-mask-image: none;
   }
 
   .codex-search-result-panel {
