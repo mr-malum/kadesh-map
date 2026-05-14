@@ -502,7 +502,7 @@
 
 .codex-region-detail-fixed {
   display: grid;
-  grid-template-columns: 180px minmax(0, 1fr) minmax(220px, 0.95fr);
+  grid-template-columns: 220px minmax(0, 1fr) minmax(220px, 0.95fr);
   gap: 22px;
   align-items: start;
 
@@ -510,8 +510,8 @@
 }
 
 .codex-region-detail-image {
-  width: 180px;
-  height: 180px;
+  width: 220px;
+  height: 220px;
 
   background-size: cover;
   background-position: center;
