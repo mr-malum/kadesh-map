@@ -144,6 +144,11 @@ function toggleRetroCodexMode() {
   }
 }
 
+function closeMobileHexPopup() {
+  map.closePopup();
+  clearSelectedHex();
+}
+
 function buildMobilePopupHtml(hexId) {
   const data = db?.hexesById?.[hexId];
   const counts = getHexCounts(hexId);
@@ -159,6 +164,15 @@ function buildMobilePopupHtml(hexId) {
   }
 
   return `
+    <button
+      class="popup-close-details"
+      type="button"
+      aria-label="Close hex preview"
+      onclick="closeMobileHexPopup()"
+    >
+      ×
+    </button>
+
     <strong>${escapeHtml(hexId)}</strong><br>
     ${escapeHtml(data?.Terrain || "Unknown")}
 
@@ -180,3 +194,4 @@ function buildMobilePopupHtml(hexId) {
 }
 
 window.openPanelForHex = openPanelForHex;
+window.closeMobileHexPopup = closeMobileHexPopup;
