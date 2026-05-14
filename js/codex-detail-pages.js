@@ -360,8 +360,6 @@ function renderCodexRegionPage(regionId) {
           "No region notes recorded."
         )}
 
-        ${renderCodexMapsPanel(maps, "No maps recorded for this region.")}
-
         <section class="codex-detail-scroll-panel">
           <h3>Points of Interest</h3>
 
@@ -403,6 +401,8 @@ function renderCodexRegionPage(regionId) {
             )}
           </div>
         </section>
+
+        ${renderCodexMapsPanel(maps, "No maps recorded for this region.")}
       </div>
     </div>
   `, buildCodexBreadcrumbTrail(regionName, {
