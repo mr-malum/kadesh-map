@@ -27,16 +27,14 @@ function renderCodexSearchPage() {
           <input
             id="codex-search-input"
             type="search"
-            placeholder="Search records..."
+            placeholder="Consult the Codex..."
             autocomplete="off"
             value="${escapeHtml(codexSearchQuery)}"
           >
         </div>
       </div>
 
-      <div id="codex-search-results" class="codex-search-results-shell">
-        <p>Begin typing to search the records of Kadesh.</p>
-      </div>
+      <div id="codex-search-results" class="codex-search-results-shell"></div>
     </div>
   `;
 
@@ -76,9 +74,7 @@ function normalizeCodexSearchQuery(query) {
 }
 
 function renderCodexEmptySearchMessage() {
-  return `
-    <p>Begin typing to search the records of Kadesh.</p>
-  `;
+  return "";
 }
 
 function codexSearchTextMatches(values, cleanQuery) {
