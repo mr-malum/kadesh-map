@@ -175,6 +175,8 @@ function renderCodexPoiPage(poiId) {
   const npcs = getNpcsForPoi(poiId);
   const hexId = poi?.Hex_ID_Ref;
   const poiName = poi?.Name || poiId || "Unknown POI";
+  const group = getPoiGroupForPoi(poi);
+  const population = getPoiEffectivePopulation(poi);
 
   setCodexTitle(poiName);
 
@@ -188,14 +190,20 @@ function renderCodexPoiPage(poiId) {
           <p><strong>Notoriety Tier:</strong> ${escapeHtml(poi?.["Notoriety Tier"] || "Unknown")}</p>
 
           ${
+            group
+              ? `<p><strong>Part of:</strong> ${renderCodexInlineLink("poi-group", group.POI_Group_ID, group.POI_Group_Name || group.POI_Group_ID)}</p>`
+              : ""
+          }
+
+          ${
             hexId
               ? `<p><strong>Hex:</strong> ${renderCodexInlineLink("hex", hexId, hexId)}</p>`
               : ""
           }
 
           ${
-            poi?.POI_Type === "Settlement"
-              ? `<p><strong>Population:</strong> ${escapeHtml(poi?.Population || "Unknown")}</p>`
+            poi?.POI_Type === "Settlement" || population
+              ? `<p><strong>Population:</strong> ${escapeHtml(population || "Unknown")}</p>`
               : ""
           }
         </div>
@@ -246,12 +254,91 @@ function renderCodexPoiPage(poiId) {
   document.getElementById("codex-content").classList.add("codex-detail-page");
 }
 
+function renderCodexPoiGroupPage(groupId) {
+  const group = db?.poiGroupsById?.[groupId];
+  const groupName = group?.POI_Group_Name || groupId || "Unknown POI Group";
+  const pois = getPoisForGroup(groupId);
+  const npcs = getNpcsForPoiGroup(groupId);
+  const population = getPoiGroupPopulation(group);
+
+  setCodexTitle(groupName);
+
+  setCodexContent(`
+    <div class="codex-detail-page-shell">
+      <div class="codex-detail-fixed codex-detail-fixed-poi">
+        <div class="codex-detail-portrait-slot"></div>
+
+        <div class="codex-detail-meta">
+          <p><strong>Type:</strong> ${escapeHtml(group?.Group_Type || "Grouped POI")}</p>
+
+          ${
+            population
+              ? `<p><strong>Population:</strong> ${escapeHtml(population)}</p>`
+              : ""
+          }
+
+          <p><strong>Mapped Areas:</strong> ${pois.length}</p>
+        </div>
+
+        <section class="codex-detail-npc-panel">
+          <h3>NPCs</h3>
+
+          <div class="codex-detail-upper-scrollbox codex-scroll-fade">
+            ${renderCodexLinkedList(
+              npcs,
+              "No known NPCs associated with this place.",
+              "npc",
+              "NPC_ID",
+              buildNpcListLabel
+            )}
+          </div>
+        </section>
+      </div>
+
+      <h3>Mapped Areas</h3>
+      ${renderCodexLinkedList(
+        pois,
+        "No mapped areas currently recorded for this place.",
+        "poi",
+        "POI_ID",
+        row => joinCodexLabel(
+          row.Name || row.POI_ID,
+          [
+            row.Hex_ID_Ref ? `Hex ${row.Hex_ID_Ref}` : "",
+            row.POI_Type || ""
+          ]
+        )
+      )}
+
+      <div class="codex-detail-scroll-grid">
+        ${renderCodexDetailTextPanel(
+          "DM Journal",
+          group?.DM_Journal,
+          "No journal entries."
+        )}
+
+        ${renderCodexDetailTextPanel(
+          "Lore",
+          group?.Lore,
+          "No lore recorded."
+        )}
+      </div>
+    </div>
+  `, buildCodexBreadcrumbTrail(groupName, {
+    label: "Points of Interest",
+    pageType: "pois"
+  }));
+
+  document.getElementById("codex-content").classList.add("codex-detail-page");
+}
+
 function renderCodexNpcPage(npcId) {
   const npc = db?.npcsById?.[npcId];
   const home = npc?.Home_ID_Ref
     ? db?.poisById?.[npc.Home_ID_Ref]
     : null;
 
+  const homeGroup = home ? getPoiGroupForPoi(home) : null;
   const npcName = npc?.Name || npcId || "Unknown NPC";
 
   document.getElementById("codex-title").innerHTML = `
@@ -279,10 +366,18 @@ function renderCodexNpcPage(npcId) {
 
         <div class="codex-detail-meta">
           <p><strong>Home:</strong> ${
-            home
-              ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
-              : escapeHtml(npc?.Home_ID_Ref || "Unknown")
+            homeGroup
+              ? renderCodexInlineLink("poi-group", homeGroup.POI_Group_ID, homeGroup.POI_Group_Name || homeGroup.POI_Group_ID)
+              : home
+                ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
+                : escapeHtml(npc?.Home_ID_Ref || "Unknown")
           }</p>
+
+          ${
+            homeGroup && home
+              ? `<p><strong>Location:</strong> ${renderCodexInlineLink("poi", home.POI_ID, home.Name)}</p>`
+              : ""
+          }
 
           <p><strong>Race:</strong> ${escapeHtml(
             npc?.Race || "Unknown"
