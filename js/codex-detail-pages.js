@@ -54,6 +54,19 @@ function renderCodexDetailTextPanel(title, text, fallback) {
   `;
 }
 
+function buildCodexDetailNpcListLabel(npc) {
+  return joinCodexLabel(
+    [npc.Title, npc.Name].filter(Boolean).join(" "),
+    [
+      [
+        npc.Organization,
+        npc.Race,
+        npc.Occupation
+      ].filter(Boolean).join(" • ")
+    ]
+  );
+}
+
 function renderCodexHexPage(hexId) {
   const hex = db?.hexesById?.[hexId];
   const region = hex?.Region_ID_Ref ? db?.regionsById?.[hex.Region_ID_Ref] : null;
@@ -202,7 +215,7 @@ function renderCodexPoiPage(poiId) {
           }
 
           ${
-            poi?.POI_Type === "Settlement" || population
+            !group && (poi?.POI_Type === "Settlement" || population)
               ? `<p><strong>Population:</strong> ${escapeHtml(population || "Unknown")}</p>`
               : ""
           }
@@ -217,16 +230,7 @@ function renderCodexPoiPage(poiId) {
               "No known NPCs at this location.",
               "npc",
               "NPC_ID",
-              npc => joinCodexLabel(
-                [npc.Title, npc.Name].filter(Boolean).join(" "),
-                [
-                  [
-                    npc.Organization,
-                    npc.Race,
-                    npc.Occupation
-                  ].filter(Boolean).join(" • ")
-                ]
-              )
+              buildCodexDetailNpcListLabel
             )}
           </div>
         </section>
@@ -289,7 +293,7 @@ function renderCodexPoiGroupPage(groupId) {
               "No known NPCs associated with this place.",
               "npc",
               "NPC_ID",
-              buildNpcListLabel
+              buildCodexDetailNpcListLabel
             )}
           </div>
         </section>
