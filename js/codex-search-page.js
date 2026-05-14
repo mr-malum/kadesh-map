@@ -36,6 +36,13 @@ function renderCodexSearchPage() {
 
       <div id="codex-search-results" class="codex-search-results-shell"></div>
     </div>
+
+    <div
+      id="codex-search-results-modal"
+      class="codex-search-results-modal"
+      aria-hidden="true"
+      onclick="handleCodexSearchModalBackdropClick(event)"
+    ></div>
   `;
 
   bindCodexSearchInput();
@@ -70,6 +77,8 @@ function isMobileCodexSearchLayout() {
 function renderCodexSearchResults(query) {
   const resultsEl = document.getElementById("codex-search-results");
   const cleanQuery = normalizeCodexSearchQuery(query);
+
+  closeCodexSearchResultsModal();
 
   if (!cleanQuery) {
     resultsEl.innerHTML = renderCodexEmptySearchMessage();
@@ -272,13 +281,6 @@ function renderMobileCodexSearchResultGroups(results) {
         .map(group => renderMobileCodexSearchSummaryButton(group, results))
         .join("")}
     </div>
-
-    <div
-      id="codex-search-results-modal"
-      class="codex-search-results-modal"
-      aria-hidden="true"
-      onclick="handleCodexSearchModalBackdropClick(event)"
-    ></div>
   `;
 }
 
