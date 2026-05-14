@@ -5,8 +5,8 @@
 const CODEX_SEARCH_GROUPS = [
   { type: "poi", label: "POIs" },
   { type: "npc", label: "NPCs" },
-  { type: "hex", label: "Hexes" },
-  { type: "region", label: "Regions" }
+  { type: "region", label: "Regions" },
+  { type: "hex", label: "Hexes" }
 ];
 
 function renderCodexSearchPage() {
@@ -47,6 +47,13 @@ function bindCodexSearchInput() {
   input.addEventListener("input", function () {
     codexSearchQuery = input.value;
     renderCodexSearchResults(input.value);
+  });
+
+  input.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+    input.blur();
   });
 
   if (codexSearchQuery.trim()) {
