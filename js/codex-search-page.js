@@ -379,6 +379,12 @@ function getCodexSearchGroupRows(group, results) {
   return results.filter(result => result.type === group.type);
 }
 
+function getCodexSearchOrderedRows(results) {
+  return CODEX_SEARCH_GROUPS.flatMap(group => {
+    return getCodexSearchGroupRows(group, results);
+  });
+}
+
 function getCodexSearchGroupCount(group, results) {
   return getCodexSearchGroupRows(group, results).length;
 }
@@ -563,50 +569,26 @@ function renderCodexSearchCategoryButton(category) {
 
 function renderCodexSearchMainPaneContent(results) {
   const activeGroup = CODEX_SEARCH_GROUPS.find(group => group.type === codexSearchActiveGroup);
+  const rows = activeGroup
+    ? getCodexSearchGroupRows(activeGroup, results)
+    : getCodexSearchOrderedRows(results);
 
-  if (!activeGroup) {
-    return renderCodexSearchAllResultsPaneContent(results);
-  }
-
-  const groupRows = getCodexSearchGroupRows(activeGroup, results);
+  const emptyText = activeGroup
+    ? `No matching ${activeGroup.label}.`
+    : "No matching records.";
 
   return `
     <section class="codex-search-focused-section">
-      <div class="codex-search-focused-heading">
-        <h3>${escapeHtml(activeGroup.label)}</h3>
-        <p>${escapeHtml(getCodexSearchMatchLabel(groupRows.length))}</p>
-      </div>
-
-      ${renderCodexSearchRowList(
-        groupRows,
-        `No matching ${activeGroup.label}.`
-      )}
+      ${renderCodexSearchRowList(rows, emptyText)}
     </section>
   `;
 }
 
 function renderCodexSearchAllResultsPaneContent(results) {
-  return CODEX_SEARCH_GROUPS
-    .map(group => renderCodexSearchAllResultSection(group, results))
-    .join("");
-}
-
-function renderCodexSearchAllResultSection(group, results) {
-  const groupRows = getCodexSearchGroupRows(group, results);
-
-  return `
-    <section class="codex-search-all-section">
-      <div class="codex-search-focused-heading">
-        <h3>${escapeHtml(group.label)}</h3>
-        <p>${escapeHtml(getCodexSearchMatchLabel(groupRows.length))}</p>
-      </div>
-
-      ${renderCodexSearchRowList(
-        groupRows,
-        `No matching ${group.label}.`
-      )}
-    </section>
-  `;
+  return renderCodexSearchRowList(
+    getCodexSearchOrderedRows(results),
+    "No matching records."
+  );
 }
 
 window.openCodexSearchResultsModal = openCodexSearchResultsModal;
