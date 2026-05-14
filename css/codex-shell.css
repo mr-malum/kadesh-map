@@ -61,9 +61,19 @@
 }
 
 #codex-back,
+#codex-close,
 #mobile-panel-back {
   width: 72px;
   min-width: 72px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding-left: 0;
+  padding-right: 0;
+
+  text-align: center;
 }
 
 .panel-nav button:hover {
