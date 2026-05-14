@@ -198,6 +198,8 @@ function clearCodexHomeSearch() {
     input.blur();
   }
 
+  restoreCodexHomeSearchControlsFromRail?.();
+
   if (results) {
     results.innerHTML = "";
   }
