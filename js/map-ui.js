@@ -15,7 +15,10 @@ function clearSelectedHex() {
 }
 
 function closePanel(options = {}) {
-  document.getElementById("app-panel").classList.remove("open");
+  const panel = document.getElementById("app-panel");
+  const wasOpen = panel.classList.contains("open");
+
+  panel.classList.remove("open");
 
   if (options.centerSelected && selectedHexId) {
     centerHexInView(selectedHexId);
@@ -25,10 +28,22 @@ function closePanel(options = {}) {
     clearSelectedHex();
     map.closePopup();
   }
+
+  if (
+    wasOpen &&
+    options.syncHistory !== false &&
+    typeof releaseAppBrowserBackTrap === "function"
+  ) {
+    releaseAppBrowserBackTrap();
+  }
 }
 
 function openPanel() {
   const panel = document.getElementById("app-panel");
+
+  if (typeof ensureAppBrowserBackTrap === "function") {
+    ensureAppBrowserBackTrap();
+  }
 
   requestAnimationFrame(() => {
     panel.classList.add("open");
