@@ -7,40 +7,84 @@
 }
 
 .codex-search-shell {
-  width: min(100%, 460px);
+  width: min(100%, 500px);
   margin: 0 auto 12px;
 }
 
 #codex-search-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 9px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(72, 43, 18, 0.24);
-  background: rgba(255, 241, 202, 0.16);
+  padding: 10px 38px 10px 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(72, 43, 18, 0.34);
+  background:
+    linear-gradient(
+      rgba(255, 239, 199, 0.34),
+      rgba(183, 124, 50, 0.12)
+    );
   color: #2f1d10;
   font-family: 'Spectral', Georgia, serif;
-  font-size: 1.05rem;
+  font-size: 1.06rem;
   line-height: 1.2;
-  text-align: center;
+  text-align: left;
   box-shadow:
-    inset 0 1px 4px rgba(55, 28, 8, 0.16),
+    inset 0 1px 5px rgba(55, 28, 8, 0.20),
+    inset 0 -1px 0 rgba(255, 241, 202, 0.20),
     0 1px 2px rgba(55, 28, 8, 0.08);
 }
 
 #codex-search-input::placeholder {
-  color: rgba(58, 38, 20, 0.56);
-  text-align: center;
+  color: rgba(58, 38, 20, 0.62);
+  text-align: left;
 }
 
 #codex-search-input:focus {
   outline: none;
-  border-color: rgba(94, 55, 22, 0.46);
-  background: rgba(255, 241, 202, 0.22);
+  border-color: rgba(94, 55, 22, 0.52);
+  background:
+    linear-gradient(
+      rgba(255, 241, 202, 0.40),
+      rgba(183, 124, 50, 0.14)
+    );
   box-shadow:
-    inset 0 1px 4px rgba(55, 28, 8, 0.18),
-    0 0 0 2px rgba(166, 108, 41, 0.12),
+    inset 0 1px 5px rgba(55, 28, 8, 0.22),
+    inset 0 -1px 0 rgba(255, 241, 202, 0.22),
+    0 0 0 2px rgba(166, 108, 41, 0.10),
     0 1px 3px rgba(55, 28, 8, 0.10);
+}
+
+#codex-search-input::-webkit-search-cancel-button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 16px;
+  height: 16px;
+
+  margin-right: 2px;
+
+  cursor: pointer;
+
+  background:
+    linear-gradient(
+      45deg,
+      transparent 43%,
+      rgba(58, 38, 20, 0.82) 44%,
+      rgba(58, 38, 20, 0.82) 56%,
+      transparent 57%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 43%,
+      rgba(58, 38, 20, 0.82) 44%,
+      rgba(58, 38, 20, 0.82) 56%,
+      transparent 57%
+    );
+
+  opacity: 0.76;
+}
+
+#codex-search-input::-webkit-search-cancel-button:hover {
+  opacity: 1;
 }
 
 #codex-search-results {
@@ -165,7 +209,7 @@
   width: min(100%, 500px);
   margin-bottom: 0;
 
-  transform: translateY(12px) scale(1.04);
+  transform: translateY(12px) scale(1.02);
   transform-origin: top center;
 
   transition: transform 220ms ease;
@@ -173,8 +217,8 @@
 }
 
 .codex-home-search-page #codex-search-input {
-  font-size: 1.05rem;
-  padding: 9px 14px;
+  font-size: 1.06rem;
+  padding: 10px 38px 10px 16px;
 
   transition:
     background 160ms ease,
@@ -185,7 +229,7 @@
 .codex-home-section-buttons {
   flex: 1 1 auto;
 
-  width: min(100%, 520px);
+  width: min(100%, 430px);
   margin: 0 auto;
 
   display: flex;
@@ -200,11 +244,11 @@
 }
 
 .codex-home-section-row .codex-row-title {
-  font-size: 1.08rem;
+  font-size: 1.05rem;
 }
 
 .codex-home-section-row .codex-row-meta {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .codex-home-search-page #codex-search-results {
@@ -226,7 +270,7 @@
 }
 
 .codex-home-search-active .codex-home-search-shell {
-  width: min(100%, 460px);
+  width: min(100%, 500px);
   transform: translateY(0) scale(1);
 }
 
