@@ -56,19 +56,27 @@
 }
 
 .codex-placeholder-npc {
-  background-image: url("../assets/placeholder/Placeholder_NPC.png");
+  background-image:
+    var(--codex-record-image),
+    url("../assets/placeholder/Placeholder_NPC.png");
 }
 
 .codex-placeholder-settlement {
-  background-image: url("../assets/placeholder/Placeholder_Settlement.png");
+  background-image:
+    var(--codex-record-image),
+    url("../assets/placeholder/Placeholder_Settlement.png");
 }
 
 .codex-placeholder-poi {
-  background-image: url("../assets/placeholder/Placeholder_POI.png");
+  background-image:
+    var(--codex-record-image),
+    url("../assets/placeholder/Placeholder_POI.png");
 }
 
 .codex-placeholder-region {
-  background-image: url("../assets/placeholder/Placeholder_Region.png");
+  background-image:
+    var(--codex-record-image),
+    url("../assets/placeholder/Placeholder_Region.png");
 }
 
 .codex-detail-meta {
