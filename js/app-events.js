@@ -8,9 +8,8 @@ const HEX_GRID_MAX = 350;
 let retroCodexSequence = "";
 let codexLongPressTimer = null;
 let suppressNextCodexClick = false;
-let appBrowserBackTrapActive = false;
-let appBrowserBackTrapReleasing = false;
-let appBrowserBackTrapRearmTimer = null;
+let appBrowserHistoryDepth = 0;
+let appBrowserHistoryReleaseCount = 0;
 
 function initializeHexGrid() {
   for (let xxx = HEX_GRID_MIN; xxx < HEX_GRID_MAX; xxx++) {
@@ -122,6 +121,11 @@ function bindCodexEvents() {
   document
     .getElementById("codex-back")
     .addEventListener("click", function () {
+      if (isMobileBrowserBackEnabled() && appBrowserHistoryDepth > 0) {
+        history.back();
+        return;
+      }
+
       if (codexHistory.length <= 1) {
         closeCodex();
         return;
@@ -198,63 +202,57 @@ function isAppPanelOpen() {
 }
 
 function ensureAppBrowserBackTrap() {
-  if (!isMobileBrowserBackEnabled() || appBrowserBackTrapActive) return;
+  if (!isMobileBrowserBackEnabled()) return;
 
-  history.pushState({ kadeshAppBackTrap: true }, "", window.location.href);
-  appBrowserBackTrapActive = true;
-}
-
-function rearmAppBrowserBackTrap() {
-  window.clearTimeout(appBrowserBackTrapRearmTimer);
-
-  appBrowserBackTrapRearmTimer = window.setTimeout(() => {
-    appBrowserBackTrapRearmTimer = null;
-
-    if (!isCodexOpen() && !isAppPanelOpen()) return;
-
-    appBrowserBackTrapActive = false;
-    ensureAppBrowserBackTrap();
-  }, 0);
+  history.pushState({ kadeshAppState: true }, "", window.location.href);
+  appBrowserHistoryDepth += 1;
 }
 
 function releaseAppBrowserBackTrap() {
-  window.clearTimeout(appBrowserBackTrapRearmTimer);
-  appBrowserBackTrapRearmTimer = null;
+  if (!appBrowserHistoryDepth) return;
 
-  if (!appBrowserBackTrapActive) return;
+  const releaseDepth = appBrowserHistoryDepth;
+  appBrowserHistoryDepth = 0;
+  appBrowserHistoryReleaseCount += releaseDepth;
 
-  appBrowserBackTrapActive = false;
-  appBrowserBackTrapReleasing = true;
-  history.back();
+  history.go(-releaseDepth);
 }
 
 function handleAppBrowserBack() {
-  if (appBrowserBackTrapReleasing) {
-    appBrowserBackTrapReleasing = false;
+  if (appBrowserHistoryReleaseCount > 0) {
+    appBrowserHistoryReleaseCount -= 1;
     return;
   }
 
   if (!isMobileBrowserBackEnabled()) return;
 
   if (isCodexOpen()) {
+    if (appBrowserHistoryDepth > 0) {
+      appBrowserHistoryDepth -= 1;
+    }
+
     if (codexHistory.length <= 1) {
       closeCodex({ syncHistory: false });
-      appBrowserBackTrapActive = false;
+      appBrowserHistoryDepth = 0;
       return;
     }
 
     goBackCodex();
-    rearmAppBrowserBackTrap();
     return;
   }
 
   if (isAppPanelOpen()) {
+    if (appBrowserHistoryDepth > 0) {
+      appBrowserHistoryDepth -= 1;
+    }
+
     closePanel({
       clearSelection: true,
       centerSelected: true,
       syncHistory: false
     });
-    appBrowserBackTrapActive = false;
+
+    appBrowserHistoryDepth = 0;
   }
 }
 
