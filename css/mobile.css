@@ -343,6 +343,10 @@
     background: rgba(12, 7, 3, 0.38);
   }
 
+  .codex-mobile-controls-heading {
+    display: block;
+  }
+
   .codex-mobile-controls-panel h3 {
     margin-top: 0;
   }
@@ -365,6 +369,7 @@
   }
 
   .codex-mobile-controls-apply {
+    display: block;
     width: 100%;
 
     margin-top: 12px;
