@@ -500,16 +500,12 @@
   width: 100%;
 }
 
-.codex-region-detail-fixed {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr) minmax(220px, 0.95fr);
-  gap: 22px;
-  align-items: start;
-
-  margin-bottom: 20px;
+.codex-detail-fixed-region {
+  align-items: stretch;
 }
 
 .codex-region-detail-image {
+  flex: 0 0 220px;
   width: 220px;
   height: 220px;
 
@@ -518,31 +514,68 @@
 }
 
 .codex-region-detail-summary {
-  min-width: 0;
+  min-width: 180px;
 }
 
 .codex-region-terrain-profile {
-  text-align: right;
+  text-align: left;
   font-size: 0.95rem;
   line-height: 1.25;
 }
 
 #codex-content .codex-region-terrain-profile h3 {
-  margin-top: 0;
+  margin: 0 0 8px;
   font-size: 1.12rem;
 }
 
-#codex-content .codex-region-terrain-profile h3::after {
-  background: linear-gradient(
-    to left,
-    rgba(72, 43, 18, 0.58),
-    rgba(72, 43, 18, 0.18),
-    transparent
-  );
+.codex-region-terrain-list {
+  display: grid;
+  gap: 5px;
+
+  padding-right: 6px;
 }
 
-.codex-region-terrain-profile p {
-  margin: 0;
+.codex-region-terrain-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+
+  padding: 5px 8px;
+
+  border: 1px solid rgba(94, 55, 22, 0.16);
+  border-radius: 9px;
+
+  background: rgba(94, 55, 22, 0.055);
+}
+
+.codex-region-terrain-row span {
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.codex-region-terrain-row strong {
+  flex: 0 0 auto;
+}
+
+.codex-region-detail-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.codex-region-list-scrollbox {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 4px 8px 18px 0;
 }
 
 /* =========================================================
