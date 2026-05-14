@@ -6,7 +6,12 @@ function joinCodexLabel(title, meta = []) {
 }
 
 function buildPoiListLabel(row) {
+  if (row.__codexRecordType === "poi-group") {
+    return buildPoiGroupListLabel(row);
+  }
+
   const meta = [];
+  const group = getPoiGroupForPoi(row);
 
   const typeLine = [
     row.POI_Type || "",
@@ -17,10 +22,15 @@ function buildPoiListLabel(row) {
     meta.push(typeLine);
   }
 
+  if (group) {
+    meta.push(`Part of: ${group.POI_Group_Name || group.POI_Group_ID}`);
+  }
+
   const npcCount = getNpcsForPoi(row.POI_ID).length;
+  const population = getPoiEffectivePopulation(row);
 
   const populationNpcLine = [
-    row.Population ? `Population: ${row.Population}` : "",
+    population ? `Population: ${population}` : "",
     npcCount > 0 ? `${npcCount} NPC${npcCount !== 1 ? "s" : ""}` : ""
   ].filter(Boolean).join(" • ");
 
@@ -30,6 +40,36 @@ function buildPoiListLabel(row) {
 
   return joinCodexLabel(
     row.Name || row.POI_ID || "Unnamed POI",
+    meta
+  );
+}
+
+function buildPoiGroupListLabel(group) {
+  const groupPois = group.__codexGroupPois || getPoisForGroup(group.POI_Group_ID);
+  const npcs = getNpcsForPoiGroup(group.POI_Group_ID);
+
+  const meta = [];
+
+  const typeLine = [
+    group.Group_Type || "Grouped POI",
+    `${groupPois.length} mapped area${groupPois.length !== 1 ? "s" : ""}`
+  ].filter(Boolean).join(" • ");
+
+  if (typeLine) {
+    meta.push(typeLine);
+  }
+
+  const populationNpcLine = [
+    group.Population ? `Population: ${group.Population}` : "",
+    npcs.length > 0 ? `${npcs.length} NPC${npcs.length !== 1 ? "s" : ""}` : ""
+  ].filter(Boolean).join(" • ");
+
+  if (populationNpcLine) {
+    meta.push(populationNpcLine);
+  }
+
+  return joinCodexLabel(
+    group.POI_Group_Name || group.POI_Group_ID || "Unnamed POI Group",
     meta
   );
 }
@@ -50,7 +90,8 @@ function buildNpcListLabel(row) {
     ? db?.poisById?.[row.Home_ID_Ref]
     : null;
 
-  const homeLabel = home?.Name || row.Home_ID_Ref;
+  const group = home ? getPoiGroupForPoi(home) : null;
+  const homeLabel = group?.POI_Group_Name || home?.Name || row.Home_ID_Ref;
 
   if (homeLabel) {
     meta.push(homeLabel);
