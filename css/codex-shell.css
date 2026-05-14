@@ -782,9 +782,7 @@
    PARCHMENT IMAGE EDGE TRANSPARENCY
    ========================================================= */
 
-.codex-detail-portrait-slot,
-.codex-region-tile,
-.codex-map-card {
+.codex-detail-portrait-slot {
   -webkit-mask-image:
     linear-gradient(
       to right,
@@ -834,4 +832,184 @@
       transparent 100%
     );
   mask-composite: intersect;
+}
+
+/* =========================================================
+   TILE ART / TEXT SEPARATION
+   ========================================================= */
+
+.codex-region-tile,
+.codex-map-card {
+  background: transparent;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.codex-region-tile-image {
+  inset: 0;
+  z-index: 0;
+
+  background:
+    var(--codex-record-image, none),
+    radial-gradient(circle at center, rgba(255, 232, 174, 0.18), transparent 62%),
+    rgba(94, 55, 22, 0.08);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+.codex-region-tile-info,
+.codex-map-card-info {
+  z-index: 2;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  background: transparent;
+  border-top: 0;
+
+  text-align: center;
+}
+
+.codex-region-tile-info {
+  padding: 12px 14px 14px;
+}
+
+.codex-region-tile-name,
+.codex-region-tile-details,
+.codex-map-card-title {
+  width: 100%;
+  text-align: center;
+}
+
+.codex-map-card {
+  background: transparent;
+}
+
+.codex-map-card::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  pointer-events: none;
+
+  background:
+    var(--codex-map-image, none),
+    linear-gradient(
+      160deg,
+      rgba(255, 238, 196, 0.32),
+      rgba(85, 49, 19, 0.16)
+    );
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  opacity: 0.92;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+.codex-map-card-info {
+  justify-content: center;
+  padding: 10px 10px 12px;
 }
