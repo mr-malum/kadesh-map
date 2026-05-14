@@ -228,20 +228,17 @@
   /* Search */
 
   #codex-content.codex-search-page {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-
+    display: block;
     min-height: 0;
-    overflow-y: auto;
-
-    padding-bottom: calc(190px + env(safe-area-inset-bottom));
+    overflow: hidden;
   }
 
   .codex-search-page-shell {
-    height: auto;
+    height: calc(100dvh - 310px);
     min-height: 0;
+    overflow-y: auto;
     display: block;
+    padding-bottom: calc(36px + env(safe-area-inset-bottom));
   }
 
   .codex-search-controls-shell {
