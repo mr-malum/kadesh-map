@@ -162,9 +162,12 @@ function collectMatchingRegions(cleanQuery, collector, context) {
 }
 
 function collectMatchingPois(cleanQuery, collector, context) {
+  const matchingGroupedPois = new Map();
+
   (db?.raw?.pois || []).forEach(poi => {
     if (!codexSearchTextMatches([
       poi.POI_ID,
+      poi.POI_Group_ID,
       poi.Name,
       poi.POI_Type,
       poi.Hex_ID_Ref,
@@ -180,12 +183,70 @@ function collectMatchingPois(cleanQuery, collector, context) {
       context.matchingPoiHexIds.add(poi.Hex_ID_Ref);
     }
 
+    const group = getPoiGroupForPoi(poi);
+
+    if (group) {
+      if (!matchingGroupedPois.has(group.POI_Group_ID)) {
+        matchingGroupedPois.set(group.POI_Group_ID, {
+          group,
+          matchingPois: []
+        });
+      }
+
+      matchingGroupedPois
+        .get(group.POI_Group_ID)
+        .matchingPois
+        .push(poi);
+
+      return;
+    }
+
     collector.add(
       "poi",
       poi.POI_ID,
       buildPoiListLabel(poi)
     );
   });
+
+  matchingGroupedPois.forEach(({ group, matchingPois }) => {
+    collector.add(
+      "poi-group",
+      group.POI_Group_ID,
+      buildPoiGroupSearchLabel(group, matchingPois)
+    );
+  });
+}
+
+function buildPoiGroupSearchLabel(group, matchingPois) {
+  const allMappedAreas = getPoisForGroup(group.POI_Group_ID);
+  const npcs = getNpcsForPoiGroup(group.POI_Group_ID);
+  const meta = [];
+
+  const typeLine = [
+    group.Group_Type || "Grouped POI",
+    `${allMappedAreas.length} mapped area${allMappedAreas.length !== 1 ? "s" : ""}`
+  ].filter(Boolean).join(" • ");
+
+  if (typeLine) {
+    meta.push(typeLine);
+  }
+
+  const matchLine = `${matchingPois.length} matching mapped area${matchingPois.length !== 1 ? "s" : ""}`;
+
+  const populationNpcLine = [
+    group.Population ? `Population: ${group.Population}` : "",
+    npcs.length > 0 ? `${npcs.length} NPC${npcs.length !== 1 ? "s" : ""}` : "",
+    matchLine
+  ].filter(Boolean).join(" • ");
+
+  if (populationNpcLine) {
+    meta.push(populationNpcLine);
+  }
+
+  return joinCodexLabel(
+    group.POI_Group_Name || group.POI_Group_ID || "Unnamed POI Group",
+    meta
+  );
 }
 
 function collectMatchingNpcs(cleanQuery, collector, context) {
