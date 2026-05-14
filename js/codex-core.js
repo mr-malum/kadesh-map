@@ -141,7 +141,7 @@ function updateCodexBackButton() {
   const backButton = document.getElementById("codex-back");
 
   backButton.disabled = false;
-  backButton.textContent = "⮜";
+  backButton.textContent = "❮";
 }
 
 function prepareCodexNavigation() {
