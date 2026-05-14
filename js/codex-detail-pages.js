@@ -30,6 +30,26 @@ function buildCodexBreadcrumbTrail(currentLabel, section = null) {
   ].filter(Boolean);
 }
 
+function buildCodexGroupedPoiBreadcrumbTrail(poiName, group) {
+  if (!group) {
+    return buildCodexBreadcrumbTrail(poiName, {
+      label: "Points of Interest",
+      pageType: "pois"
+    });
+  }
+
+  return [
+    codexRootBreadcrumb(),
+    codexSectionBreadcrumb("Points of Interest", "pois"),
+    {
+      label: group.POI_Group_Name || group.POI_Group_ID,
+      clickable: true,
+      onclick: `openCodexPage('poi-group', '${escapeJsString(group.POI_Group_ID)}')`
+    },
+    codexCurrentBreadcrumb(poiName)
+  ];
+}
+
 function renderCodexInlineLink(type, id, label) {
   return `
     <button
@@ -250,10 +270,7 @@ function renderCodexPoiPage(poiId) {
         )}
       </div>
     </div>
-  `, buildCodexBreadcrumbTrail(poiName, {
-    label: "Points of Interest",
-    pageType: "pois"
-  }));
+  `, buildCodexGroupedPoiBreadcrumbTrail(poiName, group));
 
   document.getElementById("codex-content").classList.add("codex-detail-page");
 }
