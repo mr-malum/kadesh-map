@@ -167,6 +167,15 @@ function resetCodexToIndex() {
 }
 
 function renderCodexPage(type, id) {
+  if (databaseLoadError) {
+    setCodexTitle("The Codex of Kadesh");
+    setCodexContent(`
+      <p>The records could not be gathered.</p>
+      <p>Please refresh the page and consult the Codex again.</p>
+    `);
+    return;
+  }
+
   if (!db) {
     setCodexTitle("The Codex of Kadesh");
     setCodexContent(`<p>The records are still being gathered...</p>`);
