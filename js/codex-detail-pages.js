@@ -113,7 +113,7 @@ function getPoiPlaceholderClass(record) {
 
 function renderImageStyle(imageUrl) {
   return imageUrl
-    ? `style="background-image: url('${escapeJsString(imageUrl)}')"`
+    ? `style="--codex-record-image: url('${escapeJsString(imageUrl)}')"`
     : "";
 }
 
