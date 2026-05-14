@@ -183,12 +183,16 @@
   }
 
   #codex-header {
-    padding: 64px 28px 18px;
+    padding: 34px 24px 10px;
     margin-bottom: 0;
   }
 
   #codex-title {
-    font-size: 1.85rem;
+    font-size: 1.75rem;
+  }
+
+  #codex-header::after {
+    margin-top: 9px;
   }
 
   #codex-content {
@@ -247,7 +251,7 @@
   }
 
   .codex-search-page-shell {
-    height: calc(100dvh - 310px);
+    height: calc(100dvh - 270px);
     min-height: 0;
     overflow-y: auto;
     display: block;
@@ -311,7 +315,7 @@
   /* List pages */
 
   .codex-list-page-shell {
-    height: calc(100dvh - 310px);
+    height: calc(100dvh - 270px);
     display: flex;
     flex-direction: column;
   }
@@ -457,7 +461,7 @@
   /* Detail pages */
 
   .codex-detail-page-shell {
-    height: calc(100dvh - 310px);
+    height: calc(100dvh - 270px);
   }
 
   .codex-detail-fixed {
