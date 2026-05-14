@@ -233,3 +233,29 @@
   align-content: start;
   grid-auto-rows: minmax(230px, auto);
 }
+
+/* =========================================================
+   CODEX CONTENT SCROLL FADES
+   ========================================================= */
+
+#codex-content.codex-search-page,
+#codex-content.codex-home-search-page,
+#codex-content.codex-regions-index {
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 18px,
+      black calc(100% - 22px),
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 18px,
+      black calc(100% - 22px),
+      transparent 100%
+    );
+}
