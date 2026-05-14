@@ -327,6 +327,12 @@ function buildCodexHexSearchLabel(hex, matches) {
 }
 
 function getCodexSearchGroupRows(group, results) {
+  if (group.type === "poi") {
+    return results.filter(result => {
+      return result.type === "poi" || result.type === "poi-group";
+    });
+  }
+
   return results.filter(result => result.type === group.type);
 }
 
