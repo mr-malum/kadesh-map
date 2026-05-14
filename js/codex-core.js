@@ -124,11 +124,14 @@ function popCodexHistory() {
 
 function updateCodexBackButton() {
   const backButton = document.getElementById("codex-back");
+  const isMobile = window.matchMedia("(max-width: 700px)").matches;
 
   backButton.disabled = false;
-  backButton.textContent = codexHistory.length <= 1
-    ? "← Map"
-    : "← Back";
+  backButton.textContent = isMobile
+    ? "←"
+    : codexHistory.length <= 1
+      ? "← Map"
+      : "← Back";
 }
 
 function prepareCodexNavigation() {
