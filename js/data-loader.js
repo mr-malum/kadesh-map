@@ -2,7 +2,8 @@ const sheetUrls = {
   hexes: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ads-k6v3CiG58JEZkZa7sya_IqLMBiUTh0IfnKOGeWCmbbw9qLJL9KITnd_GadRzMVz_e0otMzaD/pub?gid=1899494677&single=true&output=csv",
   pois: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ads-k6v3CiG58JEZkZa7sya_IqLMBiUTh0IfnKOGeWCmbbw9qLJL9KITnd_GadRzMVz_e0otMzaD/pub?gid=1900621664&single=true&output=csv",
   npcs: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ads-k6v3CiG58JEZkZa7sya_IqLMBiUTh0IfnKOGeWCmbbw9qLJL9KITnd_GadRzMVz_e0otMzaD/pub?gid=603218189&single=true&output=csv",
-  regions: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ads-k6v3CiG58JEZkZa7sya_IqLMBiUTh0IfnKOGeWCmbbw9qLJL9KITnd_GadRzMVz_e0otMzaD/pub?gid=30419630&single=true&output=csv"
+  regions: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ads-k6v3CiG58JEZkZa7sya_IqLMBiUTh0IfnKOGeWCmbbw9qLJL9KITnd_GadRzMVz_e0otMzaD/pub?gid=30419630&single=true&output=csv",
+  poiGroups: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ0ads-k6v3CiG58JEZkZa7sya_IqLMBiUTh0IfnKOGeWCmbbw9qLJL9KITnd_GadRzMVz_e0otMzaD/pub?gid=1000348883&single=true&output=csv"
 };
 
 function parseCSV(csvText) {
@@ -103,18 +104,20 @@ function groupBy(rows, fieldName) {
 }
 
 async function loadDatabase() {
-  const [hexes, pois, npcs, regions] = await Promise.all([
+  const [hexes, pois, npcs, regions, poiGroups] = await Promise.all([
     fetchSheet(sheetUrls.hexes),
     fetchSheet(sheetUrls.pois),
     fetchSheet(sheetUrls.npcs),
-    fetchSheet(sheetUrls.regions)
+    fetchSheet(sheetUrls.regions),
+    fetchSheet(sheetUrls.poiGroups)
   ]);
 
   const appData = {
     hexes,
     pois,
     npcs,
-    regions
+    regions,
+    poiGroups
   };
 
   const db = {
@@ -124,9 +127,11 @@ async function loadDatabase() {
     poisById: indexById(appData.pois, "POI_ID"),
     npcsById: indexById(appData.npcs, "NPC_ID"),
     regionsById: indexById(appData.regions, "Region_ID"),
+    poiGroupsById: indexById(appData.poiGroups, "POI_Group_ID"),
 
     poisByHexId: groupBy(appData.pois, "Hex_ID_Ref"),
-    npcsByHomeId: groupBy(appData.npcs, "Home_ID_Ref")
+    npcsByHomeId: groupBy(appData.npcs, "Home_ID_Ref"),
+    poisByGroupId: groupBy(appData.pois, "POI_Group_ID")
   };
 
   window.db = db;

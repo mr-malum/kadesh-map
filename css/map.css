@@ -304,11 +304,6 @@
 }
 
 .leaflet-popup-content button {
-  width: 100%;
-
-  margin-top: 10px;
-  padding: 10px 12px;
-
   border: 1px solid rgba(94, 55, 22, 0.25);
   border-radius: 10px;
 
@@ -319,4 +314,24 @@
   font-size: 0.95rem;
 
   cursor: pointer;
+}
+
+.leaflet-popup-content .popup-action-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 8px;
+
+  margin-top: 12px;
+}
+
+.leaflet-popup-content .popup-action-row button {
+  width: 100%;
+
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.leaflet-popup-content .popup-close-details {
+  font-size: 1.2rem;
+  line-height: 1;
 }

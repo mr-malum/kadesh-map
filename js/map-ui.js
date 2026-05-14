@@ -15,7 +15,10 @@ function clearSelectedHex() {
 }
 
 function closePanel(options = {}) {
-  document.getElementById("app-panel").classList.remove("open");
+  const panel = document.getElementById("app-panel");
+  const wasOpen = panel.classList.contains("open");
+
+  panel.classList.remove("open");
 
   if (options.centerSelected && selectedHexId) {
     centerHexInView(selectedHexId);
@@ -25,10 +28,22 @@ function closePanel(options = {}) {
     clearSelectedHex();
     map.closePopup();
   }
+
+  if (
+    wasOpen &&
+    options.syncHistory !== false &&
+    typeof releaseAppBrowserBackTrap === "function"
+  ) {
+    releaseAppBrowserBackTrap();
+  }
 }
 
 function openPanel() {
   const panel = document.getElementById("app-panel");
+
+  if (typeof ensureAppBrowserBackTrap === "function") {
+    ensureAppBrowserBackTrap();
+  }
 
   requestAnimationFrame(() => {
     panel.classList.add("open");
@@ -129,6 +144,11 @@ function toggleRetroCodexMode() {
   }
 }
 
+function closeMobileHexPopup() {
+  map.closePopup();
+  clearSelectedHex();
+}
+
 function buildMobilePopupHtml(hexId) {
   const data = db?.hexesById?.[hexId];
   const counts = getHexCounts(hexId);
@@ -153,15 +173,26 @@ function buildMobilePopupHtml(hexId) {
         : ""
     }
 
-    <br>
-    <button
-      class="popup-open-details"
-      type="button"
-      onclick="openCodexPage('hex', '${escapeJsString(hexId)}')"
-    >
-      Open Details
-    </button>
+    <div class="popup-action-row">
+      <button
+        class="popup-open-details"
+        type="button"
+        onclick="openCodexPage('hex', '${escapeJsString(hexId)}')"
+      >
+        Details
+      </button>
+
+      <button
+        class="popup-close-details"
+        type="button"
+        aria-label="Close hex preview"
+        onclick="closeMobileHexPopup()"
+      >
+        ×
+      </button>
+    </div>
   `;
 }
 
 window.openPanelForHex = openPanelForHex;
+window.closeMobileHexPopup = closeMobileHexPopup;

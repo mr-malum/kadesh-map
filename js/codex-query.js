@@ -52,12 +52,67 @@ function getPoiNotorietyRank(value) {
   return fallbackOrder[clean] || 999;
 }
 
+function getPoiGroupForPoi(poi) {
+  const groupId = poi?.POI_Group_ID;
+  if (!groupId) return null;
+  return db?.poiGroupsById?.[groupId] || null;
+}
+
+function getPoisForGroup(groupId) {
+  if (!groupId) return [];
+  return db?.poisByGroupId?.[groupId] || [];
+}
+
+function getNpcsForPoiGroup(groupId) {
+  return getPoisForGroup(groupId).flatMap(poi => {
+    return getNpcsForPoi(poi.POI_ID);
+  });
+}
+
+function getPoiGroupPopulation(group, fallbackPoi = null) {
+  return group?.Population || fallbackPoi?.Population || "";
+}
+
+function getPoiEffectivePopulation(poi) {
+  const group = getPoiGroupForPoi(poi);
+  return getPoiGroupPopulation(group, poi);
+}
+
+function createPoiGroupListRows(pois) {
+  const rows = [];
+  const seenGroupIds = new Set();
+
+  pois.forEach(poi => {
+    const group = getPoiGroupForPoi(poi);
+
+    if (!group) {
+      rows.push(poi);
+      return;
+    }
+
+    if (seenGroupIds.has(group.POI_Group_ID)) return;
+
+    seenGroupIds.add(group.POI_Group_ID);
+
+    rows.push({
+      ...group,
+      __codexRecordType: "poi-group",
+      __codexRecordId: group.POI_Group_ID,
+      __codexGroupPois: getPoisForGroup(group.POI_Group_ID)
+    });
+  });
+
+  return rows;
+}
+
 function getNpcHomeLabel(npc) {
   const home = npc.Home_ID_Ref
     ? db?.poisById?.[npc.Home_ID_Ref]
     : null;
 
-  return home?.Name || npc.Home_ID_Ref || "";
+  const group = home ? getPoiGroupForPoi(home) : null;
+
+  return group?.POI_Group_Name || home?.Name || npc.Home_ID_Ref || "";
 }
 
 function getNpcFilterValue(npc, field) {

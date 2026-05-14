@@ -5,8 +5,8 @@
 const CODEX_SEARCH_GROUPS = [
   { type: "poi", label: "POIs" },
   { type: "npc", label: "NPCs" },
-  { type: "hex", label: "Hexes" },
-  { type: "region", label: "Regions" }
+  { type: "region", label: "Regions" },
+  { type: "hex", label: "Hexes" }
 ];
 
 function renderCodexSearchPage() {
@@ -36,6 +36,13 @@ function renderCodexSearchPage() {
 
       <div id="codex-search-results" class="codex-search-results-shell"></div>
     </div>
+
+    <div
+      id="codex-search-results-modal"
+      class="codex-search-results-modal"
+      aria-hidden="true"
+      onclick="handleCodexSearchModalBackdropClick(event)"
+    ></div>
   `;
 
   bindCodexSearchInput();
@@ -49,6 +56,13 @@ function bindCodexSearchInput() {
     renderCodexSearchResults(input.value);
   });
 
+  input.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+    input.blur();
+  });
+
   if (codexSearchQuery.trim()) {
     renderCodexSearchResults(codexSearchQuery);
   }
@@ -56,9 +70,15 @@ function bindCodexSearchInput() {
   input.focus();
 }
 
+function isMobileCodexSearchLayout() {
+  return window.matchMedia("(max-width: 700px)").matches;
+}
+
 function renderCodexSearchResults(query) {
   const resultsEl = document.getElementById("codex-search-results");
   const cleanQuery = normalizeCodexSearchQuery(query);
+
+  closeCodexSearchResultsModal();
 
   if (!cleanQuery) {
     resultsEl.innerHTML = renderCodexEmptySearchMessage();
@@ -66,7 +86,9 @@ function renderCodexSearchResults(query) {
   }
 
   const results = buildCodexSearchResults(cleanQuery);
-  resultsEl.innerHTML = renderCodexSearchResultGroups(results);
+  resultsEl.innerHTML = isMobileCodexSearchLayout()
+    ? renderMobileCodexSearchResultGroups(results)
+    : renderCodexSearchResultGroups(results);
 }
 
 function normalizeCodexSearchQuery(query) {
@@ -140,9 +162,12 @@ function collectMatchingRegions(cleanQuery, collector, context) {
 }
 
 function collectMatchingPois(cleanQuery, collector, context) {
+  const matchingGroupedPois = new Map();
+
   (db?.raw?.pois || []).forEach(poi => {
     if (!codexSearchTextMatches([
       poi.POI_ID,
+      poi.POI_Group_ID,
       poi.Name,
       poi.POI_Type,
       poi.Hex_ID_Ref,
@@ -158,12 +183,99 @@ function collectMatchingPois(cleanQuery, collector, context) {
       context.matchingPoiHexIds.add(poi.Hex_ID_Ref);
     }
 
+    const group = getPoiGroupForPoi(poi);
+
+    if (group) {
+      if (!matchingGroupedPois.has(group.POI_Group_ID)) {
+        matchingGroupedPois.set(group.POI_Group_ID, {
+          group,
+          matchingPois: []
+        });
+      }
+
+      matchingGroupedPois
+        .get(group.POI_Group_ID)
+        .matchingPois
+        .push(poi);
+
+      return;
+    }
+
     collector.add(
       "poi",
       poi.POI_ID,
       buildPoiListLabel(poi)
     );
   });
+
+  (db?.raw?.poiGroups || []).forEach(group => {
+    if (!codexSearchTextMatches([
+      group.POI_Group_ID,
+      group.POI_Group_Name,
+      group.Group_Type,
+      group.Population,
+      group.Lore,
+      group.DM_Journal
+    ], cleanQuery)) {
+      return;
+    }
+
+    if (!matchingGroupedPois.has(group.POI_Group_ID)) {
+      matchingGroupedPois.set(group.POI_Group_ID, {
+        group,
+        matchingPois: []
+      });
+    }
+  });
+
+  matchingGroupedPois.forEach(({ group, matchingPois }) => {
+    getPoisForGroup(group.POI_Group_ID).forEach(poi => {
+      if (poi.Hex_ID_Ref) {
+        context.matchingPoiHexIds.add(poi.Hex_ID_Ref);
+      }
+    });
+
+    collector.add(
+      "poi-group",
+      group.POI_Group_ID,
+      buildPoiGroupSearchLabel(group, matchingPois)
+    );
+  });
+}
+
+function buildPoiGroupSearchLabel(group, matchingPois) {
+  const allMappedAreas = getPoisForGroup(group.POI_Group_ID);
+  const npcs = getNpcsForPoiGroup(group.POI_Group_ID);
+  const population = formatCodexPopulation(group.Population);
+  const meta = [];
+
+  const typeLine = [
+    group.Group_Type || "Grouped POI",
+    `${allMappedAreas.length} mapped area${allMappedAreas.length !== 1 ? "s" : ""}`
+  ].filter(Boolean).join(" • ");
+
+  if (typeLine) {
+    meta.push(typeLine);
+  }
+
+  const matchLine = matchingPois.length > 0
+    ? `${matchingPois.length} matching mapped area${matchingPois.length !== 1 ? "s" : ""}`
+    : "Group match";
+
+  const populationNpcLine = [
+    population ? `Population: ${population}` : "",
+    npcs.length > 0 ? `${npcs.length} NPC${npcs.length !== 1 ? "s" : ""}` : "",
+    matchLine
+  ].filter(Boolean).join(" • ");
+
+  if (populationNpcLine) {
+    meta.push(populationNpcLine);
+  }
+
+  return joinCodexLabel(
+    group.POI_Group_Name || group.POI_Group_ID || "Unnamed POI Group",
+    meta
+  );
 }
 
 function collectMatchingNpcs(cleanQuery, collector, context) {
@@ -243,6 +355,103 @@ function buildCodexHexSearchLabel(hex, matches) {
   ]);
 }
 
+function getCodexSearchGroupRows(group, results) {
+  if (group.type === "poi") {
+    return results.filter(result => {
+      return result.type === "poi" || result.type === "poi-group";
+    });
+  }
+
+  return results.filter(result => result.type === group.type);
+}
+
+function getCodexSearchMatchLabel(count) {
+  if (count === 1) return "1 match";
+  return `${count} matches`;
+}
+
+function renderMobileCodexSearchResultGroups(results) {
+  return `
+    <div class="codex-mobile-search-summary">
+      ${CODEX_SEARCH_GROUPS
+        .map(group => renderMobileCodexSearchSummaryButton(group, results))
+        .join("")}
+    </div>
+  `;
+}
+
+function renderMobileCodexSearchSummaryButton(group, results) {
+  const count = getCodexSearchGroupRows(group, results).length;
+
+  return `
+    <button
+      class="codex-mobile-search-summary-button"
+      type="button"
+      onclick="openCodexSearchResultsModal('${escapeJsString(group.type)}')"
+    >
+      <span class="codex-mobile-search-summary-label">${escapeHtml(group.label)}</span>
+      <span class="codex-mobile-search-summary-count">${escapeHtml(getCodexSearchMatchLabel(count))}</span>
+    </button>
+  `;
+}
+
+function openCodexSearchResultsModal(type) {
+  const modal = document.getElementById("codex-search-results-modal");
+  const group = CODEX_SEARCH_GROUPS.find(item => item.type === type);
+  const cleanQuery = normalizeCodexSearchQuery(codexSearchQuery);
+
+  if (!modal || !group || !cleanQuery) return;
+
+  const results = buildCodexSearchResults(cleanQuery);
+  const groupRows = getCodexSearchGroupRows(group, results);
+  const matchLabel = getCodexSearchMatchLabel(groupRows.length);
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+
+  modal.innerHTML = `
+    <div class="codex-search-results-modal-panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(group.label)} search results">
+      <div class="codex-search-results-modal-header">
+        <h3>${escapeHtml(group.label)}</h3>
+        <p>${escapeHtml(matchLabel)}</p>
+      </div>
+
+      <div class="codex-search-results-modal-list codex-scroll-fade">
+        ${renderCodexLinkedList(
+          groupRows,
+          `No matching ${group.label}.`,
+          null,
+          "id",
+          row => row.label,
+          row => row.type
+        )}
+      </div>
+
+      <button
+        class="codex-search-results-modal-close"
+        type="button"
+        onclick="closeCodexSearchResultsModal()"
+      >
+        Close
+      </button>
+    </div>
+  `;
+}
+
+function closeCodexSearchResultsModal() {
+  const modal = document.getElementById("codex-search-results-modal");
+  if (!modal) return;
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  modal.innerHTML = "";
+}
+
+function handleCodexSearchModalBackdropClick(event) {
+  if (event.target?.id !== "codex-search-results-modal") return;
+  closeCodexSearchResultsModal();
+}
+
 function renderCodexSearchResultGroups(results) {
   return CODEX_SEARCH_GROUPS
     .map(group => renderCodexSearchResultGroup(group, results))
@@ -250,7 +459,7 @@ function renderCodexSearchResultGroups(results) {
 }
 
 function renderCodexSearchResultGroup(group, results) {
-  const groupRows = results.filter(result => result.type === group.type);
+  const groupRows = getCodexSearchGroupRows(group, results);
 
   return `
     <section class="codex-search-result-panel">
@@ -269,3 +478,7 @@ function renderCodexSearchResultGroup(group, results) {
     </section>
   `;
 }
+
+window.openCodexSearchResultsModal = openCodexSearchResultsModal;
+window.closeCodexSearchResultsModal = closeCodexSearchResultsModal;
+window.handleCodexSearchModalBackdropClick = handleCodexSearchModalBackdropClick;

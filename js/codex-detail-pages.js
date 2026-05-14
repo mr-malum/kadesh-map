@@ -30,6 +30,83 @@ function buildCodexBreadcrumbTrail(currentLabel, section = null) {
   ].filter(Boolean);
 }
 
+function buildCodexGroupedPoiBreadcrumbTrail(poiName, group) {
+  if (!group) {
+    return buildCodexBreadcrumbTrail(poiName, {
+      label: "Points of Interest",
+      pageType: "pois"
+    });
+  }
+
+  return [
+    codexRootBreadcrumb(),
+    codexSectionBreadcrumb("Points of Interest", "pois"),
+    {
+      label: group.POI_Group_Name || group.POI_Group_ID,
+      clickable: true,
+      onclick: `openCodexPage('poi-group', '${escapeJsString(group.POI_Group_ID)}')`
+    },
+    codexCurrentBreadcrumb(poiName)
+  ];
+}
+
+function getRegionImageUrl(region) {
+  return region?.Image ||
+    region?.Image_URL ||
+    region?.Region_Image ||
+    region?.Region_Image_URL ||
+    "";
+}
+
+function getPoiImageUrl(poi) {
+  return poi?.Image ||
+    poi?.Image_URL ||
+    poi?.POI_Image ||
+    poi?.POI_Image_URL ||
+    "";
+}
+
+function getPoiGroupImageUrl(group) {
+  return group?.Image ||
+    group?.Image_URL ||
+    group?.POI_Group_Image ||
+    group?.POI_Group_Image_URL ||
+    group?.Group_Image ||
+    group?.Group_Image_URL ||
+    "";
+}
+
+function getNpcImageUrl(npc) {
+  return npc?.Image ||
+    npc?.Image_URL ||
+    npc?.NPC_Image ||
+    npc?.NPC_Image_URL ||
+    npc?.Portrait ||
+    npc?.Portrait_URL ||
+    "";
+}
+
+function getPoiPlaceholderClass(record) {
+  const type = String(record?.POI_Type || record?.Group_Type || "").toLowerCase();
+
+  if (
+    type.includes("settlement") ||
+    type.includes("city") ||
+    type.includes("town") ||
+    type.includes("village")
+  ) {
+    return "codex-placeholder-settlement";
+  }
+
+  return "codex-placeholder-poi";
+}
+
+function renderImageStyle(imageUrl) {
+  return imageUrl
+    ? `style="background-image: url('${escapeJsString(imageUrl)}')"`
+    : "";
+}
+
 function renderCodexInlineLink(type, id, label) {
   return `
     <button
@@ -52,6 +129,48 @@ function renderCodexDetailTextPanel(title, text, fallback) {
       </div>
     </section>
   `;
+}
+
+function buildCodexDetailNpcListLabel(npc) {
+  return joinCodexLabel(
+    [npc.Title, npc.Name].filter(Boolean).join(" "),
+    [
+      [
+        npc.Organization,
+        npc.Race,
+        npc.Occupation
+      ].filter(Boolean).join(" • ")
+    ]
+  );
+}
+
+function buildCodexMappedAreaListLabel(poi) {
+  const meta = [];
+
+  const typeLine = [
+    poi.POI_Type || "",
+    poi["Notoriety Tier"] ? `Notoriety: ${poi["Notoriety Tier"]}` : ""
+  ].filter(Boolean).join(" • ");
+
+  if (typeLine) {
+    meta.push(typeLine);
+  }
+
+  const npcCount = getNpcsForPoi(poi.POI_ID).length;
+
+  const locationNpcLine = [
+    poi.Hex_ID_Ref ? `Hex ${poi.Hex_ID_Ref}` : "",
+    npcCount > 0 ? `${npcCount} NPC${npcCount !== 1 ? "s" : ""}` : ""
+  ].filter(Boolean).join(" • ");
+
+  if (locationNpcLine) {
+    meta.push(locationNpcLine);
+  }
+
+  return joinCodexLabel(
+    poi.Name || poi.POI_ID || "Unnamed Mapped Area",
+    meta
+  );
 }
 
 function renderCodexHexPage(hexId) {
@@ -102,10 +221,13 @@ function renderCodexRegionPage(regionId) {
   const hexes = getRowsByField(db?.raw?.hexes, "Region_ID_Ref", regionId);
   const regionName = region?.Region_Name || regionId || "Unknown Region";
   const summary = getRegionSummary(regionId);
+  const imageUrl = getRegionImageUrl(region);
 
   const pois = hexes.flatMap(hex => {
     return getPoisForHex(hex.Hex_ID);
   });
+
+  const poiListRows = createPoiGroupListRows(pois);
 
   const npcs = pois.flatMap(poi => {
     return getNpcsForPoi(poi.POI_ID);
@@ -125,49 +247,66 @@ function renderCodexRegionPage(regionId) {
   setCodexTitle(regionName);
 
   setCodexContent(`
-    <h3>Region Notes</h3>
-    <p>${escapeHtml(region?.Lore || region?.DM_Journal || "No region notes recorded.")}</p>
+    <div class="codex-region-detail-shell">
+      <div class="codex-region-detail-fixed">
+        <div
+          class="codex-detail-portrait-slot codex-region-detail-image codex-placeholder-region"
+          ${renderImageStyle(imageUrl)}
+        ></div>
 
-    <h3>Summary</h3>
-    <p>
-      <strong>Hexes:</strong> ${summary.hexCount}<br>
-      <strong>Points of Interest:</strong> ${summary.poiCount}<br>
-      <strong>NPCs:</strong> ${summary.npcCount}
-    </p>
+        <div class="codex-detail-meta codex-region-detail-summary">
+          <p><strong>Hexes:</strong> ${summary.hexCount}</p>
+          <p><strong>Points of Interest:</strong> ${summary.poiCount}</p>
+          ${
+            summary.mappedAreaCount > summary.poiCount
+              ? `<p><strong>Mapped Areas:</strong> ${summary.mappedAreaCount}</p>`
+              : ""
+          }
+          <p><strong>NPCs:</strong> ${summary.npcCount}</p>
+        </div>
 
-    <h3>Terrain Profile</h3>
-    <p>${terrainSummary || "No terrain data recorded."}</p>
+        <div class="codex-region-terrain-profile">
+          <h3>Terrain Profile</h3>
+          <p>${terrainSummary || "No terrain data recorded."}</p>
+        </div>
+      </div>
 
-    <h3>Points of Interest</h3>
-    ${renderCodexLinkedList(
-      pois,
-      "No points of interest currently recorded in this region.",
-      "poi",
-      "POI_ID",
-      buildPoiListLabel
-    )}
+      <h3>Region Notes</h3>
+      <p>${escapeHtml(region?.Lore || region?.DM_Journal || "No region notes recorded.")}</p>
 
-    <h3>NPCs</h3>
-    ${renderCodexLinkedList(
-      npcs,
-      "No NPCs currently recorded in this region.",
-      "npc",
-      "NPC_ID",
-      buildNpcListLabel
-    )}
+      <h3>Points of Interest</h3>
+      ${renderCodexLinkedList(
+        poiListRows,
+        "No points of interest currently recorded in this region.",
+        "poi",
+        "POI_ID",
+        buildPoiListLabel
+      )}
 
-    <h3>Hexes</h3>
-    ${renderCodexLinkedList(
-      hexes,
-      "No hexes currently assigned to this region.",
-      "hex",
-      "Hex_ID",
-      buildHexListLabel
-    )}
+      <h3>NPCs</h3>
+      ${renderCodexLinkedList(
+        npcs,
+        "No NPCs currently recorded in this region.",
+        "npc",
+        "NPC_ID",
+        buildNpcListLabel
+      )}
+
+      <h3>Hexes</h3>
+      ${renderCodexLinkedList(
+        hexes,
+        "No hexes currently assigned to this region.",
+        "hex",
+        "Hex_ID",
+        buildHexListLabel
+      )}
+    </div>
   `, buildCodexBreadcrumbTrail(regionName, {
     label: "Regions",
     pageType: "regions"
   }));
+
+  document.getElementById("codex-content").classList.add("codex-region-detail-page");
 }
 
 function renderCodexPoiPage(poiId) {
@@ -175,17 +314,27 @@ function renderCodexPoiPage(poiId) {
   const npcs = getNpcsForPoi(poiId);
   const hexId = poi?.Hex_ID_Ref;
   const poiName = poi?.Name || poiId || "Unknown POI";
+  const group = getPoiGroupForPoi(poi);
+  const population = getPoiEffectivePopulation(poi);
+  const imageUrl = getPoiImageUrl(poi);
+  const placeholderClass = getPoiPlaceholderClass(poi);
 
   setCodexTitle(poiName);
 
   setCodexContent(`
     <div class="codex-detail-page-shell">
       <div class="codex-detail-fixed codex-detail-fixed-poi">
-        <div class="codex-detail-portrait-slot"></div>
+        <div class="codex-detail-portrait-slot ${placeholderClass}" ${renderImageStyle(imageUrl)}></div>
 
         <div class="codex-detail-meta">
           <p><strong>Type:</strong> ${escapeHtml(poi?.POI_Type || "Unknown")}</p>
           <p><strong>Notoriety Tier:</strong> ${escapeHtml(poi?.["Notoriety Tier"] || "Unknown")}</p>
+
+          ${
+            group
+              ? `<p><strong>Part of:</strong> ${renderCodexInlineLink("poi-group", group.POI_Group_ID, group.POI_Group_Name || group.POI_Group_ID)}</p>`
+              : ""
+          }
 
           ${
             hexId
@@ -194,8 +343,8 @@ function renderCodexPoiPage(poiId) {
           }
 
           ${
-            poi?.POI_Type === "Settlement"
-              ? `<p><strong>Population:</strong> ${escapeHtml(poi?.Population || "Unknown")}</p>`
+            !group && (poi?.POI_Type === "Settlement" || population)
+              ? `<p><strong>Population:</strong> ${escapeHtml(formatCodexPopulation(population) || "Unknown")}</p>`
               : ""
           }
         </div>
@@ -209,16 +358,7 @@ function renderCodexPoiPage(poiId) {
               "No known NPCs at this location.",
               "npc",
               "NPC_ID",
-              npc => joinCodexLabel(
-                [npc.Title, npc.Name].filter(Boolean).join(" "),
-                [
-                  [
-                    npc.Organization,
-                    npc.Race,
-                    npc.Occupation
-                  ].filter(Boolean).join(" • ")
-                ]
-              )
+              buildCodexDetailNpcListLabel
             )}
           </div>
         </section>
@@ -238,7 +378,78 @@ function renderCodexPoiPage(poiId) {
         )}
       </div>
     </div>
-  `, buildCodexBreadcrumbTrail(poiName, {
+  `, buildCodexGroupedPoiBreadcrumbTrail(poiName, group));
+
+  document.getElementById("codex-content").classList.add("codex-detail-page");
+}
+
+function renderCodexPoiGroupPage(groupId) {
+  const group = db?.poiGroupsById?.[groupId];
+  const groupName = group?.POI_Group_Name || groupId || "Unknown POI Group";
+  const pois = getPoisForGroup(groupId);
+  const npcs = getNpcsForPoiGroup(groupId);
+  const population = formatCodexPopulation(getPoiGroupPopulation(group));
+  const imageUrl = getPoiGroupImageUrl(group);
+  const placeholderClass = getPoiPlaceholderClass(group);
+
+  setCodexTitle(groupName);
+
+  setCodexContent(`
+    <div class="codex-detail-page-shell">
+      <div class="codex-detail-fixed codex-detail-fixed-poi">
+        <div class="codex-detail-portrait-slot ${placeholderClass}" ${renderImageStyle(imageUrl)}></div>
+
+        <div class="codex-detail-meta">
+          <p><strong>Type:</strong> ${escapeHtml(group?.Group_Type || "Grouped POI")}</p>
+
+          ${
+            population
+              ? `<p><strong>Population:</strong> ${escapeHtml(population)}</p>`
+              : ""
+          }
+
+          <p><strong>Mapped Areas:</strong> ${pois.length}</p>
+        </div>
+
+        <section class="codex-detail-npc-panel">
+          <h3>NPCs</h3>
+
+          <div class="codex-detail-upper-scrollbox codex-scroll-fade">
+            ${renderCodexLinkedList(
+              npcs,
+              "No known NPCs associated with this place.",
+              "npc",
+              "NPC_ID",
+              buildCodexDetailNpcListLabel
+            )}
+          </div>
+        </section>
+      </div>
+
+      <h3>Mapped Areas</h3>
+      ${renderCodexLinkedList(
+        pois,
+        "No mapped areas currently recorded for this place.",
+        "poi",
+        "POI_ID",
+        buildCodexMappedAreaListLabel
+      )}
+
+      <div class="codex-detail-scroll-grid">
+        ${renderCodexDetailTextPanel(
+          "DM Journal",
+          group?.DM_Journal,
+          "No journal entries."
+        )}
+
+        ${renderCodexDetailTextPanel(
+          "Lore",
+          group?.Lore,
+          "No lore recorded."
+        )}
+      </div>
+    </div>
+  `, buildCodexBreadcrumbTrail(groupName, {
     label: "Points of Interest",
     pageType: "pois"
   }));
@@ -252,7 +463,9 @@ function renderCodexNpcPage(npcId) {
     ? db?.poisById?.[npc.Home_ID_Ref]
     : null;
 
+  const homeGroup = home ? getPoiGroupForPoi(home) : null;
   const npcName = npc?.Name || npcId || "Unknown NPC";
+  const imageUrl = getNpcImageUrl(npc);
 
   document.getElementById("codex-title").innerHTML = `
     ${npc?.Title ? `
@@ -275,14 +488,22 @@ function renderCodexNpcPage(npcId) {
   setCodexContent(`
     <div class="codex-detail-page-shell">
       <div class="codex-detail-fixed">
-        <div class="codex-detail-portrait-slot"></div>
+        <div class="codex-detail-portrait-slot codex-placeholder-npc" ${renderImageStyle(imageUrl)}></div>
 
         <div class="codex-detail-meta">
           <p><strong>Home:</strong> ${
-            home
-              ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
-              : escapeHtml(npc?.Home_ID_Ref || "Unknown")
+            homeGroup
+              ? renderCodexInlineLink("poi-group", homeGroup.POI_Group_ID, homeGroup.POI_Group_Name || homeGroup.POI_Group_ID)
+              : home
+                ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
+                : escapeHtml(npc?.Home_ID_Ref || "Unknown")
           }</p>
+
+          ${
+            homeGroup && home
+              ? `<p><strong>Location:</strong> ${renderCodexInlineLink("poi", home.POI_ID, home.Name)}</p>`
+              : ""
+          }
 
           <p><strong>Race:</strong> ${escapeHtml(
             npc?.Race || "Unknown"
@@ -318,16 +539,56 @@ function renderCodexNpcPage(npcId) {
     .classList.add("codex-detail-page");
 }
 
+function renderCodexRegionTile(region) {
+  const regionId = region.Region_ID;
+  const regionName = region.Region_Name || regionId || "Unnamed Region";
+  const summary = getRegionSummary(regionId);
+  const imageUrl = getRegionImageUrl(region);
+
+  const detailLine = [
+    `${summary.hexCount} hexes`,
+    `${summary.poiCount} POIs`,
+    summary.mappedAreaCount > summary.poiCount
+      ? `${summary.mappedAreaCount} mapped areas`
+      : "",
+    `${summary.npcCount} NPCs`
+  ].filter(Boolean).join(" • ");
+
+  return `
+    <button
+      class="codex-region-tile"
+      type="button"
+      onclick="openCodexPage('region', '${escapeJsString(regionId)}')"
+    >
+      <span
+        class="codex-region-tile-image codex-placeholder-region"
+        ${renderImageStyle(imageUrl)}
+      ></span>
+
+      <span class="codex-region-tile-info">
+        <span class="codex-region-tile-name">${escapeHtml(regionName)}</span>
+        <span class="codex-region-tile-details">${escapeHtml(detailLine)}</span>
+      </span>
+    </button>
+  `;
+}
+
 function renderCodexRegionsIndex() {
-  const regions = db?.raw?.regions || [];
+  const regions = [...(db?.raw?.regions || [])].sort((a, b) => {
+    return String(a.Region_Name || a.Region_ID || "")
+      .localeCompare(String(b.Region_Name || b.Region_ID || ""));
+  });
 
   setCodexTitle("Regions");
 
-  setCodexContent(renderCodexLinkedList(
-    regions,
-    "No regions recorded.",
-    "region",
-    "Region_ID",
-    buildRegionListLabel
-  ));
+  setCodexContent(`
+    <div class="codex-region-tile-grid">
+      ${regions.map(renderCodexRegionTile).join("") || `<p>No regions recorded.</p>`}
+    </div>
+  `, [
+    { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
+    { label: "Regions" }
+  ]);
+
+  document.getElementById("codex-content").classList.add("codex-regions-index");
 }

@@ -1,0 +1,141 @@
+We are continuing development of the Kadesh Codex / Map web app.
+
+Repo:
+mr-malum/kadesh-codex
+
+Current branch:
+ux-refinement
+
+Important:
+Treat ux-refinement as the working/default branch until otherwise stated.
+Main has just absorbed and merged the completed architecture-overhaul branch.
+architecture-overhaul was deleted after merge.
+Only main existed before creating ux-refinement.
+
+Project overview:
+- Fantasy overworld hex map web app.
+- Leaflet-based map with parchment UI aesthetic.
+- Codex acts as an in-world atlas/database browser for:
+  - Regions
+  - POIs
+  - NPCs
+  - Hexes
+- Heavy emphasis on immersive parchment UI, readable lore presentation, and app-like UX.
+
+Recent completed architecture work:
+- Split giant CSS into focused files under /css.
+- Split giant app.js into focused JS files under /js.
+- Kept scripts as plain global scripts, not ES modules.
+- Current JS architecture includes:
+  - data-loader.js
+  - app-core.js
+  - map-ui.js
+  - codex-core.js
+  - codex-render.js
+  - codex-labels.js
+  - codex-query.js
+  - codex-detail-pages.js
+  - codex-list-pages.js
+  - codex-list-config.js
+  - codex-search-page.js
+  - codex-pages.js placeholder
+  - app-events.js
+- Current CSS architecture includes:
+  - styles.css
+  - panel.css
+  - map.css
+  - codex-shell.css
+  - codex-search.css
+  - codex-lists.css
+  - codex-detail.css
+  - mobile.css
+
+Recent confirmed fixes/polish:
+- POI/NPC list pages use shared rendering and dynamic field filters.
+- Desktop POI/NPC controls cleaned up:
+  - no unnecessary “Filter & Sort” heading on desktop
+  - no Apply button on desktop
+  - filters still apply instantly on change
+- Mobile POI/NPC controls still use Filter & Sort popup:
+  - popup heading retained
+  - Apply button retained
+  - inherited compact selector style looks good on mobile
+- Filter-field select boxes now visually match the ASC/DESC button:
+  - compact button-like style
+  - fixed SVG down-arrow
+  - no clipping/artifact issue
+- Search placeholder changed to:
+  “Consult the Codex...”
+- Search input text centered.
+- Empty search landing helper removed.
+- Search result group order changed:
+  top row: POIs / NPCs
+  bottom row: Hexes / Regions
+- Search still shows “No matching ...” messages after typing.
+- 95 easter egg still toggles retro Codex icon.
+- Retro Codex text readability improved:
+  - gold CODEX text retained
+  - darker shadow in retro mode
+  - subtle dark radial backing behind text only when retro label is visible
+- Database loading improved:
+  - Google Sheets now load in parallel
+  - if Codex opens before db finishes loading, it auto-refreshes when db loads
+  - if db fails, Codex shows an error instead of hanging forever
+- Desktop smoke test passed.
+- Mobile checklist passed.
+
+Known outstanding UX issues / next roadmap:
+1. Mobile search UX overhaul is the top priority.
+   Current issue:
+   - On mobile, only POIs and NPCs are comfortably visible.
+   - Hexes and Regions are pushed down.
+   - Result group scrollboxes are too small.
+   - Need better mobile search layout.
+   Possible directions:
+   - overall page scroll instead of four trapped scrollboxes
+   - collapsible result groups
+   - result counts
+   - mobile-specific ordering/layout if needed
+   - keep desktop search order POIs / NPCs / Hexes / Regions unless there is a better reason to change it
+
+2. Detail page UX refinement:
+   - Mobile POI/NPC detail pages may need better real estate usage.
+   - Journal/Lore panes may be too shallow on some screens.
+   - Consider hybrid overall page scroll plus internal scroll regions, but inspect existing code/CSS first.
+
+3. Region index redesign:
+   - More atlas-like archival presentation.
+   - Hard A-Z sorting.
+   - Future thumbnail support.
+   - Possible continent/zone grouping later.
+
+4. Search refinement:
+   - exact-match priority
+   - relevance weighting
+   - match highlighting
+   - result counts
+   - possible fuzzy matching
+
+5. Hex detail enrichment:
+   - richer summaries
+   - better relational browsing
+   - more “atlas entry” feel
+
+Implementation philosophy:
+- Read actual current files before proposing changes.
+- Prefer surgical modifications over rewrites.
+- Maintain existing architecture.
+- Avoid duplicate IDs or duplicate control markup.
+- Be careful with desktop/mobile divergence:
+  - desktop should remain immersive atlas spread
+  - mobile should become more app-like and space-efficient
+- We can now use the GitHub connector to read and modify files directly, but changes should still be described clearly.
+- Continue committing directly to the working branch only when explicitly permitted.
+
+First recommended task in this new chat:
+Start UX refinement with the mobile Search page layout.
+Inspect:
+- css/codex-search.css
+- css/mobile.css
+- js/codex-search-page.js
+Then propose a focused mobile-only layout improvement.

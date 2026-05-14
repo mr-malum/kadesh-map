@@ -152,6 +152,20 @@ function escapeJsString(value) {
     .replaceAll("\r", "\\r");
 }
 
+function formatCodexNumber(value) {
+  const cleanValue = String(value ?? "").trim();
+  if (!cleanValue) return "";
+
+  const numericValue = Number(cleanValue.replaceAll(",", ""));
+  if (!Number.isFinite(numericValue)) return cleanValue;
+
+  return new Intl.NumberFormat("en-US").format(numericValue);
+}
+
+function formatCodexPopulation(value) {
+  return formatCodexNumber(value);
+}
+
 function getRowsByField(rows, fieldName, value) {
   if (!Array.isArray(rows)) return [];
   return rows.filter(row => row?.[fieldName] === value);
@@ -185,6 +199,17 @@ function getHexCounts(hexId) {
   };
 }
 
+function getDedupedPoiCount(pois) {
+  const counted = new Set();
+
+  pois.forEach(poi => {
+    const groupId = poi.POI_Group_ID;
+    counted.add(groupId ? `group:${groupId}` : `poi:${poi.POI_ID}`);
+  });
+
+  return counted.size;
+}
+
 function getRegionSummary(regionId) {
   const hexes = getRowsByField(db?.raw?.hexes, "Region_ID_Ref", regionId);
 
@@ -198,7 +223,8 @@ function getRegionSummary(regionId) {
 
   return {
     hexCount: hexes.length,
-    poiCount: pois.length,
+    poiCount: getDedupedPoiCount(pois),
+    mappedAreaCount: pois.length,
     npcCount
   };
 }

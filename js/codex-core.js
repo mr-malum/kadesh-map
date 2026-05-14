@@ -16,14 +16,29 @@ function getCodexTitle() {
 
 function openCodex() {
   getCodexOverlay().classList.add("open");
+
+  if (typeof ensureAppBrowserBackTrap === "function") {
+    ensureAppBrowserBackTrap();
+  }
 }
 
-function closeCodex() {
+function closeCodex(options = {}) {
+  const overlay = getCodexOverlay();
+  const wasOpen = overlay.classList.contains("open");
+
   codexSearchQuery = "";
 
-  getCodexOverlay().classList.remove("open");
+  overlay.classList.remove("open");
   map.closePopup();
   clearSelectedHex();
+
+  if (
+    wasOpen &&
+    options.syncHistory !== false &&
+    typeof releaseAppBrowserBackTrap === "function"
+  ) {
+    releaseAppBrowserBackTrap();
+  }
 }
 
 function setCodexTitle(title) {
@@ -126,9 +141,7 @@ function updateCodexBackButton() {
   const backButton = document.getElementById("codex-back");
 
   backButton.disabled = false;
-  backButton.textContent = codexHistory.length <= 1
-    ? "← Map"
-    : "← Back";
+  backButton.textContent = "❮";
 }
 
 function prepareCodexNavigation() {
@@ -185,6 +198,7 @@ function renderCodexPage(type, id) {
   if (type === "hex") return renderCodexHexPage(id);
   if (type === "region") return renderCodexRegionPage(id);
   if (type === "poi") return renderCodexPoiPage(id);
+  if (type === "poi-group") return renderCodexPoiGroupPage(id);
   if (type === "npc") return renderCodexNpcPage(id);
   if (type === "search") return renderCodexSearchPage();
   if (type === "regions") return renderCodexRegionsIndex();

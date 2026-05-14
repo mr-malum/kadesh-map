@@ -8,6 +8,8 @@ const HEX_GRID_MAX = 350;
 let retroCodexSequence = "";
 let codexLongPressTimer = null;
 let suppressNextCodexClick = false;
+let appBrowserHistoryDepth = 0;
+let appBrowserHistoryReleaseCount = 0;
 
 function initializeHexGrid() {
   for (let xxx = HEX_GRID_MIN; xxx < HEX_GRID_MAX; xxx++) {
@@ -119,6 +121,11 @@ function bindCodexEvents() {
   document
     .getElementById("codex-back")
     .addEventListener("click", function () {
+      if (isMobileBrowserBackEnabled() && appBrowserHistoryDepth > 0) {
+        history.back();
+        return;
+      }
+
       if (codexHistory.length <= 1) {
         closeCodex();
         return;
@@ -178,6 +185,81 @@ function isMobileCodexLongPressEnabled() {
   return window.matchMedia("(max-width: 700px), (pointer: coarse)").matches;
 }
 
+function isMobileBrowserBackEnabled() {
+  return window.matchMedia("(max-width: 700px), (pointer: coarse)").matches;
+}
+
+function isCodexOpen() {
+  return document
+    .getElementById("codex-overlay")
+    ?.classList.contains("open");
+}
+
+function isAppPanelOpen() {
+  return document
+    .getElementById("app-panel")
+    ?.classList.contains("open");
+}
+
+function ensureAppBrowserBackTrap() {
+  if (!isMobileBrowserBackEnabled()) return;
+
+  history.pushState({ kadeshAppState: true }, "", window.location.href);
+  appBrowserHistoryDepth += 1;
+}
+
+function releaseAppBrowserBackTrap() {
+  if (!appBrowserHistoryDepth) return;
+
+  const releaseDepth = appBrowserHistoryDepth;
+  appBrowserHistoryDepth = 0;
+  appBrowserHistoryReleaseCount += releaseDepth;
+
+  history.go(-releaseDepth);
+}
+
+function handleAppBrowserBack() {
+  if (appBrowserHistoryReleaseCount > 0) {
+    appBrowserHistoryReleaseCount -= 1;
+    return;
+  }
+
+  if (!isMobileBrowserBackEnabled()) return;
+
+  if (isCodexOpen()) {
+    if (appBrowserHistoryDepth > 0) {
+      appBrowserHistoryDepth -= 1;
+    }
+
+    if (codexHistory.length <= 1) {
+      closeCodex({ syncHistory: false });
+      appBrowserHistoryDepth = 0;
+      return;
+    }
+
+    goBackCodex();
+    return;
+  }
+
+  if (isAppPanelOpen()) {
+    if (appBrowserHistoryDepth > 0) {
+      appBrowserHistoryDepth -= 1;
+    }
+
+    closePanel({
+      clearSelection: true,
+      centerSelected: true,
+      syncHistory: false
+    });
+
+    appBrowserHistoryDepth = 0;
+  }
+}
+
+function bindBrowserBackEvents() {
+  window.addEventListener("popstate", handleAppBrowserBack);
+}
+
 function clearCodexLongPressTimer() {
   window.clearTimeout(codexLongPressTimer);
   codexLongPressTimer = null;
@@ -212,7 +294,11 @@ function initializeAppEvents() {
   bindPanelEvents();
   bindCodexEvents();
   bindKeyboardEasterEggEvents();
+  bindBrowserBackEvents();
   bindCodexLongPressEvents();
 }
+
+window.ensureAppBrowserBackTrap = ensureAppBrowserBackTrap;
+window.releaseAppBrowserBackTrap = releaseAppBrowserBackTrap;
 
 initializeAppEvents();
