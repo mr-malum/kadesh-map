@@ -297,8 +297,10 @@
 
     overflow-y: auto;
 
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: none !important;
+    grid-auto-flow: row !important;
     gap: 16px;
 
     padding-bottom: calc(48px + env(safe-area-inset-bottom));
@@ -321,15 +323,19 @@
   }
 
   .codex-search-result-panel {
-    min-height: 0;
+    flex: 0 0 auto !important;
+    min-height: auto !important;
+    display: block !important;
   }
 
   .codex-search-result-heading {
+    display: block;
     margin: 0 0 7px;
     font-size: 1rem;
   }
 
   .codex-search-group-scroll {
+    display: block !important;
     max-height: none;
     overflow-y: visible;
     padding-right: 0;
@@ -341,6 +347,7 @@
   }
 
   .codex-search-group-scroll .codex-list {
+    display: grid !important;
     gap: 7px;
   }
 
