@@ -87,6 +87,35 @@ function buildCodexDetailNpcListLabel(npc) {
   );
 }
 
+function buildCodexMappedAreaListLabel(poi) {
+  const meta = [];
+
+  const typeLine = [
+    poi.POI_Type || "",
+    poi["Notoriety Tier"] ? `Notoriety: ${poi["Notoriety Tier"]}` : ""
+  ].filter(Boolean).join(" • ");
+
+  if (typeLine) {
+    meta.push(typeLine);
+  }
+
+  const npcCount = getNpcsForPoi(poi.POI_ID).length;
+
+  const locationNpcLine = [
+    poi.Hex_ID_Ref ? `Hex ${poi.Hex_ID_Ref}` : "",
+    npcCount > 0 ? `${npcCount} NPC${npcCount !== 1 ? "s" : ""}` : ""
+  ].filter(Boolean).join(" • ");
+
+  if (locationNpcLine) {
+    meta.push(locationNpcLine);
+  }
+
+  return joinCodexLabel(
+    poi.Name || poi.POI_ID || "Unnamed Mapped Area",
+    meta
+  );
+}
+
 function renderCodexHexPage(hexId) {
   const hex = db?.hexesById?.[hexId];
   const region = hex?.Region_ID_Ref ? db?.regionsById?.[hex.Region_ID_Ref] : null;
@@ -322,13 +351,7 @@ function renderCodexPoiGroupPage(groupId) {
         "No mapped areas currently recorded for this place.",
         "poi",
         "POI_ID",
-        row => joinCodexLabel(
-          row.Name || row.POI_ID,
-          [
-            row.Hex_ID_Ref ? `Hex ${row.Hex_ID_Ref}` : "",
-            row.POI_Type || ""
-          ]
-        )
+        buildCodexMappedAreaListLabel
       )}
 
       <div class="codex-detail-scroll-grid">
