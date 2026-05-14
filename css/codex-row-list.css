@@ -185,6 +185,11 @@
   text-align: center;
 }
 
+/* Linked lists do not currently render left-side icons. */
+.codex-linked-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 /* Compact row lists for left rails and section navigation. */
 .codex-row-list-rail .codex-row {
   grid-template-columns: 30px minmax(0, 1fr) auto;
@@ -228,6 +233,10 @@
     gap: 10px;
 
     padding: 11px 6px;
+  }
+
+  .codex-linked-row {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .codex-row-icon {
