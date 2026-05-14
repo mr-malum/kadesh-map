@@ -11,37 +11,249 @@
   box-sizing: border-box;
 }
 
-#codex-content.codex-home:not(.codex-home-search-page) {
+#codex-content.codex-home {
   width: min(100%, var(--codex-home-content-max-width));
   max-width: var(--codex-home-content-max-width);
 }
 
-/* Codex search page layout */
+/* =========================================================
+   COMPACT CODEX CONTROL CLUSTER
+   ========================================================= */
+
+.codex-panel-nav {
+  position: relative;
+  z-index: 10020;
+
+  justify-content: flex-end;
+  align-items: center;
+
+  margin-top: auto;
+  margin-left: 24px;
+  margin-right: 24px;
+  margin-bottom: 76px;
+
+  padding: 0;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.codex-control-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+
+  padding: 5px;
+
+  border: 1px solid rgba(72, 43, 18, 0.20);
+  border-radius: 4px;
+
+  background: rgba(235, 214, 170, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 245, 220, 0.26),
+    0 2px 8px rgba(45, 25, 8, 0.12);
+
+  pointer-events: auto;
+}
+
+.panel-nav .codex-control-cluster button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  min-width: 42px;
+  min-height: 36px;
+  width: auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px 11px;
+
+  border: 1px solid rgba(72, 43, 18, 0.24);
+  border-radius: 3px;
+
+  background: rgba(246, 232, 196, 0.42);
+  color: #2f1d10;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.035em;
+
+  box-shadow: none;
+  cursor: pointer;
+
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease,
+    opacity 0.14s ease;
+}
+
+.panel-nav .codex-control-cluster button:hover,
+.panel-nav .codex-control-cluster button:focus-visible {
+  background: rgba(94, 55, 22, 0.10);
+  border-color: rgba(72, 43, 18, 0.38);
+  color: #241409;
+  outline: none;
+}
+
+.panel-nav .codex-control-cluster button:active {
+  transform: none;
+  background: rgba(94, 55, 22, 0.14);
+}
+
+.panel-nav .codex-control-cluster button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+#codex-back,
+#codex-close {
+  width: 42px;
+  min-width: 42px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#codex-breadcrumbs {
+  margin-right: auto;
+  padding-right: 16px;
+
+  pointer-events: auto;
+}
+
+/* =========================================================
+   GLOBAL SEARCH MODAL
+   ========================================================= */
+
+.codex-global-search-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 10010;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding-top: 190px;
+
+  background: rgba(24, 13, 5, 0.16);
+  backdrop-filter: blur(0.8px);
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 160ms ease;
+}
+
+.codex-global-search-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.codex-global-search-panel {
+  width: min(68%, 540px);
+
+  padding: 14px;
+
+  border: 1px solid rgba(72, 43, 18, 0.26);
+  border-radius: 4px;
+
+  background: rgba(235, 214, 170, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 245, 220, 0.24),
+    0 8px 22px rgba(45, 25, 8, 0.18);
+}
+
+#codex-global-search-input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 11px 38px;
+
+  border-radius: 3px;
+  border: 1px solid rgba(72, 43, 18, 0.34);
+
+  background: rgba(244, 238, 220, 0.92);
+  color: #2f1d10;
+
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 1.08rem;
+  line-height: 1.2;
+  text-align: center;
+
+  box-shadow:
+    inset 0 1px 5px rgba(55, 28, 8, 0.18),
+    inset 0 -1px 0 rgba(255, 252, 236, 0.34),
+    0 1px 2px rgba(55, 28, 8, 0.08);
+}
+
+#codex-global-search-input::placeholder {
+  color: rgba(58, 38, 20, 0.62);
+  text-align: center;
+}
+
+#codex-global-search-input:focus {
+  outline: none;
+  border-color: rgba(94, 55, 22, 0.52);
+  background: rgba(248, 241, 223, 0.92);
+}
+
+/* =========================================================
+   CODEX SEARCH RESULTS PAGE
+   ========================================================= */
+
 #codex-content.codex-search-page {
   display: block;
   width: min(100%, var(--codex-content-max-width));
   max-width: var(--codex-content-max-width);
-  padding-bottom: 0;
+
+  padding-bottom: 72px;
   overflow: hidden;
+}
+
+.codex-search-page-shell {
+  height: calc(100vh - 275px);
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.codex-search-controls-shell {
+  flex: 0 0 auto;
+
+  padding-bottom: 12px;
 }
 
 .codex-search-shell {
   width: min(100%, 500px);
-  margin: 0 auto 12px;
+  margin: 0 auto;
 }
 
 #codex-search-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 38px 10px 38px;
+
+  padding: 10px 38px;
+
   border-radius: 3px;
   border: 1px solid rgba(72, 43, 18, 0.34);
+
   background: rgba(244, 238, 220, 0.90);
   color: #2f1d10;
+
   font-family: 'Spectral', Georgia, serif;
   font-size: 1.06rem;
   line-height: 1.2;
-  text-align: left;
+  text-align: center;
+
   box-shadow:
     inset 0 1px 5px rgba(55, 28, 8, 0.18),
     inset 0 -1px 0 rgba(255, 252, 236, 0.34),
@@ -50,7 +262,7 @@
 
 #codex-search-input::placeholder {
   color: rgba(58, 38, 20, 0.62);
-  text-align: left;
+  text-align: center;
 }
 
 #codex-search-input:focus {
@@ -64,13 +276,13 @@
     0 1px 3px rgba(55, 28, 8, 0.10);
 }
 
-#codex-search-input::-webkit-search-cancel-button {
+#codex-search-input::-webkit-search-cancel-button,
+#codex-global-search-input::-webkit-search-cancel-button {
   appearance: none;
   -webkit-appearance: none;
 
   width: 18px;
   height: 18px;
-
   margin-right: 0;
 
   cursor: pointer;
@@ -84,26 +296,9 @@
   opacity: 0.78;
 }
 
-#codex-search-input::-webkit-search-cancel-button:hover {
+#codex-search-input::-webkit-search-cancel-button:hover,
+#codex-global-search-input::-webkit-search-cancel-button:hover {
   opacity: 1;
-}
-
-#codex-search-results {
-  clear: both;
-}
-
-.codex-search-page-shell {
-  height: calc(100vh - 285px);
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.codex-search-controls-shell {
-  flex: 0 0 auto;
-
-  padding-bottom: 8px;
 }
 
 .codex-search-results-shell {
@@ -116,207 +311,6 @@
   gap: 18px;
 
   overflow: hidden;
-}
-
-.codex-search-result-panel {
-  min-height: 230px;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.codex-search-result-heading {
-  flex: 0 0 auto;
-
-  margin: 0 0 8px;
-
-  font-size: 1.05rem;
-}
-
-.codex-search-group-scroll {
-  flex: 1 1 auto;
-  min-height: 188px;
-  max-height: 260px;
-
-  overflow-y: auto;
-
-  padding-right: 8px;
-}
-
-.codex-search-group-scroll .codex-list {
-  gap: 7px;
-  margin: 0;
-}
-
-.codex-search-group-scroll .codex-record-button {
-  padding: 9px 12px;
-}
-
-.codex-search-group-scroll .codex-record-title {
-  font-size: 0.98rem;
-}
-
-.codex-search-group-scroll .codex-record-meta {
-  font-size: 0.9rem;
-}
-
-.codex-search-group-scroll .codex-record-arrow {
-  font-size: 1.2rem;
-}
-
-/* =========================================================
-   CODEX HOME LIVE SEARCH
-   ========================================================= */
-
-#codex-content.codex-home-search-page {
-  display: block;
-  width: min(100%, var(--codex-home-content-max-width));
-  max-width: var(--codex-home-content-max-width);
-  padding-bottom: 0;
-  overflow: hidden;
-}
-
-#codex-content.codex-home-search-page.codex-home-search-active {
-  width: min(100%, var(--codex-content-max-width));
-  max-width: var(--codex-content-max-width);
-  padding-bottom: 0;
-  overflow: hidden;
-}
-
-.codex-home-search-page-shell {
-  height: calc(100vh - 285px);
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-}
-
-.codex-home-search-active .codex-home-search-page-shell {
-  height: calc(100vh - 285px);
-  min-height: 0;
-}
-
-.codex-home-search-controls-shell {
-  flex: 0 0 auto;
-
-  padding-top: 18px;
-  padding-bottom: 22px;
-
-  transition:
-    opacity 160ms ease,
-    transform 220ms ease,
-    padding 220ms ease;
-
-  will-change: transform;
-}
-
-.codex-home-search-shell {
-  width: min(100%, 500px);
-  margin: 0 auto;
-
-  transform: translateY(24px) scale(1.02);
-  transform-origin: top center;
-
-  transition:
-    width 220ms ease,
-    margin 220ms ease,
-    transform 220ms ease;
-  will-change: transform;
-}
-
-.codex-home-search-page #codex-search-input {
-  font-size: 1.06rem;
-  padding: 10px 38px 10px 38px;
-
-  transition:
-    background 160ms ease,
-    box-shadow 160ms ease,
-    border-color 160ms ease;
-}
-
-#codex-content.codex-home-search-page .codex-home-section-buttons {
-  flex: 1 1 auto;
-
-  width: min(100%, 333px);
-  max-width: 333px;
-  margin: 0 auto;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  transition:
-    opacity 180ms ease,
-    transform 220ms ease,
-    max-height 220ms ease,
-    margin 220ms ease;
-}
-
-.codex-home-section-row .codex-row-title {
-  font-size: 1.05rem;
-}
-
-.codex-home-section-row .codex-row-meta {
-  font-size: 0.88rem;
-}
-
-.codex-home-search-page #codex-search-results {
-  flex: 1 1 auto;
-  min-height: 0;
-
-  opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none;
-
-  transition:
-    opacity 180ms ease,
-    transform 220ms ease;
-}
-
-.codex-home-search-active .codex-home-search-controls-shell {
-  padding-top: 18px;
-  padding-bottom: 8px;
-}
-
-.codex-home-search-active .codex-home-search-shell {
-  width: var(--codex-rail-width);
-  margin-left: 0;
-  margin-right: auto;
-  transform: translateY(24px) scale(1);
-}
-
-.codex-home-search-rail-input-slot .codex-home-search-controls-shell {
-  padding-top: 0;
-  padding-bottom: 10px;
-}
-
-.codex-home-search-rail-input-slot .codex-home-search-shell {
-  width: 100%;
-  margin: 0;
-  transform: none;
-}
-
-.codex-home-search-active .codex-home-section-buttons {
-  flex: 0 0 auto;
-  max-height: 0;
-  margin-top: 0;
-  margin-bottom: 0;
-
-  opacity: 0;
-  transform: translateY(-10px);
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.codex-home-search-active #codex-search-results {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.codex-home-search-active .codex-search-results-shell {
-  align-content: stretch;
-  grid-auto-rows: 1fr;
 }
 
 /* =========================================================
@@ -341,10 +335,6 @@
   align-items: center;
 }
 
-.codex-home-search-split-view .codex-split-rail {
-  align-items: flex-start;
-}
-
 .codex-split-rail-inner {
   width: 100%;
   max-height: 100%;
@@ -357,7 +347,7 @@
 
   overflow-y: auto;
 
-  padding: 4px 12px 38px 2px;
+  padding: 4px 12px 24px 2px;
 }
 
 .codex-split-main .codex-list,
@@ -394,39 +384,11 @@
   margin-bottom: 0;
 }
 
-.codex-search-focused-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-
-  margin: 0 0 8px;
-}
-
-#codex-content .codex-search-focused-heading h3 {
-  margin: 0;
-
-  font-size: 1.18rem;
-}
-
-.codex-search-focused-heading h3::after {
-  display: none;
-}
-
-.codex-search-focused-heading p {
-  margin: 0;
-
-  font-size: 0.95rem;
-  line-height: 1.2;
-  opacity: 0.72;
-}
-
 /* =========================================================
    CODEX CONTENT SCROLL FADES
    ========================================================= */
 
 #codex-content.codex-search-page,
-#codex-content.codex-home-search-page,
 #codex-content.codex-regions-index {
   mask-image:
     linear-gradient(
@@ -453,36 +415,9 @@
     max-width: none;
   }
 
-  #codex-content.codex-search-page,
-  #codex-content.codex-home-search-page.codex-home-search-active {
-    padding-bottom: 170px;
+  #codex-content.codex-search-page {
+    padding-bottom: 130px;
     overflow-y: auto;
-  }
-
-  #codex-content.codex-home-search-page:not(.codex-home-search-active) {
-    padding-bottom: 0;
-    overflow: hidden;
-  }
-
-  .codex-home-search-active .codex-home-search-controls-shell {
-    padding-top: 18px;
-    padding-bottom: 12px;
-  }
-
-  .codex-home-search-active .codex-home-search-shell {
-    width: min(100%, 500px);
-    margin: 0 auto;
-  }
-
-  .codex-home-search-rail-input-slot .codex-home-search-controls-shell {
-    padding-top: 0;
-    padding-bottom: 10px;
-  }
-
-  .codex-home-search-rail-input-slot .codex-home-search-shell {
-    width: 100%;
-    margin: 0;
-    transform: none;
   }
 
   .codex-search-results-shell {
@@ -494,5 +429,30 @@
     display: block;
     height: auto;
     overflow: visible;
+  }
+
+  .codex-global-search-modal {
+    padding: 150px 24px 0;
+  }
+
+  .codex-global-search-panel {
+    width: min(100%, 520px);
+  }
+
+  .codex-panel-nav {
+    margin-left: 12px;
+    margin-right: 12px;
+    margin-bottom: 72px;
+  }
+
+  .codex-control-cluster {
+    gap: 5px;
+  }
+
+  .panel-nav .codex-control-cluster button {
+    min-width: 40px;
+    min-height: 36px;
+    padding: 6px 9px;
+    font-size: 0.86rem;
   }
 }
