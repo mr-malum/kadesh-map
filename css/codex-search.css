@@ -66,8 +66,8 @@
   min-height: 0;
 
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-rows: minmax(230px, 1fr);
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
   gap: 18px;
 
   overflow: hidden;
@@ -237,13 +237,10 @@
 }
 
 /* =========================================================
-   DESKTOP SEARCH SPLIT VIEW
+   REUSABLE CODEX SPLIT VIEW
    ========================================================= */
 
-.codex-search-split-view {
-  grid-column: 1 / -1;
-  grid-row: 1 / -1;
-
+.codex-split-view {
   height: 100%;
   min-height: 0;
   overflow: hidden;
@@ -253,18 +250,49 @@
   gap: 18px;
 }
 
-.codex-search-category-rail {
-  align-self: center;
+.codex-split-rail {
   min-height: 0;
-  max-height: 100%;
+  overflow: visible;
 
   display: flex;
+  align-items: center;
+}
+
+.codex-split-rail-inner {
+  width: 100%;
+  max-height: 100%;
+
+  overflow: visible;
+}
+
+.codex-split-main {
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 4px 12px 38px 2px;
+}
+
+.codex-split-main .codex-list {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.codex-split-main .codex-record-button {
+  width: 100%;
+}
+
+/* =========================================================
+   DESKTOP SEARCH SPLIT VIEW
+   ========================================================= */
+
+.codex-search-category-rail {
+  display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 10px;
 
   padding: 8px 10px 14px 0;
-  overflow: visible;
 }
 
 .codex-search-category-button {
@@ -347,14 +375,6 @@
   text-align: center;
 }
 
-.codex-search-main-pane {
-  min-height: 0;
-
-  overflow-y: auto;
-
-  padding: 4px 12px 38px 2px;
-}
-
 .codex-search-focused-section,
 .codex-search-all-section {
   margin: 0 0 22px;
@@ -392,16 +412,6 @@
   opacity: 0.72;
 }
 
-.codex-search-main-pane .codex-list {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-.codex-search-main-pane .codex-record-button {
-  width: 100%;
-}
-
 /* =========================================================
    CODEX CONTENT SCROLL FADES
    ========================================================= */
@@ -431,6 +441,12 @@
 @media (max-width: 700px) {
   .codex-search-results-shell {
     display: block;
+    overflow: visible;
+  }
+
+  .codex-split-view {
+    display: block;
+    height: auto;
     overflow: visible;
   }
 }
