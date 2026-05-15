@@ -76,44 +76,33 @@
   text-align: center;
 }
 
-.panel-nav button:hover,
-.panel-nav button:focus-visible {
-  background: rgba(94, 55, 22, 0.10);
-  border-color: rgba(72, 43, 18, 0.38);
+.panel-nav button:hover {
+  background:
+    linear-gradient(
+      rgba(255, 236, 188, 0.92),
+      rgba(214, 170, 108, 0.84)
+    );
+
+  border-color: rgba(94, 55, 22, 0.55);
 
   box-shadow:
-    inset 0 1px 0 rgba(255, 245, 220, 0.22),
-    0 1px 4px rgba(45, 25, 8, 0.10);
+    inset 0 1px 3px rgba(255, 241, 202, 0.42),
+    0 3px 10px rgba(45, 25, 8, 0.20);
 }
 
 .panel-nav button:active {
-  background: rgba(94, 55, 22, 0.14);
-  border-color: rgba(72, 43, 18, 0.46);
   transform: scale(0.96);
 }
 
-.panel-nav button:focus {
+.panel-nav button:focus,
+.panel-nav button:focus-visible {
   outline: none;
+  box-shadow: none;
 }
 
 .panel-nav button:disabled {
   opacity: 0.35;
   cursor: default;
-}
-
-.panel-nav button:disabled:hover,
-.panel-nav button:disabled:focus-visible,
-.panel-nav button:disabled:active {
-  background:
-    linear-gradient(
-      rgba(255, 238, 204, 0.92),
-      rgba(214, 170, 108, 0.82)
-    );
-  border-color: rgba(94, 55, 22, 0.36);
-  box-shadow:
-    inset 0 1px 3px rgba(255, 241, 202, 0.48),
-    0 3px 10px rgba(45, 25, 8, 0.22);
-  transform: none;
 }
 
 /* Codex Modal */
@@ -234,35 +223,18 @@
 }
 
 .codex-section-button {
-  appearance: none;
-  -webkit-appearance: none;
-
-  width: 100%;
-
   padding: 18px 20px;
 
   border-radius: 14px;
-  border: 1px solid rgba(94, 55, 22, 0.30);
+  border: 1px solid rgba(94, 55, 22, 0.22);
 
-  background:
-    linear-gradient(
-      rgba(255, 231, 174, 0.78),
-      rgba(166, 108, 41, 0.32)
-    );
-
+  background: rgba(94, 55, 22, 0.08);
   color: #3a2614;
 
   font-family: 'Marcellus SC', Georgia, serif;
-  font-size: 1.08rem;
-  line-height: 1.1;
-  letter-spacing: 0.045em;
-  text-align: center;
+  font-size: 1.15rem;
 
   cursor: pointer;
-
-  box-shadow:
-    inset 0 1px 2px rgba(255, 241, 202, 0.35),
-    0 2px 8px rgba(45, 25, 8, 0.12);
 
   transition:
     background 0.15s ease,
@@ -270,15 +242,854 @@
     transform 0.12s ease;
 }
 
-.codex-section-button:hover,
-.codex-section-button:focus-visible {
-  background: rgba(94, 55, 22, 0.10);
-  border-color: rgba(72, 43, 18, 0.38);
-  outline: none;
+.codex-section-button:hover {
+  background: rgba(94, 55, 22, 0.14);
+  border-color: rgba(94, 55, 22, 0.32);
 }
 
 .codex-section-button:active {
-  background: rgba(94, 55, 22, 0.14);
-  border-color: rgba(72, 43, 18, 0.46);
   transform: scale(0.98);
+}
+
+/* =========================================================
+   CODEX PHASE 1 POLISH
+   ========================================================= */
+
+/* Make Codex detail pages behave like document pages, not the old home-button grid */
+#codex-content {
+  display: block;
+  width: min(100%, 860px);
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 18px 170px;
+  overflow-y: auto;
+  font-size: 21px;
+  line-height: 1.55;
+}
+
+/* Codex home/index can still use a grid */
+#codex-content.codex-home {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  max-width: 620px;
+}
+
+/* Headings inside Codex pages */
+#codex-content h3 {
+  margin: 30px 0 10px;
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.04em;
+  color: #2f1d10;
+}
+
+#codex-content h3::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin-top: 7px;
+  background: linear-gradient(
+    to right,
+    rgba(72, 43, 18, 0.58),
+    rgba(72, 43, 18, 0.18),
+    transparent
+  );
+}
+
+#codex-content p {
+  margin: 0 0 14px;
+}
+
+#codex-content strong {
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-weight: 500;
+}
+
+/* Make main action buttons match the parchment UI */
+.codex-section-button,
+.popup-open-details {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(94, 55, 22, 0.36);
+  border-radius: 12px;
+  background:
+    linear-gradient(
+      rgba(255, 231, 174, 0.46),
+      rgba(166, 108, 41, 0.18)
+    );
+  color: #3a2614;
+  font-family: 'Marcellus SC', Georgia, serif;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 3px rgba(255, 241, 202, 0.35),
+    0 2px 8px rgba(45, 25, 8, 0.14);
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.12s ease,
+    box-shadow 0.15s ease;
+}
+
+.codex-section-button:hover,
+.popup-open-details:hover {
+  background:
+    linear-gradient(
+      rgba(255, 236, 188, 0.58),
+      rgba(166, 108, 41, 0.26)
+    );
+  border-color: rgba(94, 55, 22, 0.55);
+  box-shadow:
+    inset 0 1px 3px rgba(255, 241, 202, 0.42),
+    0 3px 10px rgba(45, 25, 8, 0.20);
+}
+
+.codex-section-button:active,
+.popup-open-details:active {
+  transform: scale(0.985);
+}
+
+.codex-link-button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  display: inline;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+
+  margin: 0 0.08em;
+  padding: 0 0.18em 0.05em;
+
+  border: 0;
+  border-bottom: 1px solid rgba(72, 43, 18, 0.34);
+  border-radius: 0;
+
+  background: transparent;
+  color: #2f1d10;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.94em;
+  font-weight: 500;
+  line-height: inherit;
+  letter-spacing: 0.025em;
+
+  box-shadow: none;
+  cursor: pointer;
+
+  vertical-align: baseline;
+
+  transition:
+    color 0.14s ease,
+    border-color 0.14s ease,
+    background 0.14s ease;
+}
+
+.codex-link-button:hover,
+.codex-link-button:focus-visible {
+  background: rgba(94, 55, 22, 0.08);
+  border-color: rgba(72, 43, 18, 0.62);
+  color: #241409;
+  outline: none;
+}
+
+.codex-link-button:active {
+  transform: none;
+  background: rgba(94, 55, 22, 0.12);
+}
+
+.codex-superheader {
+  margin: 0 0 -4px;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  opacity: 0.72;
+}
+
+.codex-subheader {
+  margin: 0 0 -4px;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  opacity: 0.72;
+}
+
+/* =========================================================
+   REGION INDEX TILES
+   ========================================================= */
+
+#codex-content.codex-regions-index {
+  width: min(100%, 980px);
+  max-width: 980px;
+}
+
+.codex-region-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.codex-region-tile {
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  padding: 0;
+  overflow: hidden;
+
+  border: 0;
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      160deg,
+      rgba(255, 238, 196, 0.32),
+      rgba(85, 49, 19, 0.16)
+    );
+
+  color: #2f1d10;
+  cursor: pointer;
+
+  box-shadow: none;
+
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.codex-region-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.codex-region-tile:active {
+  transform: scale(0.985);
+}
+
+.codex-region-tile-image {
+  position: absolute;
+  inset: 0 0 33.333%;
+
+  background:
+    radial-gradient(circle at center, rgba(255, 232, 174, 0.18), transparent 62%),
+    rgba(94, 55, 22, 0.08);
+  background-size: cover;
+  background-position: center;
+
+  opacity: 0.92;
+}
+
+.codex-region-tile-info {
+  position: relative;
+  z-index: 1;
+
+  min-height: 33.333%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 12px 14px;
+
+  background: rgba(246, 219, 164, 0.90);
+  border-top: 1px solid rgba(94, 55, 22, 0.28);
+
+  text-align: left;
+}
+
+.codex-region-tile-name {
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: clamp(0.94rem, 1.38vw, 1.22rem);
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+}
+
+.codex-region-tile-details {
+  font-family: 'Spectral', Georgia, serif;
+  font-size: clamp(0.72rem, 0.92vw, 0.86rem);
+  line-height: 1.14;
+  opacity: 0.86;
+}
+
+/* =========================================================
+   REGION DETAIL HEADER
+   ========================================================= */
+
+#codex-content.codex-region-detail-page {
+  width: min(100%, 960px);
+  max-width: 960px;
+}
+
+.codex-region-detail-shell {
+  width: 100%;
+}
+
+.codex-detail-fixed-region {
+  align-items: stretch;
+}
+
+.codex-region-detail-image {
+  flex: 0 0 220px;
+  width: 220px;
+  height: 220px;
+
+  background-size: cover;
+  background-position: center;
+}
+
+.codex-region-detail-summary {
+  min-width: 180px;
+}
+
+.codex-region-terrain-profile {
+  align-self: center;
+  text-align: left;
+  font-size: 0.95rem;
+  line-height: 1.25;
+}
+
+#codex-content .codex-region-terrain-profile h3 {
+  margin: 0 0 8px;
+  font-size: 1.12rem;
+}
+
+.codex-region-terrain-list {
+  display: grid;
+  gap: 4px;
+
+  padding-right: 6px;
+}
+
+.codex-region-terrain-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+
+  padding: 0;
+
+  border: 0;
+  border-radius: 0;
+
+  background: transparent;
+}
+
+.codex-region-terrain-row span {
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.codex-region-terrain-row strong {
+  flex: 0 0 auto;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-weight: 500;
+}
+
+.codex-region-detail-grid {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.codex-region-list-scrollbox {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 4px 8px 18px 0;
+}
+
+/* =========================================================
+   CODEX MAP TILES
+   ========================================================= */
+
+.codex-maps-panel {
+  margin-top: 20px;
+}
+
+.codex-map-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.codex-map-card {
+  position: relative;
+
+  width: 100%;
+  aspect-ratio: 1 / 1;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  padding: 0;
+  overflow: hidden;
+
+  border: 0;
+  border-radius: 14px;
+
+  background:
+    var(--codex-map-image, none),
+    linear-gradient(
+      160deg,
+      rgba(255, 238, 196, 0.32),
+      rgba(85, 49, 19, 0.16)
+    );
+  background-size: cover;
+  background-position: center;
+
+  color: #2f1d10;
+  text-decoration: none;
+  cursor: pointer;
+
+  box-shadow: none;
+
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+.codex-map-card[href]:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.codex-map-card[href]:active {
+  transform: scale(0.985);
+}
+
+.codex-map-card-disabled {
+  opacity: 0.64;
+  cursor: default;
+}
+
+.codex-map-card-info {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+
+  min-height: 28%;
+  padding: 8px 10px;
+
+  background: rgba(246, 219, 164, 0.90);
+  border-top: 1px solid rgba(94, 55, 22, 0.26);
+}
+
+.codex-map-card-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: clamp(0.78rem, 0.95vw, 0.96rem);
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+}
+
+/* =========================================================
+   CODEX BREADCRUMBS
+   ========================================================= */
+
+.codex-panel-nav {
+  align-items: center;
+}
+
+#codex-breadcrumbs {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0 12px;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  text-align: center;
+
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+
+  color: rgba(58, 38, 20, 0.72);
+}
+
+#codex-breadcrumbs-inner {
+  display: inline-block;
+  max-width: 100%;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.codex-breadcrumbs-mobile {
+  display: none;
+}
+
+.codex-breadcrumb-ellipsis {
+  opacity: 0.7;
+}
+
+#codex-breadcrumbs .codex-breadcrumb-button,
+.panel-nav .codex-breadcrumb-button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+
+  color: rgba(58, 38, 20, 0.82);
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: inherit;
+
+  cursor: pointer;
+
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease;
+}
+
+.panel-nav .codex-breadcrumb-button:hover {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: rgba(94, 55, 22, 1);
+}
+
+.panel-nav .codex-breadcrumb-button:active {
+  transform: none;
+}
+
+.codex-breadcrumb-separator {
+  margin: 0 8px;
+  opacity: 0.45;
+}
+
+.codex-scroll-fade {
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 12px,
+      black calc(100% - 10px),
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 12px,
+      black calc(100% - 10px),
+      transparent 100%
+    );
+}
+
+/* =========================================================
+   PARCHMENT IMAGE EDGE TRANSPARENCY
+   ========================================================= */
+
+.codex-detail-portrait-slot {
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+/* =========================================================
+   TILE ART / TEXT SEPARATION
+   ========================================================= */
+
+.codex-region-tile,
+.codex-map-card {
+  background: transparent;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.codex-region-tile-image {
+  inset: 0;
+  z-index: 0;
+
+  background:
+    var(--codex-record-image, none),
+    radial-gradient(circle at center, rgba(255, 232, 174, 0.18), transparent 62%),
+    rgba(94, 55, 22, 0.08);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+.codex-region-tile-info,
+.codex-map-card-info {
+  z-index: 2;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  background: transparent;
+  border-top: 0;
+
+  text-align: center;
+}
+
+.codex-region-tile-info {
+  padding: 12px 14px 14px;
+}
+
+.codex-region-tile-name,
+.codex-region-tile-details,
+.codex-map-card-title {
+  width: 100%;
+  text-align: center;
+}
+
+.codex-map-card {
+  background: transparent;
+}
+
+.codex-map-card::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  pointer-events: none;
+
+  background:
+    var(--codex-map-image, none),
+    linear-gradient(
+      160deg,
+      rgba(255, 238, 196, 0.32),
+      rgba(85, 49, 19, 0.16)
+    );
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  opacity: 0.92;
+
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 58%,
+      rgba(0, 0, 0, 0.30) 72%,
+      transparent 84%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+}
+
+.codex-map-card-info {
+  justify-content: center;
+  padding: 10px 10px 12px;
+}
+
+/* =========================================================
+   DESKTOP CODEX SPACING REFINEMENT
+   ========================================================= */
+
+@media (min-width: 900px) {
+  #codex-modal {
+    width: min(88vw, 1180px);
+    padding-top: 54px;
+  }
+
+  #codex-header {
+    margin-bottom: 26px;
+  }
+
+  #codex-content:not(.codex-home-search-page):not(.codex-search-page) {
+    width: min(100%, 980px);
+    max-width: 980px;
+  }
+
+  #codex-content.codex-home:not(.codex-home-search-page) {
+    max-width: 720px;
+  }
+
+  #codex-content.codex-home.codex-home-search-page,
+  #codex-content.codex-search-page {
+    display: block;
+    width: min(100%, 860px);
+    max-width: 860px;
+  }
+
+  #codex-content.codex-regions-index,
+  #codex-content.codex-region-detail-page {
+    width: min(100%, 1080px);
+    max-width: 1080px;
+  }
 }
