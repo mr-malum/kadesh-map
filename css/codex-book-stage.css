@@ -118,15 +118,28 @@
   .codex-panel-nav,
   #codex-global-search-modal {
     position: absolute;
-    z-index: 1;
     box-sizing: border-box;
     pointer-events: none;
   }
 
+  #codex-header,
+  #codex-content,
+  .codex-panel-nav {
+    z-index: 2;
+  }
+
   #codex-overlay.open #codex-header,
   #codex-overlay.open #codex-content,
-  #codex-overlay.open .codex-panel-nav,
-  #codex-overlay.open #codex-global-search-modal {
+  #codex-overlay.open .codex-panel-nav {
+    pointer-events: auto;
+  }
+
+  #codex-global-search-modal {
+    z-index: 3;
+    pointer-events: none;
+  }
+
+  #codex-overlay.open #codex-global-search-modal.open {
     pointer-events: auto;
   }
 
