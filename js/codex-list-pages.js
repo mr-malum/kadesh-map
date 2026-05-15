@@ -174,27 +174,30 @@ function renderCodexListPage(config) {
         Filter & Sort
       </button>
 
-      <div class="codex-list-controls-shell" id="codex-list-controls-shell">
-        <div class="codex-mobile-controls-panel">
+      <div class="codex-list-control-split-view">
+        <aside class="codex-list-control-rail">
+          <div class="codex-list-controls-shell" id="codex-list-controls-shell">
+            <div class="codex-mobile-controls-panel">
+              <div class="codex-mobile-controls-heading">
+                <h3>Filter & Sort</h3>
+              </div>
 
-        <div class="codex-mobile-controls-heading">
-          <h3>Filter & Sort</h3>
-         </div>
+              ${controlsHtml}
 
-        ${controlsHtml}
+              <button
+                class="codex-mobile-controls-apply"
+                type="button"
+                onclick="closeCodexMobileControls()"
+              >
+                Apply
+              </button>
+            </div>
+          </div>
+        </aside>
 
-        <button
-          class="codex-mobile-controls-apply"
-          type="button"
-          onclick="closeCodexMobileControls()"
-        >
-          Apply
-        </button>
+        <div class="codex-list-scroll-shell codex-scroll-fade">
+          <div id="${escapeHtml(config.listId)}"></div>
         </div>
-      </div>
-
-      <div class="codex-list-scroll-shell codex-scroll-fade">
-        <div id="${escapeHtml(config.listId)}"></div>
       </div>
     </div>
   `, config.breadcrumbs);

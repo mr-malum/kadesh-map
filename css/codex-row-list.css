@@ -1,0 +1,339 @@
+/* =========================================================
+   SHARED CODEX ROW LISTS
+   =========================================================
+
+   Flat parchment index rows for Search, rails, linked lists,
+   detail sections, and future table-of-contents panels.
+
+   These classes are intentionally unused by default until pages are
+   converted one at a time.
+   ========================================================= */
+
+.codex-row-list {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  border-top: 1px solid rgba(72, 43, 18, 0.20);
+  border-bottom: 1px solid rgba(255, 241, 202, 0.18);
+}
+
+.codex-row {
+  appearance: none;
+  -webkit-appearance: none;
+
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+
+  margin: 0;
+  padding: 10px 8px;
+
+  border: 0;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(72, 43, 18, 0.18);
+
+  background: transparent;
+  color: #2f1d10;
+
+  text-align: left;
+  text-decoration: none;
+
+  box-shadow: none;
+  cursor: pointer;
+
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    opacity 0.14s ease;
+}
+
+.codex-row:last-child {
+  border-bottom: 0;
+}
+
+.codex-row:hover,
+.codex-row:focus-visible,
+.codex-row-active {
+  background:
+    linear-gradient(
+      to right,
+      rgba(94, 55, 22, 0.10),
+      rgba(94, 55, 22, 0.045),
+      transparent
+    );
+  color: #241409;
+  outline: none;
+}
+
+.codex-row:active {
+  background:
+    linear-gradient(
+      to right,
+      rgba(94, 55, 22, 0.14),
+      rgba(94, 55, 22, 0.065),
+      transparent
+    );
+}
+
+.codex-row-disabled {
+  opacity: 0.42;
+  cursor: default;
+  pointer-events: none;
+}
+
+.codex-row-active::before {
+  content: "";
+
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 0;
+
+  width: 2px;
+
+  background: rgba(58, 38, 20, 0.62);
+  border-radius: 999px;
+}
+
+.codex-row-icon {
+  width: 34px;
+  min-width: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: rgba(47, 29, 16, 0.86);
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.35rem;
+  line-height: 1;
+
+  opacity: 0.92;
+}
+
+.codex-row-main {
+  min-width: 0;
+
+  display: grid;
+  gap: 2px;
+}
+
+.codex-row-title {
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 1.02rem;
+  line-height: 1.18;
+  letter-spacing: 0.035em;
+
+  color: currentColor;
+}
+
+.codex-row-meta {
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.92rem;
+  line-height: 1.18;
+
+  color: rgba(47, 29, 16, 0.76);
+}
+
+.codex-row-arrow,
+.codex-row-count {
+  flex: 0 0 auto;
+
+  color: rgba(47, 29, 16, 0.74);
+
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.codex-row-count {
+  min-width: 2.1em;
+
+  padding: 2px 7px;
+
+  border-radius: 999px;
+
+  background: rgba(94, 55, 22, 0.10);
+
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.codex-row-has-kicker {
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+}
+
+.codex-row-kicker {
+  align-self: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  color: rgba(47, 29, 16, 0.76);
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+
+  opacity: 0.92;
+}
+
+.codex-row-kicker-icon {
+  font-size: 1.02rem;
+  line-height: 1;
+}
+
+.codex-row-type-label {
+  transform: translateY(0.04em);
+}
+
+/* Linked lists now share the row renderer with search and future rails. */
+.codex-linked-row-list {
+  margin: 4px 0 14px;
+}
+
+.codex-linked-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+
+  padding: 8px 6px;
+}
+
+.codex-linked-record-row {
+  gap: 10px;
+
+  padding: 8px 6px;
+}
+
+.codex-linked-row .codex-row-title,
+.codex-linked-record-row .codex-row-title {
+  font-weight: 600;
+}
+
+.codex-detail-upper-scrollbox .codex-linked-row,
+.codex-detail-scrollbox .codex-linked-row,
+.codex-region-list-scrollbox .codex-linked-row,
+.codex-detail-upper-scrollbox .codex-linked-record-row,
+.codex-detail-scrollbox .codex-linked-record-row,
+.codex-region-list-scrollbox .codex-linked-record-row {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+/* Compact row lists for left rails and section navigation. */
+.codex-row-list-rail .codex-row {
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 10px;
+
+  padding: 11px 8px;
+}
+
+.codex-row-list-rail .codex-row-icon {
+  width: 30px;
+  min-width: 30px;
+
+  font-size: 1.2rem;
+}
+
+.codex-row-list-rail .codex-row-title {
+  font-size: 1rem;
+}
+
+.codex-row-list-rail .codex-row-meta {
+  display: none;
+}
+
+/* Denser rows for long result lists. */
+.codex-row-list-dense .codex-row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.codex-row-list-dense .codex-row-title {
+  font-size: 0.98rem;
+}
+
+.codex-row-list-dense .codex-row-meta {
+  font-size: 0.88rem;
+}
+
+@media (max-width: 700px) {
+  .codex-row {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    gap: 10px;
+
+    padding: 11px 6px;
+  }
+
+  .codex-row-has-kicker {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+  }
+
+  .codex-row-kicker {
+    font-size: 0.68rem;
+  }
+
+  .codex-row-kicker-icon {
+    font-size: 0.96rem;
+  }
+
+  .codex-linked-row-list {
+    margin: 4px 0 12px;
+  }
+
+  .codex-linked-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    padding: 9px 6px;
+  }
+
+  .codex-linked-record-row {
+    padding: 9px 6px;
+  }
+
+  .codex-row-icon {
+    width: 30px;
+    min-width: 30px;
+
+    font-size: 1.2rem;
+  }
+
+  .codex-row-title {
+    font-size: 0.98rem;
+  }
+
+  .codex-row-meta {
+    white-space: normal;
+    font-size: 0.88rem;
+  }
+}

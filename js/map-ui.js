@@ -64,17 +64,33 @@ function renderHexPreview(hexId) {
   const journalPreview = getLimitedLines(hex?.DM_Journal, 4);
 
   document.getElementById("panel-content").innerHTML = `
-    <p><strong>Terrain:</strong> ${escapeHtml(hex?.Terrain || "Unknown")}</p>
-    <p><strong>Region:</strong> ${escapeHtml(region?.Region_Name || hex?.Region_ID_Ref || "Unknown")}</p>
+    <div class="hex-preview-ledger">
+      <div class="hex-preview-row">
+        <span class="hex-preview-label">Terrain</span>
+        <span class="hex-preview-value">${escapeHtml(hex?.Terrain || "Unknown")}</span>
+      </div>
 
-    ${countLine ? `<p><strong>Known Records:</strong> ${escapeHtml(countLine)}</p>` : ""}
+      <div class="hex-preview-row">
+        <span class="hex-preview-label">Region</span>
+        <span class="hex-preview-value">${escapeHtml(region?.Region_Name || hex?.Region_ID_Ref || "Unknown")}</span>
+      </div>
 
-    <h3>Field Notes</h3>
-    <p class="panel-journal-preview">
-      ${renderMultilineText(journalPreview)}
-    </p>
+      ${countLine ? `
+        <div class="hex-preview-row">
+          <span class="hex-preview-label">Records</span>
+          <span class="hex-preview-value">${escapeHtml(countLine)}</span>
+        </div>
+      ` : ""}
+    </div>
 
-    <button class="codex-section-button" type="button" onclick="openCodexPage('hex', '${escapeJsString(hexId)}')">
+    <section class="hex-preview-notes">
+      <h3>Field Notes</h3>
+      <p class="panel-journal-preview">
+        ${renderMultilineText(journalPreview)}
+      </p>
+    </section>
+
+    <button class="hex-preview-details-button" type="button" onclick="openCodexPage('hex', '${escapeJsString(hexId)}')">
       Open Details
     </button>
   `;
@@ -164,32 +180,33 @@ function buildMobilePopupHtml(hexId) {
   }
 
   return `
-    <strong>${escapeHtml(hexId)}</strong><br>
-    ${escapeHtml(data?.Terrain || "Unknown")}
+    <div class="mobile-hex-popup-card">
+      <div class="mobile-hex-popup-title">Hex ${escapeHtml(hexId)}</div>
+      <div class="mobile-hex-popup-terrain">${escapeHtml(data?.Terrain || "Unknown")}</div>
+      ${
+        info.length
+          ? `<div class="mobile-hex-popup-meta">${escapeHtml(info.join(" • "))}</div>`
+          : ""
+      }
 
-    ${
-      info.length
-        ? `<br><span>${escapeHtml(info.join(" • "))}</span>`
-        : ""
-    }
+      <div class="popup-action-row">
+        <button
+          class="popup-open-details"
+          type="button"
+          onclick="openCodexPage('hex', '${escapeJsString(hexId)}')"
+        >
+          Details
+        </button>
 
-    <div class="popup-action-row">
-      <button
-        class="popup-open-details"
-        type="button"
-        onclick="openCodexPage('hex', '${escapeJsString(hexId)}')"
-      >
-        Details
-      </button>
-
-      <button
-        class="popup-close-details"
-        type="button"
-        aria-label="Close hex preview"
-        onclick="closeMobileHexPopup()"
-      >
-        ×
-      </button>
+        <button
+          class="popup-close-details"
+          type="button"
+          aria-label="Close hex preview"
+          onclick="closeMobileHexPopup()"
+        >
+          ×
+        </button>
+      </div>
     </div>
   `;
 }

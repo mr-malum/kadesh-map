@@ -119,6 +119,10 @@ function bindCodexEvents() {
     });
 
   document
+    .getElementById("codex-search-button")
+    .addEventListener("click", openCodexGlobalSearchModal);
+
+  document
     .getElementById("codex-back")
     .addEventListener("click", function () {
       if (isMobileBrowserBackEnabled() && appBrowserHistoryDepth > 0) {
@@ -141,6 +145,58 @@ function bindCodexEvents() {
         closeCodex();
       }
     });
+}
+
+function openCodexGlobalSearchModal() {
+  const modal = document.getElementById("codex-global-search-modal");
+  if (!modal) return;
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+
+  modal.innerHTML = `
+    <div class="codex-global-search-panel" role="dialog" aria-modal="true" aria-label="Search the Codex">
+      <input
+        id="codex-global-search-input"
+        type="search"
+        placeholder="Consult the Codex..."
+        autocomplete="off"
+        value=""
+      >
+    </div>
+  `;
+
+  const input = document.getElementById("codex-global-search-input");
+  input?.focus();
+
+  input?.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+    commitCodexGlobalSearch(input.value);
+  });
+}
+
+function commitCodexGlobalSearch(query) {
+  const cleanQuery = String(query || "").trim();
+  if (!cleanQuery) return;
+
+  closeCodexGlobalSearchModal();
+  openCodexSearchResults(cleanQuery);
+}
+
+function closeCodexGlobalSearchModal() {
+  const modal = document.getElementById("codex-global-search-modal");
+  if (!modal) return;
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  modal.innerHTML = "";
+}
+
+function handleCodexGlobalSearchBackdropClick(event) {
+  if (event.target?.id !== "codex-global-search-modal") return;
+  closeCodexGlobalSearchModal();
 }
 
 function handleCodexButtonClick(event) {
@@ -300,5 +356,7 @@ function initializeAppEvents() {
 
 window.ensureAppBrowserBackTrap = ensureAppBrowserBackTrap;
 window.releaseAppBrowserBackTrap = releaseAppBrowserBackTrap;
+window.closeCodexGlobalSearchModal = closeCodexGlobalSearchModal;
+window.handleCodexGlobalSearchBackdropClick = handleCodexGlobalSearchBackdropClick;
 
 initializeAppEvents();

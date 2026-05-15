@@ -1,1 +1,55 @@
 
+function renderCodexLinkedList(
+  rows,
+  emptyText,
+  type,
+  idField,
+  getLabel,
+  getType = null
+) {
+  if (!rows.length) {
+    return `<p>${escapeHtml(emptyText)}</p>`;
+  }
+
+  return `
+    <div class="codex-row-list codex-linked-row-list">
+      ${rows.map(row => {
+        const id = row?.__codexRecordId || row?.[idField];
+
+        const resolvedType = row?.__codexRecordType || (
+          getType
+            ? getType(row)
+            : type
+        );
+
+        const label = getLabel(row) || id || "Unnamed Record";
+
+        const parts = String(label).split(" — ");
+
+        const title = parts.shift() || "Unnamed Record";
+
+        const metaLine = parts.filter(Boolean).join(" • ");
+
+        return `
+          <button
+            class="codex-row codex-linked-row"
+            type="button"
+            onclick="openCodexPage('${escapeJsString(resolvedType)}', '${escapeJsString(id)}')"
+          >
+            <span class="codex-row-main">
+              <span class="codex-row-title">${escapeHtml(title)}</span>
+
+              ${
+                metaLine
+                  ? `<span class="codex-row-meta">${escapeHtml(metaLine)}</span>`
+                  : ""
+              }
+            </span>
+
+            <span class="codex-row-arrow" aria-hidden="true">›</span>
+          </button>
+        `;
+      }).join("")}
+    </div>
+  `;
+}

@@ -64,20 +64,124 @@ function renderCodexListControls(config) {
   `;
 }
 
+function parseCodexRowLabel(label) {
+  const parts = String(label || "")
+    .split(" — ")
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  return {
+    title: parts.shift() || "Unnamed Record",
+    meta: parts.join(" • ")
+  };
+}
+
+function getCodexRecordTypeIcon(type) {
+  switch (type) {
+    case "poi":
+    case "poi-group":
+      return "✦";
+
+    case "npc":
+      return "♟";
+
+    case "region":
+      return "◇";
+
+    case "hex":
+      return "⬡";
+
+    default:
+      return "•";
+  }
+}
+
+function getCodexRecordTypeLabel(type) {
+  switch (type) {
+    case "poi":
+    case "poi-group":
+      return "POI";
+
+    case "npc":
+      return "NPC";
+
+    case "region":
+      return "Reg";
+
+    case "hex":
+      return "Hex";
+
+    default:
+      return "";
+  }
+}
+
+function renderCodexRow(options) {
+  const title = options?.title || "Unnamed Record";
+  const meta = options?.meta || "";
+  const icon = options?.icon || "";
+  const typeLabel = options?.typeLabel || "";
+  const count = options?.count;
+  const onclick = options?.onclick || "";
+  const extraClasses = options?.classes || "";
+  const isActive = Boolean(options?.active);
+  const isDisabled = Boolean(options?.disabled);
+  const disabledAttr = isDisabled ? "disabled" : "";
+  const activeClass = isActive ? "codex-row-active active" : "";
+  const disabledClass = isDisabled ? "codex-row-disabled" : "";
+  const hasKicker = Boolean(typeLabel);
+  const noIconClass = !icon && !hasKicker ? "codex-linked-row" : "";
+  const kickerClass = hasKicker ? "codex-row-has-kicker" : "";
+
+  return `
+    <button
+      class="codex-row ${noIconClass} ${kickerClass} ${extraClasses} ${activeClass} ${disabledClass}"
+      type="button"
+      ${onclick ? `onclick="${onclick}"` : ""}
+      ${disabledAttr}
+    >
+      ${
+        hasKicker
+          ? `
+            <span class="codex-row-kicker" aria-hidden="true">
+              ${icon ? `<span class="codex-row-kicker-icon">${escapeHtml(icon)}</span>` : ""}
+              <span class="codex-row-type-label">${escapeHtml(typeLabel)}</span>
+            </span>
+          `
+          : icon
+            ? `<span class="codex-row-icon" aria-hidden="true">${escapeHtml(icon)}</span>`
+            : ""
+      }
+
+      <span class="codex-row-main">
+        <span class="codex-row-title">${escapeHtml(title)}</span>
+        ${meta ? `<span class="codex-row-meta">${escapeHtml(meta)}</span>` : ""}
+      </span>
+
+      ${
+        count !== undefined && count !== null
+          ? `<span class="codex-row-count">${escapeHtml(String(count))}</span>`
+          : `<span class="codex-row-arrow" aria-hidden="true">›</span>`
+      }
+    </button>
+  `;
+}
+
 function renderCodexLinkedList(
   rows,
   emptyText,
   type,
   idField,
   getLabel,
-  getType = null
+  getType = null,
+  getIcon = null
 ) {
   if (!rows.length) {
     return `<p>${escapeHtml(emptyText)}</p>`;
   }
 
   return `
-    <div class="codex-list">
+    <div class="codex-row-list codex-linked-row-list">
       ${rows.map(row => {
         const id = row?.__codexRecordId || row?.[idField];
 
@@ -88,30 +192,20 @@ function renderCodexLinkedList(
         );
 
         const label = getLabel(row) || id || "Unnamed Record";
+        const { title, meta } = parseCodexRowLabel(label);
+        const icon = getIcon
+          ? getIcon(row, resolvedType)
+          : getCodexRecordTypeIcon(resolvedType);
+        const typeLabel = getCodexRecordTypeLabel(resolvedType);
 
-        const parts = String(label).split(" — ");
-
-        const title = parts.shift() || "Unnamed Record";
-
-        const metaLines = parts;
-
-        return `
-          <button
-            class="codex-section-button codex-record-button"
-            type="button"
-            onclick="openCodexPage('${escapeJsString(resolvedType)}', '${escapeJsString(id)}')"
-          >
-            <span class="codex-record-main">
-              <span class="codex-record-title">${escapeHtml(title)}</span>
-
-              ${metaLines.map(line => `
-                <span class="codex-record-meta">${escapeHtml(line)}</span>
-              `).join("")}
-            </span>
-
-            <span class="codex-record-arrow">›</span>
-          </button>
-        `;
+        return renderCodexRow({
+          title,
+          meta,
+          icon,
+          typeLabel,
+          classes: "codex-linked-record-row",
+          onclick: `openCodexPage('${escapeJsString(resolvedType)}', '${escapeJsString(id)}')`
+        });
       }).join("")}
     </div>
   `;

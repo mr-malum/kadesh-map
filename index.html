@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/panel.css">
   <link rel="stylesheet" href="css/map.css">
   <link rel="stylesheet" href="css/codex-shell.css">
+  <link rel="stylesheet" href="css/codex-row-list.css">
   <link rel="stylesheet" href="css/codex-search.css">
   <link rel="stylesheet" href="css/codex-lists.css">
   <link rel="stylesheet" href="css/codex-detail.css">
@@ -39,10 +40,21 @@
       <button class="codex-section-button" type="button">NPCs</button>
     </div>
 
+    <div
+      id="codex-global-search-modal"
+      class="codex-global-search-modal"
+      aria-hidden="true"
+      onclick="handleCodexGlobalSearchBackdropClick(event)"
+    ></div>
+
     <div class="panel-nav codex-panel-nav">
-      <button id="codex-back" type="button" disabled>← Back</button>
       <div id="codex-breadcrumbs"></div>
-      <button id="codex-close" type="button">✗</button>
+
+      <div class="codex-control-cluster" aria-label="Codex controls">
+        <button id="codex-back" type="button" disabled aria-label="Back">❮</button>
+        <button id="codex-search-button" type="button">Search</button>
+        <button id="codex-close" type="button" aria-label="Close">✕</button>
+      </div>
     </div>
 
   </div>

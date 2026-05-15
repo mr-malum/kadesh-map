@@ -2,8 +2,27 @@
    CODEX DETAIL PAGE LAYOUT
    ========================================================= */
 
-#codex-content.codex-detail-page {
-  overflow-y: auto;
+#codex-content.codex-detail-page,
+#codex-content.codex-region-detail-page {
+  overflow: hidden;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 18px,
+      black calc(100% - 22px),
+      transparent 100%
+    );
+
+  -webkit-mask-image:
+    linear-gradient(
+      to bottom,
+      transparent 0,
+      black 18px,
+      black calc(100% - 22px),
+      transparent 100%
+    );
 }
 
 .codex-detail-page-shell {
@@ -13,22 +32,125 @@
   flex-direction: column;
 }
 
+.codex-detail-rail-page {
+  height: calc(100vh - 285px);
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+.codex-detail-overview-locked {
+  flex: 0 0 auto;
+  min-height: 0;
+
+  padding-bottom: 8px;
+}
+
+.codex-detail-overview-panel {
+  border-bottom: 1px solid rgba(72, 43, 18, 0.18);
+}
+
+#codex-content .codex-detail-overview-panel h3 {
+  display: none;
+}
+
+.codex-detail-lower-pane {
+  flex: 1 1 auto;
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: var(--codex-rail-width, 190px) minmax(0, 1fr);
+  gap: 18px;
+
+  overflow: hidden;
+}
+
+.codex-detail-rail {
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+}
+
+.codex-detail-section-rail {
+  width: 100%;
+}
+
+.codex-detail-section-rail-row .codex-row-title {
+  font-size: 0.93rem;
+}
+
+.codex-detail-main {
+  min-height: 0;
+
+  overflow-y: auto;
+
+  padding: 4px 12px 24px 2px;
+}
+
+.codex-detail-rail-section {
+  display: none;
+
+  min-height: 100%;
+
+  margin: 0;
+
+  border-top: 1px solid rgba(72, 43, 18, 0.22);
+  border-bottom: 1px solid rgba(255, 241, 202, 0.14);
+}
+
+.codex-detail-rail-section.active {
+  display: block;
+}
+
+#codex-content .codex-detail-rail-section h3 {
+  margin: 0;
+  padding: 12px 0 8px;
+
+  font-size: 1.05rem;
+}
+
+.codex-detail-rail-section-content {
+  padding: 3px 0 16px;
+}
+
+.codex-detail-rail-section-content > p,
+.codex-detail-rail-section-content .codex-detail-text-block {
+  margin: 0;
+
+  font-style: italic;
+  font-size: 1.02rem;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+}
+
+.codex-detail-rail-section-content .codex-row-list {
+  margin: 0;
+}
+
 .codex-detail-fixed {
   flex: 0 0 auto;
 
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 20px;
+  gap: 16px;
 
-  padding-bottom: 18px;
+  padding-bottom: 12px;
+}
+
+.codex-detail-overview-panel .codex-detail-fixed {
+  padding-bottom: 8px;
 }
 
 .codex-detail-portrait-slot {
   position: relative;
 
-  width: 220px;
-  height: 220px;
+  width: 190px;
+  height: 190px;
 
   overflow: hidden;
 
@@ -98,7 +220,7 @@
   flex: 0 0 auto;
 
   display: grid;
-  gap: 4px;
+  gap: 2px;
 
   align-self: center;
 
@@ -106,13 +228,17 @@
 
   margin:
     0
-    24px
-    18px
+    20px
+    10px
     0;
 }
 
+.codex-detail-overview-meta {
+  margin: 0;
+}
+
 .codex-detail-meta p {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
 }
 
 .codex-detail-meta h3 {
@@ -163,7 +289,7 @@
 .codex-detail-upper-scrollbox {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 220px;
+  max-height: 190px;
 
   overflow-y: auto;
 
@@ -236,4 +362,53 @@
 /* Slightly reduce metadata size */
 #codex-content strong {
   font-size: 0.96em;
+}
+
+@media (max-width: 700px) {
+  #codex-content.codex-detail-page,
+  #codex-content.codex-region-detail-page {
+    overflow-y: auto;
+  }
+
+  .codex-detail-rail-page,
+  .codex-detail-lower-pane {
+    display: block;
+    height: auto;
+    overflow: visible;
+  }
+
+  .codex-detail-rail {
+    display: none;
+  }
+
+  .codex-detail-rail-section {
+    display: block;
+    min-height: 0;
+    margin-bottom: 24px;
+  }
+
+  .codex-detail-main {
+    overflow: visible;
+    padding: 0 0 24px;
+  }
+
+  .codex-detail-fixed,
+  .codex-detail-fixed-poi,
+  .codex-detail-fixed-region {
+    flex-direction: column;
+    display: flex;
+    gap: 14px;
+  }
+
+  .codex-detail-portrait-slot {
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+  }
+
+  .codex-detail-meta {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+  }
 }

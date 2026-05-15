@@ -6,6 +6,7 @@
 
   width: min(32vw, 405px);
   height: 100vh;
+  height: 100dvh;
 
   padding: 70px 90px;
 
@@ -19,6 +20,7 @@
 
   overflow: hidden;
   isolation: isolate;
+  box-sizing: border-box;
 
   transform: translateX(120%);
   transition: transform 220ms ease;
@@ -158,7 +160,10 @@
 }
 
 #panel-content h3 {
-  font-size: 1.55rem;
+  margin: 0;
+
+  font-size: 1.08rem;
+  letter-spacing: 0.055em;
 }
 
 /* Interactive panel buttons/links */
@@ -223,13 +228,112 @@ button.panel-link.mobile-nav-back {
 }
 
 #panel-content .panel-journal-preview {
+  margin: 0;
   padding-left: 1.1em;
 
   font-style: italic;
   font-weight: 400;
 
-  font-size: 1.02rem;
-  line-height: 1.9;
+  font-size: 0.98rem;
+  line-height: 1.85;
 
   letter-spacing: 0.01em;
+}
+
+.hex-preview-ledger {
+  margin: 0 0 18px;
+
+  border-top: 1px solid rgba(72, 43, 18, 0.24);
+  border-bottom: 1px solid rgba(255, 241, 202, 0.18);
+}
+
+.hex-preview-row {
+  display: grid;
+  grid-template-columns: minmax(76px, 0.75fr) minmax(0, 1.25fr);
+  gap: 10px;
+  align-items: baseline;
+
+  padding: 8px 0;
+
+  border-bottom: 1px solid rgba(72, 43, 18, 0.14);
+}
+
+.hex-preview-row:last-child {
+  border-bottom: 0;
+}
+
+.hex-preview-label {
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.72rem;
+  line-height: 1;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+
+  color: rgba(47, 29, 16, 0.70);
+}
+
+.hex-preview-value {
+  min-width: 0;
+
+  font-family: 'Spectral', Georgia, serif;
+  font-size: 0.98rem;
+  line-height: 1.18;
+
+  color: #2f1d10;
+}
+
+.hex-preview-notes {
+  margin: 0 0 18px;
+
+  border-top: 1px solid rgba(72, 43, 18, 0.22);
+}
+
+#panel-content .hex-preview-notes h3 {
+  padding: 10px 0 8px;
+}
+
+.hex-preview-details-button {
+  appearance: none;
+  -webkit-appearance: none;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(72, 43, 18, 0.24);
+  border-radius: 3px;
+
+  background: rgba(246, 232, 196, 0.42);
+  color: #2f1d10;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.035em;
+
+  box-shadow: none;
+  cursor: pointer;
+
+  transition:
+    background 0.14s ease,
+    border-color 0.14s ease,
+    color 0.14s ease;
+}
+
+.hex-preview-details-button:hover,
+.hex-preview-details-button:focus-visible {
+  background: rgba(94, 55, 22, 0.10);
+  border-color: rgba(72, 43, 18, 0.38);
+  color: #241409;
+  outline: none;
+}
+
+.hex-preview-details-button:active {
+  transform: none;
+  background: rgba(94, 55, 22, 0.14);
 }

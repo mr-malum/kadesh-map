@@ -175,13 +175,15 @@ function renderCodexMapsPanel(maps, fallback = "No maps recorded.") {
     <section class="codex-maps-panel">
       <h3>Maps</h3>
 
-      ${
-        maps.length
-          ? `<div class="codex-map-tile-grid">${maps.map(renderCodexMapCard).join("")}</div>`
-          : `<p>${escapeHtml(fallback)}</p>`
-      }
+      ${renderCodexMapsContent(maps, fallback)}
     </section>
   `;
+}
+
+function renderCodexMapsContent(maps, fallback = "No maps recorded.") {
+  return maps.length
+    ? `<div class="codex-map-tile-grid">${maps.map(renderCodexMapCard).join("")}</div>`
+    : `<p>${escapeHtml(fallback)}</p>`;
 }
 
 function renderCodexDetailTextPanel(title, text, fallback) {
@@ -193,6 +195,80 @@ function renderCodexDetailTextPanel(title, text, fallback) {
         <p>${escapeHtml(text || fallback)}</p>
       </div>
     </section>
+  `;
+}
+
+function setCodexDetailSection(sectionId) {
+  const root = document.querySelector(".codex-detail-rail-page");
+  if (!root || !sectionId) return;
+
+  root.querySelectorAll(".codex-detail-rail-section").forEach(section => {
+    section.classList.toggle("active", section.id === sectionId);
+  });
+
+  root.querySelectorAll("[data-codex-detail-section]").forEach(button => {
+    button.classList.toggle("active", button.dataset.codexDetailSection === sectionId);
+    button.classList.toggle("codex-row-active", button.dataset.codexDetailSection === sectionId);
+  });
+}
+
+function renderCodexDetailRail(items) {
+  return `
+    <nav class="codex-row-list codex-row-list-rail codex-detail-section-rail" aria-label="Detail sections">
+      ${items.map((item, index) => `
+        <button
+          class="codex-row codex-detail-section-rail-row ${index === 0 ? "active codex-row-active" : ""}"
+          type="button"
+          data-codex-detail-section="${escapeHtml(item.id)}"
+          onclick="setCodexDetailSection('${escapeJsString(item.id)}')"
+        >
+          ${item.icon ? `<span class="codex-row-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>` : ""}
+          <span class="codex-row-main">
+            <span class="codex-row-title">${escapeHtml(item.label)}</span>
+          </span>
+          ${
+            item.count !== undefined && item.count !== null
+              ? `<span class="codex-row-count">${escapeHtml(String(item.count))}</span>`
+              : `<span class="codex-row-arrow" aria-hidden="true">›</span>`
+          }
+        </button>
+      `).join("")}
+    </nav>
+  `;
+}
+
+function renderCodexDetailRailSection(id, title, content, classes = "", active = false) {
+  return `
+    <section id="${escapeHtml(id)}" class="codex-detail-rail-section ${active ? "active" : ""} ${classes}">
+      <h3>${escapeHtml(title)}</h3>
+      <div class="codex-detail-rail-section-content">
+        ${content}
+      </div>
+    </section>
+  `;
+}
+
+function renderCodexDetailTextContent(text, fallback) {
+  return `<p class="codex-detail-text-block">${escapeHtml(text || fallback)}</p>`;
+}
+
+function renderCodexDetailRailPage(overviewHtml, items, sectionsHtml) {
+  return `
+    <div class="codex-detail-page-shell codex-detail-rail-page">
+      <div class="codex-detail-overview-locked">
+        ${overviewHtml}
+      </div>
+
+      <div class="codex-detail-lower-pane">
+        <aside class="codex-detail-rail">
+          ${renderCodexDetailRail(items)}
+        </aside>
+
+        <main class="codex-detail-main codex-scroll-fade">
+          ${sectionsHtml}
+        </main>
+      </div>
+    </div>
   `;
 }
 
@@ -243,42 +319,71 @@ function renderCodexHexPage(hexId) {
   const region = hex?.Region_ID_Ref ? db?.regionsById?.[hex.Region_ID_Ref] : null;
   const pois = getPoisForHex(hexId);
   const npcs = getNpcsForHex(hexId);
+  const maps = getMapsForOwner("hex", hexId);
 
   setCodexTitle(`Hex ${hexId}`);
 
-  setCodexContent(`
-    <p><strong>Terrain:</strong> ${escapeHtml(hex?.Terrain || "Unknown")}</p>
+  const railItems = [
+    { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
+    { id: "codex-detail-pois", label: "POIs", icon: "✦", count: pois.length },
+    { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
+    { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
+  ];
 
-    <p>
-      <strong>Region:</strong>
-      ${
-        region
-          ? renderCodexInlineLink("region", region.Region_ID, region.Region_Name)
-          : escapeHtml(hex?.Region_ID_Ref || "Unknown")
-      }
-    </p>
+  const overview = `
+    <section class="codex-detail-overview-panel codex-detail-overview-section">
+      <h3>Overview</h3>
+      <div class="codex-detail-meta codex-detail-overview-meta">
+        <p><strong>Terrain:</strong> ${escapeHtml(hex?.Terrain || "Unknown")}</p>
+        <p><strong>Region:</strong> ${
+          region
+            ? renderCodexInlineLink("region", region.Region_ID, region.Region_Name)
+            : escapeHtml(hex?.Region_ID_Ref || "Unknown")
+        }</p>
+      </div>
+    </section>
+  `;
 
-    <h3>DM Journal</h3>
-    <p>${escapeHtml(hex?.DM_Journal || "No journal entries.")}</p>
+  const sections = [
+    renderCodexDetailRailSection(
+      "codex-detail-journal",
+      "DM Journal",
+      renderCodexDetailTextContent(hex?.DM_Journal, "No journal entries."),
+      "",
+      true
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-pois",
+      "Points of Interest",
+      renderCodexLinkedList(
+        pois,
+        "No known points of interest in this hex.",
+        "poi",
+        "POI_ID",
+        buildPoiListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-npcs",
+      "NPCs",
+      renderCodexLinkedList(
+        npcs,
+        "No known NPCs associated with this hex.",
+        "npc",
+        "NPC_ID",
+        buildNpcListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-maps",
+      "Maps",
+      renderCodexMapsContent(maps, "No maps recorded for this hex.")
+    )
+  ].join("");
 
-    <h3>Points of Interest</h3>
-    ${renderCodexLinkedList(
-      pois,
-      "No known points of interest in this hex.",
-      "poi",
-      "POI_ID",
-      buildPoiListLabel
-    )}
+  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexBreadcrumbTrail(`Hex ${hexId}`));
 
-    <h3>NPCs</h3>
-    ${renderCodexLinkedList(
-      npcs,
-      "No known NPCs associated with this hex.",
-      "npc",
-      "NPC_ID",
-      buildNpcListLabel
-    )}
-  `, buildCodexBreadcrumbTrail(`Hex ${hexId}`));
+  document.getElementById("codex-content").classList.add("codex-detail-page", "codex-hex-detail-page");
 }
 
 function renderCodexRegionPage(regionId) {
@@ -317,8 +422,18 @@ function renderCodexRegionPage(regionId) {
 
   setCodexTitle(regionName);
 
-  setCodexContent(`
-    <div class="codex-detail-page-shell codex-region-detail-shell">
+  const railItems = [
+    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
+    { id: "codex-detail-pois", label: "POIs", icon: "✦", count: poiListRows.length },
+    { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
+    { id: "codex-detail-hexes", label: "Hexes", icon: "⬡", count: hexes.length },
+    { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
+  ];
+
+  const overview = `
+    <section class="codex-detail-overview-panel codex-detail-overview-section">
+      <h3>Overview</h3>
       <div class="codex-detail-fixed codex-detail-fixed-region">
         <div
           class="codex-detail-portrait-slot codex-region-detail-image codex-placeholder-region"
@@ -349,60 +464,63 @@ function renderCodexRegionPage(regionId) {
           </div>
         </section>
       </div>
+    </section>
+  `;
 
-      <div class="codex-region-detail-grid">
-        ${renderCodexDetailTextPanel(
-          "Region Notes",
-          region?.Lore || region?.DM_Journal,
-          "No region notes recorded."
-        )}
+  const sections = [
+    renderCodexDetailRailSection(
+      "codex-detail-lore",
+      "Lore",
+      renderCodexDetailTextContent(region?.Lore, "No lore recorded."),
+      "",
+      true
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-journal",
+      "DM Journal",
+      renderCodexDetailTextContent(region?.DM_Journal, "No journal entries.")
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-pois",
+      "Points of Interest",
+      renderCodexLinkedList(
+        poiListRows,
+        "No points of interest currently recorded in this region.",
+        "poi",
+        "POI_ID",
+        buildPoiListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-npcs",
+      "NPCs",
+      renderCodexLinkedList(
+        npcs,
+        "No NPCs currently recorded in this region.",
+        "npc",
+        "NPC_ID",
+        buildNpcListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-hexes",
+      "Hexes",
+      renderCodexLinkedList(
+        hexes,
+        "No hexes currently assigned to this region.",
+        "hex",
+        "Hex_ID",
+        buildHexListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-maps",
+      "Maps",
+      renderCodexMapsContent(maps, "No maps recorded for this region.")
+    )
+  ].join("");
 
-        <section class="codex-detail-scroll-panel">
-          <h3>Points of Interest</h3>
-
-          <div class="codex-region-list-scrollbox codex-scroll-fade">
-            ${renderCodexLinkedList(
-              poiListRows,
-              "No points of interest currently recorded in this region.",
-              "poi",
-              "POI_ID",
-              buildPoiListLabel
-            )}
-          </div>
-        </section>
-
-        <section class="codex-detail-scroll-panel">
-          <h3>NPCs</h3>
-
-          <div class="codex-region-list-scrollbox codex-scroll-fade">
-            ${renderCodexLinkedList(
-              npcs,
-              "No NPCs currently recorded in this region.",
-              "npc",
-              "NPC_ID",
-              buildNpcListLabel
-            )}
-          </div>
-        </section>
-
-        <section class="codex-detail-scroll-panel">
-          <h3>Hexes</h3>
-
-          <div class="codex-region-list-scrollbox codex-scroll-fade">
-            ${renderCodexLinkedList(
-              hexes,
-              "No hexes currently assigned to this region.",
-              "hex",
-              "Hex_ID",
-              buildHexListLabel
-            )}
-          </div>
-        </section>
-      </div>
-
-      ${renderCodexMapsPanel(maps, "No maps recorded for this region.")}
-    </div>
-  `, buildCodexBreadcrumbTrail(regionName, {
+  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexBreadcrumbTrail(regionName, {
     label: "Regions",
     pageType: "regions"
   }));
@@ -422,11 +540,38 @@ function renderCodexPoiPage(poiId) {
   const imageUrl = getPoiImageUrl(poi);
   const placeholderClass = getPoiPlaceholderClass(poi);
   const maps = getMapsForPoi(poiId);
+  const relatedPois = group
+    ? getPoisForGroup(group.POI_Group_ID).filter(row => row.POI_ID !== poiId)
+    : [];
 
   setCodexTitle(poiName);
 
-  setCodexContent(`
-    <div class="codex-detail-page-shell">
+  const railItems = [
+    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
+    { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
+    { id: "codex-detail-related", label: "Related Places", icon: "↔", count: relatedPois.length + (group ? 1 : 0) },
+    { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
+  ];
+
+  const relatedContent = `
+    ${
+      group
+        ? `<p><strong>Parent Location:</strong> ${renderCodexInlineLink("poi-group", group.POI_Group_ID, group.POI_Group_Name || group.POI_Group_ID)}</p>`
+        : `<p>No parent location recorded.</p>`
+    }
+    ${renderCodexLinkedList(
+      relatedPois,
+      "No sibling mapped areas recorded.",
+      "poi",
+      "POI_ID",
+      buildCodexMappedAreaListLabel
+    )}
+  `;
+
+  const overview = `
+    <section class="codex-detail-overview-panel codex-detail-overview-section">
+      <h3>Overview</h3>
       <div class="codex-detail-fixed codex-detail-fixed-poi">
         <div class="codex-detail-portrait-slot ${placeholderClass}" ${renderImageStyle(imageUrl)}></div>
 
@@ -454,41 +599,49 @@ function renderCodexPoiPage(poiId) {
 
           ${maps.length ? `<p><strong>Maps:</strong> ${maps.length}</p>` : ""}
         </div>
-
-        <section class="codex-detail-npc-panel">
-          <h3>NPCs</h3>
-
-          <div class="codex-detail-upper-scrollbox codex-scroll-fade">
-            ${renderCodexLinkedList(
-              npcs,
-              "No known NPCs at this location.",
-              "npc",
-              "NPC_ID",
-              buildCodexDetailNpcListLabel
-            )}
-          </div>
-        </section>
       </div>
+    </section>
+  `;
 
-      <div class="codex-detail-scroll-grid">
-        ${renderCodexDetailTextPanel(
-          "DM Journal",
-          poi?.DM_Journal,
-          "No journal entries."
-        )}
+  const sections = [
+    renderCodexDetailRailSection(
+      "codex-detail-lore",
+      "Lore",
+      renderCodexDetailTextContent(poi?.Lore, "No lore recorded."),
+      "",
+      true
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-journal",
+      "DM Journal",
+      renderCodexDetailTextContent(poi?.DM_Journal, "No journal entries.")
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-npcs",
+      "NPCs",
+      renderCodexLinkedList(
+        npcs,
+        "No known NPCs at this location.",
+        "npc",
+        "NPC_ID",
+        buildCodexDetailNpcListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-related",
+      "Related Places",
+      relatedContent
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-maps",
+      "Maps",
+      renderCodexMapsContent(maps, "No maps recorded for this location.")
+    )
+  ].join("");
 
-        ${renderCodexDetailTextPanel(
-          "Lore",
-          poi?.Lore,
-          "No lore recorded."
-        )}
-      </div>
+  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexGroupedPoiBreadcrumbTrail(poiName, group));
 
-      ${renderCodexMapsPanel(maps, "No maps recorded for this location.")}
-    </div>
-  `, buildCodexGroupedPoiBreadcrumbTrail(poiName, group));
-
-  document.getElementById("codex-content").classList.add("codex-detail-page");
+  document.getElementById("codex-content").classList.add("codex-detail-page", "codex-poi-detail-page");
 }
 
 function renderCodexPoiGroupPage(groupId) {
@@ -503,8 +656,17 @@ function renderCodexPoiGroupPage(groupId) {
 
   setCodexTitle(groupName);
 
-  setCodexContent(`
-    <div class="codex-detail-page-shell">
+  const railItems = [
+    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
+    { id: "codex-detail-mapped", label: "Mapped Areas", icon: "⬡", count: pois.length },
+    { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
+    { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
+  ];
+
+  const overview = `
+    <section class="codex-detail-overview-panel codex-detail-overview-section">
+      <h3>Overview</h3>
       <div class="codex-detail-fixed codex-detail-fixed-poi">
         <div class="codex-detail-portrait-slot ${placeholderClass}" ${renderImageStyle(imageUrl)}></div>
 
@@ -518,55 +680,61 @@ function renderCodexPoiGroupPage(groupId) {
           }
 
           <p><strong>Mapped Areas:</strong> ${pois.length}</p>
+          <p><strong>NPCs:</strong> ${npcs.length}</p>
           ${maps.length ? `<p><strong>Maps:</strong> ${maps.length}</p>` : ""}
         </div>
-
-        <section class="codex-detail-npc-panel">
-          <h3>NPCs</h3>
-
-          <div class="codex-detail-upper-scrollbox codex-scroll-fade">
-            ${renderCodexLinkedList(
-              npcs,
-              "No known NPCs associated with this place.",
-              "npc",
-              "NPC_ID",
-              buildCodexDetailNpcListLabel
-            )}
-          </div>
-        </section>
       </div>
+    </section>
+  `;
 
-      <h3>Mapped Areas</h3>
-      ${renderCodexLinkedList(
+  const sections = [
+    renderCodexDetailRailSection(
+      "codex-detail-lore",
+      "Lore",
+      renderCodexDetailTextContent(group?.Lore, "No lore recorded."),
+      "",
+      true
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-journal",
+      "DM Journal",
+      renderCodexDetailTextContent(group?.DM_Journal, "No journal entries.")
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-mapped",
+      "Mapped Areas",
+      renderCodexLinkedList(
         pois,
         "No mapped areas currently recorded for this place.",
         "poi",
         "POI_ID",
         buildCodexMappedAreaListLabel
-      )}
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-npcs",
+      "NPCs",
+      renderCodexLinkedList(
+        npcs,
+        "No known NPCs associated with this place.",
+        "npc",
+        "NPC_ID",
+        buildCodexDetailNpcListLabel
+      )
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-maps",
+      "Maps",
+      renderCodexMapsContent(maps, "No maps recorded for this place.")
+    )
+  ].join("");
 
-      <div class="codex-detail-scroll-grid">
-        ${renderCodexDetailTextPanel(
-          "DM Journal",
-          group?.DM_Journal,
-          "No journal entries."
-        )}
-
-        ${renderCodexDetailTextPanel(
-          "Lore",
-          group?.Lore,
-          "No lore recorded."
-        )}
-      </div>
-
-      ${renderCodexMapsPanel(maps, "No maps recorded for this place.")}
-    </div>
-  `, buildCodexBreadcrumbTrail(groupName, {
+  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexBreadcrumbTrail(groupName, {
     label: "Points of Interest",
     pageType: "pois"
   }));
 
-  document.getElementById("codex-content").classList.add("codex-detail-page");
+  document.getElementById("codex-content").classList.add("codex-detail-page", "codex-poi-group-detail-page");
 }
 
 function renderCodexNpcPage(npcId) {
@@ -578,6 +746,7 @@ function renderCodexNpcPage(npcId) {
   const homeGroup = home ? getPoiGroupForPoi(home) : null;
   const npcName = npc?.Name || npcId || "Unknown NPC";
   const imageUrl = getNpcImageUrl(npc);
+  const connections = [];
 
   document.getElementById("codex-title").innerHTML = `
     ${npc?.Title ? `
@@ -597,58 +766,79 @@ function renderCodexNpcPage(npcId) {
     ` : ""}
   `;
 
-  setCodexContent(`
-    <div class="codex-detail-page-shell">
+  const railItems = [
+    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
+    { id: "codex-detail-location", label: "Home / Location", icon: "✦" },
+    { id: "codex-detail-connections", label: "Connections", icon: "↔", count: connections.length }
+  ];
+
+  const locationContent = `
+    <div class="codex-detail-meta codex-detail-overview-meta">
+      <p><strong>Home:</strong> ${
+        homeGroup
+          ? renderCodexInlineLink("poi-group", homeGroup.POI_Group_ID, homeGroup.POI_Group_Name || homeGroup.POI_Group_ID)
+          : home
+            ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
+            : escapeHtml(npc?.Home_ID_Ref || "Unknown")
+      }</p>
+
+      ${
+        homeGroup && home
+          ? `<p><strong>Location:</strong> ${renderCodexInlineLink("poi", home.POI_ID, home.Name)}</p>`
+          : ""
+      }
+    </div>
+  `;
+
+  const overview = `
+    <section class="codex-detail-overview-panel codex-detail-overview-section">
+      <h3>Overview</h3>
       <div class="codex-detail-fixed">
         <div class="codex-detail-portrait-slot codex-placeholder-npc" ${renderImageStyle(imageUrl)}></div>
 
         <div class="codex-detail-meta">
-          <p><strong>Home:</strong> ${
-            homeGroup
-              ? renderCodexInlineLink("poi-group", homeGroup.POI_Group_ID, homeGroup.POI_Group_Name || homeGroup.POI_Group_ID)
-              : home
-                ? renderCodexInlineLink("poi", home.POI_ID, home.Name)
-                : escapeHtml(npc?.Home_ID_Ref || "Unknown")
-          }</p>
-
-          ${
-            homeGroup && home
-              ? `<p><strong>Location:</strong> ${renderCodexInlineLink("poi", home.POI_ID, home.Name)}</p>`
-              : ""
-          }
-
-          <p><strong>Race:</strong> ${escapeHtml(
-            npc?.Race || "Unknown"
-          )}</p>
-
-          <p><strong>Occupation:</strong> ${escapeHtml(
-            npc?.Occupation || "Unknown"
-          )}</p>
+          <p><strong>Race:</strong> ${escapeHtml(npc?.Race || "Unknown")}</p>
+          <p><strong>Occupation:</strong> ${escapeHtml(npc?.Occupation || "Unknown")}</p>
+          ${npc?.Organization ? `<p><strong>Organization:</strong> ${escapeHtml(npc.Organization)}</p>` : ""}
         </div>
       </div>
+    </section>
+  `;
 
-      <div class="codex-detail-scroll-grid">
-        ${renderCodexDetailTextPanel(
-          "DM Journal",
-          npc?.DM_Journal,
-          "No journal entries."
-        )}
+  const sections = [
+    renderCodexDetailRailSection(
+      "codex-detail-lore",
+      "Lore",
+      renderCodexDetailTextContent(npc?.Lore, "No lore recorded."),
+      "",
+      true
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-journal",
+      "DM Journal",
+      renderCodexDetailTextContent(npc?.DM_Journal, "No journal entries.")
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-location",
+      "Home / Location",
+      locationContent
+    ),
+    renderCodexDetailRailSection(
+      "codex-detail-connections",
+      "Connections",
+      `<p>No connections currently recorded.</p>`
+    )
+  ].join("");
 
-        ${renderCodexDetailTextPanel(
-          "Lore",
-          npc?.Lore,
-          "No lore recorded."
-        )}
-      </div>
-    </div>
-  `, buildCodexBreadcrumbTrail(npcName, {
+  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexBreadcrumbTrail(npcName, {
     label: "NPCs",
     pageType: "npcs"
   }));
 
   document
     .getElementById("codex-content")
-    .classList.add("codex-detail-page");
+    .classList.add("codex-detail-page", "codex-npc-detail-page");
 }
 
 function renderCodexRegionTile(region) {

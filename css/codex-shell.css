@@ -136,6 +136,11 @@
 
   width: min(84vw, 1080px);
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100svh;
+  max-height: 100dvh;
 
   padding: 70px 90px;
 
@@ -145,7 +150,7 @@
 
   isolation: isolate;
   overflow: hidden;
-  box-sizing: content-box;
+  box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
@@ -302,9 +307,8 @@
   font-weight: 500;
 }
 
-/* Make all Codex buttons match the parchment UI */
+/* Make main action buttons match the parchment UI */
 .codex-section-button,
-.codex-link-button,
 .popup-open-details {
   appearance: none;
   -webkit-appearance: none;
@@ -329,7 +333,6 @@
 }
 
 .codex-section-button:hover,
-.codex-link-button:hover,
 .popup-open-details:hover {
   background:
     linear-gradient(
@@ -343,17 +346,57 @@
 }
 
 .codex-section-button:active,
-.codex-link-button:active,
 .popup-open-details:active {
   transform: scale(0.985);
 }
 
 .codex-link-button {
-  display: inline-block;
-  padding: 5px 12px;
-  margin-left: 6px;
-  font-size: 1rem;
+  appearance: none;
+  -webkit-appearance: none;
+
+  display: inline;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+
+  margin: 0 0.08em;
+  padding: 0 0.18em 0.05em;
+
+  border: 0;
+  border-bottom: 1px solid rgba(72, 43, 18, 0.34);
+  border-radius: 0;
+
+  background: transparent;
+  color: #2f1d10;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  font-size: 0.94em;
+  font-weight: 500;
+  line-height: inherit;
+  letter-spacing: 0.025em;
+
+  box-shadow: none;
+  cursor: pointer;
+
   vertical-align: baseline;
+
+  transition:
+    color 0.14s ease,
+    border-color 0.14s ease,
+    background 0.14s ease;
+}
+
+.codex-link-button:hover,
+.codex-link-button:focus-visible {
+  background: rgba(94, 55, 22, 0.08);
+  border-color: rgba(72, 43, 18, 0.62);
+  color: #241409;
+  outline: none;
+}
+
+.codex-link-button:active {
+  transform: none;
+  background: rgba(94, 55, 22, 0.12);
 }
 
 .codex-superheader {
@@ -1012,4 +1055,41 @@
 .codex-map-card-info {
   justify-content: center;
   padding: 10px 10px 12px;
+}
+
+/* =========================================================
+   DESKTOP CODEX SPACING REFINEMENT
+   ========================================================= */
+
+@media (min-width: 900px) {
+  #codex-modal {
+    width: min(88vw, 1180px);
+    padding-top: 54px;
+  }
+
+  #codex-header {
+    margin-bottom: 26px;
+  }
+
+  #codex-content:not(.codex-home-search-page):not(.codex-search-page) {
+    width: min(100%, 980px);
+    max-width: 980px;
+  }
+
+  #codex-content.codex-home:not(.codex-home-search-page) {
+    max-width: 720px;
+  }
+
+  #codex-content.codex-home.codex-home-search-page,
+  #codex-content.codex-search-page {
+    display: block;
+    width: min(100%, 860px);
+    max-width: 860px;
+  }
+
+  #codex-content.codex-regions-index,
+  #codex-content.codex-region-detail-page {
+    width: min(100%, 1080px);
+    max-width: 1080px;
+  }
 }

@@ -3,11 +3,22 @@
    ========================================================= */
 
 const CODEX_SEARCH_GROUPS = [
-  { type: "poi", label: "POIs" },
-  { type: "npc", label: "NPCs" },
-  { type: "region", label: "Regions" },
-  { type: "hex", label: "Hexes" }
+  { type: "poi", label: "POIs", icon: "✦" },
+  { type: "npc", label: "NPCs", icon: "♟" },
+  { type: "region", label: "Regions", icon: "◇" },
+  { type: "hex", label: "Hexes", icon: "⬡" }
 ];
+
+let codexSearchActiveGroup = "all";
+let codexSearchRenderTimer = null;
+
+function scheduleCodexSearchResultsRender(query) {
+  window.clearTimeout(codexSearchRenderTimer);
+
+  codexSearchRenderTimer = window.setTimeout(() => {
+    renderCodexSearchResults(query);
+  }, 85);
+}
 
 function renderCodexSearchPage() {
   setCodexTitle("Search the Codex");
@@ -50,10 +61,12 @@ function renderCodexSearchPage() {
 
 function bindCodexSearchInput() {
   const input = document.getElementById("codex-search-input");
+  if (!input) return;
 
   input.addEventListener("input", function () {
     codexSearchQuery = input.value;
-    renderCodexSearchResults(input.value);
+    codexSearchActiveGroup = "all";
+    scheduleCodexSearchResultsRender(input.value);
   });
 
   input.addEventListener("keydown", function (event) {
@@ -78,6 +91,8 @@ function renderCodexSearchResults(query) {
   const resultsEl = document.getElementById("codex-search-results");
   const cleanQuery = normalizeCodexSearchQuery(query);
 
+  if (!resultsEl) return;
+
   closeCodexSearchResultsModal();
 
   if (!cleanQuery) {
@@ -86,6 +101,7 @@ function renderCodexSearchResults(query) {
   }
 
   const results = buildCodexSearchResults(cleanQuery);
+
   resultsEl.innerHTML = isMobileCodexSearchLayout()
     ? renderMobileCodexSearchResultGroups(results)
     : renderCodexSearchResultGroups(results);
@@ -355,14 +371,38 @@ function buildCodexHexSearchLabel(hex, matches) {
   ]);
 }
 
-function getCodexSearchGroupRows(group, results) {
-  if (group.type === "poi") {
-    return results.filter(result => {
-      return result.type === "poi" || result.type === "poi-group";
-    });
-  }
+function getCodexSearchSortTitle(row) {
+  return parseCodexRowLabel(row?.label).title;
+}
 
-  return results.filter(result => result.type === group.type);
+function sortCodexSearchRows(rows) {
+  return [...rows].sort((a, b) => {
+    return getCodexSearchSortTitle(a)
+      .localeCompare(getCodexSearchSortTitle(b), undefined, {
+        sensitivity: "base",
+        numeric: true
+      });
+  });
+}
+
+function getCodexSearchGroupRows(group, results) {
+  const rows = group.type === "poi"
+    ? results.filter(result => {
+      return result.type === "poi" || result.type === "poi-group";
+    })
+    : results.filter(result => result.type === group.type);
+
+  return sortCodexSearchRows(rows);
+}
+
+function getCodexSearchOrderedRows(results) {
+  return CODEX_SEARCH_GROUPS.flatMap(group => {
+    return getCodexSearchGroupRows(group, results);
+  });
+}
+
+function getCodexSearchGroupCount(group, results) {
+  return getCodexSearchGroupRows(group, results).length;
 }
 
 function getCodexSearchMatchLabel(count) {
@@ -381,7 +421,7 @@ function renderMobileCodexSearchResultGroups(results) {
 }
 
 function renderMobileCodexSearchSummaryButton(group, results) {
-  const count = getCodexSearchGroupRows(group, results).length;
+  const count = getCodexSearchGroupCount(group, results);
 
   return `
     <button
@@ -423,7 +463,8 @@ function openCodexSearchResultsModal(type) {
           null,
           "id",
           row => row.label,
-          row => row.type
+          row => row.type,
+          row => getCodexSearchResultIcon(row.type)
         )}
       </div>
 
@@ -452,33 +493,122 @@ function handleCodexSearchModalBackdropClick(event) {
   closeCodexSearchResultsModal();
 }
 
-function renderCodexSearchResultGroups(results) {
-  return CODEX_SEARCH_GROUPS
-    .map(group => renderCodexSearchResultGroup(group, results))
-    .join("");
+function normalizeCodexSearchActiveGroup(results) {
+  if (codexSearchActiveGroup === "all") return;
+
+  const group = CODEX_SEARCH_GROUPS.find(item => item.type === codexSearchActiveGroup);
+
+  if (!group || getCodexSearchGroupCount(group, results) === 0) {
+    codexSearchActiveGroup = "all";
+  }
 }
 
-function renderCodexSearchResultGroup(group, results) {
-  const groupRows = getCodexSearchGroupRows(group, results);
+function setCodexSearchActiveGroup(type) {
+  codexSearchActiveGroup = type || "all";
+  renderCodexSearchResults(codexSearchQuery);
+}
+
+function getCodexSearchTotalCount(results) {
+  return results.length;
+}
+
+function renderCodexSearchResultGroups(results) {
+  normalizeCodexSearchActiveGroup(results);
+
+  return renderCodexSplitView({
+    className: "codex-search-split-view",
+    railHtml: renderCodexSearchCategoryRail(results),
+    mainHtml: renderCodexSearchMainPaneContent(results)
+  });
+}
+
+function getCodexSearchGroupIcon(type) {
+  if (type === "all") return "✧";
+
+  const group = CODEX_SEARCH_GROUPS.find(item => item.type === type);
+  return group?.icon || "•";
+}
+
+function getCodexSearchResultIcon(type) {
+  if (type === "poi-group") return getCodexSearchGroupIcon("poi");
+  return getCodexSearchGroupIcon(type);
+}
+
+function renderCodexSearchRowList(rows, emptyText) {
+  return renderCodexLinkedList(
+    rows,
+    emptyText,
+    null,
+    "id",
+    row => row.label,
+    row => row.type,
+    row => getCodexSearchResultIcon(row.type)
+  );
+}
+
+function renderCodexSearchCategoryRail(results) {
+  const totalCount = getCodexSearchTotalCount(results);
 
   return `
-    <section class="codex-search-result-panel">
-      <h3 class="codex-search-result-heading">${escapeHtml(group.label)}</h3>
+    <nav class="codex-row-list codex-row-list-rail codex-search-category-rail" aria-label="Search result categories">
+      ${renderCodexSearchCategoryButton({
+        type: "all",
+        label: "All",
+        count: totalCount
+      })}
 
-      <div class="codex-search-group-scroll codex-scroll-fade">
-        ${renderCodexLinkedList(
-          groupRows,
-          `No matching ${group.label}.`,
-          null,
-          "id",
-          row => row.label,
-          row => row.type
-        )}
-      </div>
+      ${CODEX_SEARCH_GROUPS
+        .map(group => renderCodexSearchCategoryButton({
+          type: group.type,
+          label: group.label,
+          count: getCodexSearchGroupCount(group, results)
+        }))
+        .join("")}
+    </nav>
+  `;
+}
+
+function renderCodexSearchCategoryButton(category) {
+  const isActive = codexSearchActiveGroup === category.type;
+  const isDisabled = category.count === 0;
+
+  return renderCodexRow({
+    title: category.label,
+    icon: getCodexSearchGroupIcon(category.type),
+    count: category.count,
+    active: isActive,
+    disabled: isDisabled,
+    classes: "codex-search-category-button",
+    onclick: `setCodexSearchActiveGroup('${escapeJsString(category.type)}')`
+  });
+}
+
+function renderCodexSearchMainPaneContent(results) {
+  const activeGroup = CODEX_SEARCH_GROUPS.find(group => group.type === codexSearchActiveGroup);
+  const rows = activeGroup
+    ? getCodexSearchGroupRows(activeGroup, results)
+    : getCodexSearchOrderedRows(results);
+
+  const emptyText = activeGroup
+    ? `No matching ${activeGroup.label}.`
+    : "No matching records.";
+
+  return `
+    <section class="codex-search-focused-section">
+      ${renderCodexSearchRowList(rows, emptyText)}
     </section>
   `;
+}
+
+function renderCodexSearchAllResultsPaneContent(results) {
+  return renderCodexSearchRowList(
+    getCodexSearchOrderedRows(results),
+    "No matching records."
+  );
 }
 
 window.openCodexSearchResultsModal = openCodexSearchResultsModal;
 window.closeCodexSearchResultsModal = closeCodexSearchResultsModal;
 window.handleCodexSearchModalBackdropClick = handleCodexSearchModalBackdropClick;
+window.setCodexSearchActiveGroup = setCodexSearchActiveGroup;
+window.scheduleCodexSearchResultsRender = scheduleCodexSearchResultsRender;
