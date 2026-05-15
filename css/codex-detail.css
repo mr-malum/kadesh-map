@@ -46,7 +46,7 @@
   flex: 0 0 auto;
   min-height: 0;
 
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
 
 .codex-detail-overview-panel {
@@ -54,10 +54,7 @@
 }
 
 #codex-content .codex-detail-overview-panel h3 {
-  margin: 0;
-  padding: 0 0 8px;
-
-  font-size: 1.05rem;
+  display: none;
 }
 
 .codex-detail-lower-pane {
@@ -140,20 +137,20 @@
   display: flex;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 20px;
+  gap: 16px;
 
-  padding-bottom: 18px;
+  padding-bottom: 12px;
 }
 
 .codex-detail-overview-panel .codex-detail-fixed {
-  padding-bottom: 12px;
+  padding-bottom: 8px;
 }
 
 .codex-detail-portrait-slot {
   position: relative;
 
-  width: 220px;
-  height: 220px;
+  width: 190px;
+  height: 190px;
 
   overflow: hidden;
 
@@ -223,7 +220,7 @@
   flex: 0 0 auto;
 
   display: grid;
-  gap: 4px;
+  gap: 2px;
 
   align-self: center;
 
@@ -231,8 +228,8 @@
 
   margin:
     0
-    24px
-    18px
+    20px
+    10px
     0;
 }
 
@@ -241,7 +238,7 @@
 }
 
 .codex-detail-meta p {
-  margin: 0 0 6px;
+  margin: 0 0 4px;
 }
 
 .codex-detail-meta h3 {
@@ -292,7 +289,7 @@
 .codex-detail-upper-scrollbox {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 220px;
+  max-height: 190px;
 
   overflow-y: auto;
 
@@ -404,6 +401,8 @@
   }
 
   .codex-detail-portrait-slot {
+    width: 220px;
+    height: 220px;
     margin: 0 auto;
   }
 
