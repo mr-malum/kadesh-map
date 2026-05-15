@@ -136,6 +136,11 @@
 
   width: min(84vw, 1080px);
   height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+  max-height: 100vh;
+  max-height: 100svh;
+  max-height: 100dvh;
 
   padding: 70px 90px;
 
@@ -145,7 +150,7 @@
 
   isolation: isolate;
   overflow: hidden;
-  box-sizing: content-box;
+  box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
