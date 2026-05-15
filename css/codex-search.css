@@ -34,17 +34,19 @@
    ========================================================= */
 
 .codex-panel-nav {
-  position: relative;
+  position: absolute;
   z-index: 10020;
 
+  left: 90px;
+  right: 90px;
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px));
+
+  display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 16px;
 
-  margin-top: auto;
-  margin-left: 24px;
-  margin-right: 24px;
-  margin-bottom: 76px;
-
+  margin: 0;
   padding: 0;
 
   background: transparent;
@@ -54,6 +56,8 @@
 }
 
 .codex-control-cluster {
+  flex: 0 0 auto;
+
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -135,6 +139,9 @@
 }
 
 #codex-breadcrumbs {
+  flex: 1 1 auto;
+  min-width: 0;
+
   margin-right: auto;
   padding-right: 16px;
 
@@ -423,6 +430,14 @@
     );
 }
 
+@media (max-width: 900px) {
+  .codex-panel-nav {
+    left: 32px;
+    right: 32px;
+    bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (max-width: 700px) {
   #codex-content {
     width: 100%;
@@ -468,9 +483,10 @@
   }
 
   .codex-panel-nav {
-    margin-left: 12px;
-    margin-right: 12px;
-    margin-bottom: 72px;
+    left: 18px;
+    right: 18px;
+    bottom: calc(26px + env(safe-area-inset-bottom, 0px));
+    margin: 0;
   }
 
   .codex-control-cluster {
