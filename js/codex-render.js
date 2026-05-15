@@ -123,6 +123,10 @@ function getCodexRecordTypeLabel(type) {
   }
 }
 
+function getCodexRowIconClass(icon) {
+  return icon === "⬡" ? " codex-row-icon-hex" : "";
+}
+
 function renderCodexRow(options) {
   const title = options?.title || "Unnamed Record";
   const meta = options?.meta || "";
@@ -139,6 +143,7 @@ function renderCodexRow(options) {
   const hasKicker = Boolean(typeLabel);
   const noIconClass = !icon && !hasKicker ? "codex-linked-row" : "";
   const kickerClass = hasKicker ? "codex-row-has-kicker" : "";
+  const iconClass = getCodexRowIconClass(icon);
 
   return `
     <button
@@ -151,12 +156,12 @@ function renderCodexRow(options) {
         hasKicker
           ? `
             <span class="codex-row-kicker" aria-hidden="true">
-              ${icon ? `<span class="codex-row-kicker-icon">${escapeHtml(icon)}</span>` : ""}
+              ${icon ? `<span class="codex-row-kicker-icon${iconClass}">${escapeHtml(icon)}</span>` : ""}
               <span class="codex-row-type-label">${escapeHtml(typeLabel)}</span>
             </span>
           `
           : icon
-            ? `<span class="codex-row-icon" aria-hidden="true">${escapeHtml(icon)}</span>`
+            ? `<span class="codex-row-icon${iconClass}" aria-hidden="true">${escapeHtml(icon)}</span>`
             : ""
       }
 
