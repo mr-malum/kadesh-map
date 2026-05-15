@@ -143,6 +143,7 @@
 }
 
 .codex-detail-overview-panel .codex-detail-fixed {
+  padding-top: 8px;
   padding-bottom: 8px;
 }
 
@@ -256,11 +257,20 @@
   align-self: flex-start;
 }
 
-#codex-content .codex-detail-npc-panel h3 {
+.codex-detail-overview-side {
+  align-self: stretch;
+  padding-top: 8px;
+}
+
+#codex-content .codex-detail-npc-panel h3,
+#codex-content .codex-detail-overview-side h3 {
   flex: 0 0 auto;
 
+  display: block;
   margin: 0 0 8px;
   padding: 0;
+
+  font-size: 1.02rem;
 }
 
 .codex-detail-npc-panel .codex-record-button {
@@ -289,11 +299,21 @@
 .codex-detail-upper-scrollbox {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 190px;
+  max-height: 170px;
 
   overflow-y: auto;
 
-  padding-right: 8px;
+  padding: 2px 8px 8px 0;
+}
+
+.codex-detail-upper-scrollbox .codex-linked-row-list {
+  margin-bottom: 0;
+}
+
+.codex-detail-related-overview > .codex-detail-upper-scrollbox > p {
+  margin: 0 0 6px;
+  font-size: 0.96rem;
+  line-height: 1.35;
 }
 
 .codex-detail-scroll-grid {
