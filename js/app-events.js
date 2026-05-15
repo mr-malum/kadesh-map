@@ -122,6 +122,8 @@ function bindCodexEvents() {
     .getElementById("codex-search-button")
     .addEventListener("click", openCodexGlobalSearchModal);
 
+  bindCodexDesktopPersistentSearch();
+
   document
     .getElementById("codex-back")
     .addEventListener("click", function () {
@@ -145,6 +147,27 @@ function bindCodexEvents() {
         closeCodex();
       }
     });
+}
+
+function isDesktopCodexBookLayout() {
+  return window.matchMedia("(min-width: 1100px) and (min-height: 700px)").matches;
+}
+
+function bindCodexDesktopPersistentSearch() {
+  const input = document.getElementById("codex-desktop-search-input");
+  if (!input) return;
+
+  input.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") return;
+
+    event.preventDefault();
+
+    const cleanQuery = String(input.value || "").trim();
+    if (!cleanQuery) return;
+
+    input.blur();
+    openCodexSearchResults(cleanQuery);
+  });
 }
 
 function openCodexGlobalSearchModal() {
@@ -260,103 +283,89 @@ function isAppPanelOpen() {
 function ensureAppBrowserBackTrap() {
   if (!isMobileBrowserBackEnabled()) return;
 
-  history.pushState({ kadeshAppState: true }, "", window.location.href);
-  appBrowserHistoryDepth += 1;
+  if (appBrowserHistoryDepth > 0) return;
+
+  appBrowserHistoryDepth = 1;
+  history.pushState({ appPanelTrap: true }, "");
 }
 
 function releaseAppBrowserBackTrap() {
-  if (!appBrowserHistoryDepth) return;
+  if (!isMobileBrowserBackEnabled()) {
+    appBrowserHistoryDepth = 0;
+    appBrowserHistoryReleaseCount = 0;
+    return;
+  }
 
-  const releaseDepth = appBrowserHistoryDepth;
-  appBrowserHistoryDepth = 0;
-  appBrowserHistoryReleaseCount += releaseDepth;
+  if (appBrowserHistoryDepth <= 0) return;
 
-  history.go(-releaseDepth);
+  appBrowserHistoryReleaseCount += 1;
+  appBrowserHistoryDepth -= 1;
+
+  history.back();
 }
 
-function handleAppBrowserBack() {
+window.addEventListener("popstate", function () {
   if (appBrowserHistoryReleaseCount > 0) {
     appBrowserHistoryReleaseCount -= 1;
     return;
   }
 
-  if (!isMobileBrowserBackEnabled()) return;
+  if (appBrowserHistoryDepth > 0) {
+    appBrowserHistoryDepth -= 1;
+  }
 
   if (isCodexOpen()) {
-    if (appBrowserHistoryDepth > 0) {
-      appBrowserHistoryDepth -= 1;
-    }
-
-    if (codexHistory.length <= 1) {
-      closeCodex({ syncHistory: false });
-      appBrowserHistoryDepth = 0;
-      return;
-    }
-
-    goBackCodex();
+    closeCodex({ syncHistory: false });
     return;
   }
 
   if (isAppPanelOpen()) {
-    if (appBrowserHistoryDepth > 0) {
-      appBrowserHistoryDepth -= 1;
-    }
-
     closePanel({
       clearSelection: true,
-      centerSelected: true,
-      syncHistory: false
+      centerSelected: true
     });
-
-    appBrowserHistoryDepth = 0;
   }
-}
-
-function bindBrowserBackEvents() {
-  window.addEventListener("popstate", handleAppBrowserBack);
-}
-
-function clearCodexLongPressTimer() {
-  window.clearTimeout(codexLongPressTimer);
-  codexLongPressTimer = null;
-}
+});
 
 function bindCodexLongPressEvents() {
-  const codexButton = document.getElementById("codex-button");
+  const button = document.getElementById("codex-button");
+  if (!button) return;
 
-  codexButton.addEventListener("pointerdown", () => {
+  const start = event => {
     if (!isMobileCodexLongPressEnabled()) return;
+
+    clearTimeout(codexLongPressTimer);
+    suppressNextCodexClick = false;
 
     codexLongPressTimer = window.setTimeout(() => {
       suppressNextCodexClick = true;
-      toggleRetroCodexMode();
-    }, 650);
-  });
+      button.classList.remove("codex-label-visible");
+      resetCodexToIndex();
+    }, 450);
+  };
 
-  codexButton.addEventListener("pointerup", clearCodexLongPressTimer);
-  codexButton.addEventListener("pointercancel", clearCodexLongPressTimer);
-  codexButton.addEventListener("pointerleave", clearCodexLongPressTimer);
+  const cancel = () => {
+    clearTimeout(codexLongPressTimer);
+  };
 
-  codexButton.addEventListener("contextmenu", event => {
-    if (!isMobileCodexLongPressEnabled()) return;
+  button.addEventListener("touchstart", start, { passive: true });
+  button.addEventListener("mousedown", start);
 
-    event.preventDefault();
-  });
+  button.addEventListener("touchend", cancel);
+  button.addEventListener("touchcancel", cancel);
+  button.addEventListener("mouseup", cancel);
+  button.addEventListener("mouseleave", cancel);
 }
 
-function initializeAppEvents() {
+function initializeApp() {
   initializeHexGrid();
   bindMapEvents();
   bindPanelEvents();
   bindCodexEvents();
-  bindKeyboardEasterEggEvents();
-  bindBrowserBackEvents();
   bindCodexLongPressEvents();
+  bindKeyboardEasterEggEvents();
+
+  loadDatabase();
 }
 
-window.ensureAppBrowserBackTrap = ensureAppBrowserBackTrap;
-window.releaseAppBrowserBackTrap = releaseAppBrowserBackTrap;
-window.closeCodexGlobalSearchModal = closeCodexGlobalSearchModal;
-window.handleCodexGlobalSearchBackdropClick = handleCodexGlobalSearchBackdropClick;
-
-initializeAppEvents();
+initializeApp();
