@@ -418,8 +418,8 @@ function renderCodexRegionPage(regionId) {
           ${maps.length ? `<p><strong>Maps:</strong> ${maps.length}</p>` : ""}
         </div>
 
-        <section class="codex-detail-npc-panel codex-region-terrain-profile codex-detail-overview-side">
-          <h3>Terrain Profile</h3>
+        <section class="codex-detail-npc-panel codex-region-terrain-profile codex-detail-overview-side codex-detail-terrain-overview">
+          <p class="codex-overview-side-label"><strong>Terrain Profile:</strong></p>
           <div class="codex-detail-upper-scrollbox codex-scroll-fade">
             ${terrainRows ? `<div class="codex-region-terrain-list">${terrainRows}</div>` : `<p>No terrain data recorded.</p>`}
           </div>
@@ -470,7 +470,7 @@ function renderCodexPoiPage(poiId) {
 
   const relatedOverview = `
     <section class="codex-detail-npc-panel codex-detail-overview-side codex-detail-related-overview">
-      <h3>Related Areas</h3>
+      <p class="codex-overview-side-label"><strong>Related Areas:</strong></p>
       <div class="codex-detail-upper-scrollbox codex-scroll-fade">
         ${group ? `<p><strong>Parent:</strong> ${renderCodexInlineLink("poi-group", group.POI_Group_ID, group.POI_Group_Name || group.POI_Group_ID)}</p>` : `<p>No parent location recorded.</p>`}
         ${renderCodexLinkedList(relatedPois, "No sibling mapped areas recorded.", "poi", "POI_ID", buildCodexMappedAreaListLabel)}
@@ -529,15 +529,14 @@ function renderCodexPoiGroupPage(groupId) {
     { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
   ];
 
-  const overviewMappedAreas = renderCodexUpperListPanel(
-    "Mapped Areas",
-    pois,
-    "No mapped areas currently recorded for this place.",
-    "poi",
-    "POI_ID",
-    buildCodexMappedAreaListLabel,
-    "codex-detail-mapped-overview"
-  );
+  const overviewMappedAreas = `
+    <section class="codex-detail-npc-panel codex-detail-overview-side codex-detail-mapped-overview">
+      <p class="codex-overview-side-label"><strong>Areas:</strong> ${pois.length}</p>
+      <div class="codex-detail-upper-scrollbox codex-scroll-fade">
+        ${renderCodexLinkedList(pois, "No mapped areas currently recorded for this place.", "poi", "POI_ID", buildCodexMappedAreaListLabel)}
+      </div>
+    </section>
+  `;
 
   const overview = `
     <section class="codex-detail-overview-panel codex-detail-overview-section">
@@ -548,8 +547,7 @@ function renderCodexPoiGroupPage(groupId) {
         <div class="codex-detail-meta">
           <p><strong>Type:</strong> ${escapeHtml(group?.Group_Type || "Grouped POI")}</p>
           ${population ? `<p><strong>Population:</strong> ${escapeHtml(population)}</p>` : ""}
-          <p><strong>Mapped Areas:</strong> ${pois.length}</p>
-          <p><strong>NPCs:</strong> ${npcs.length}</p>
+          <p><strong>Areas:</strong> ${pois.length}</p>
           ${maps.length ? `<p><strong>Maps:</strong> ${maps.length}</p>` : ""}
         </div>
 
@@ -598,7 +596,7 @@ function renderCodexNpcPage(npcId) {
       : escapeHtml(npc?.Home_ID_Ref || "Unknown");
 
   const locationLine = homeGroup && home
-    ? `<p><strong>Location:</strong> ${renderCodexInlineLink("poi", home.POI_ID, home.Name)}</p>`
+    ? `<p><strong>Area:</strong> ${renderCodexInlineLink("poi", home.POI_ID, home.Name)}</p>`
     : "";
 
   const overview = `
