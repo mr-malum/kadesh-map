@@ -32,12 +32,12 @@
       these same dimensions so everything scales together as the window changes.
 
       The book is 2800 x 1400, so width is always 2x height.
-      On shorter/wider desktop windows, height controls the scale.
-      On narrower desktop windows, width controls the scale instead of letting
-      the book keep overflowing at a stale size.
+      Desktop scaling is height-first: the full book may overflow horizontally,
+      because the far-left decoration is not required to remain visible. This
+      keeps the useful page areas large on split-screen desktop windows.
     */
-    --codex-book-width: min(100vw, 200dvh);
-    --codex-book-height: calc(var(--codex-book-width) / 2);
+    --codex-book-height: 100dvh;
+    --codex-book-width: calc(var(--codex-book-height) * 2);
 
     width: 100vw;
     max-width: none;
