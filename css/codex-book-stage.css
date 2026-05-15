@@ -1,0 +1,109 @@
+/* =========================================================
+   DESKTOP CODEX BOOK STAGE - CHECKPOINT 1
+   =========================================================
+
+   This file intentionally does not move Codex page internals yet.
+   It only swaps the desktop modal backdrop to the open-book asset and
+   draws temporary coordinate-debug overlays against the 2800 x 1400 image.
+
+   Coordinate reference:
+   - Full book: 2800 x 1400
+   - Gutter: x 1380-1420
+   - Left utility strip: x 1030-1290, y 150-1250
+   - Right safe page: x 1510-2610, y 150-1250
+   - Right header: x 1510-2610, y 150-300
+   - Right content: x 1510-2610, y 320-1250
+*/
+
+@media (min-width: 1100px) {
+  #codex-overlay {
+    align-items: stretch;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #codex-modal {
+    --codex-book-anchor-x: 67.5%;
+    --codex-book-debug-display: block;
+
+    width: 100vw;
+    max-width: none;
+    height: 100vh;
+    height: 100svh;
+    height: 100dvh;
+    max-height: none;
+
+    /* Keep existing content behavior mostly unchanged for Checkpoint 1. */
+    padding: 70px 90px;
+
+    overflow: hidden;
+    background: transparent;
+  }
+
+  #codex-modal::before,
+  #codex-modal::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+
+    width: min(200dvh, 2800px);
+    height: auto;
+    aspect-ratio: 2 / 1;
+
+    transform: translate(calc(-1 * var(--codex-book-anchor-x)), -50%);
+    transform-origin: center center;
+
+    pointer-events: none;
+  }
+
+  #codex-modal::before {
+    background-image: url("../assets/codex/Desktop_Codex.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    opacity: 1;
+    z-index: -1;
+  }
+
+  #codex-modal::after {
+    content: "";
+    display: var(--codex-book-debug-display);
+    z-index: 0;
+
+    box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.72);
+
+    background:
+      /* Hard gutter: x 1380-1420, y 60-1340 */
+      linear-gradient(rgba(255, 64, 64, 0.30), rgba(255, 64, 64, 0.30))
+        49.2857% 4.2857% / 1.4286% 91.4286% no-repeat,
+
+      /* Left utility strip: x 1030-1290, y 150-1250 */
+      linear-gradient(rgba(64, 192, 255, 0.26), rgba(64, 192, 255, 0.26))
+        36.7857% 10.7143% / 9.2857% 78.5714% no-repeat,
+
+      /* Right safe page: x 1510-2610, y 150-1250 */
+      linear-gradient(rgba(64, 255, 128, 0.16), rgba(64, 255, 128, 0.16))
+        53.9286% 10.7143% / 39.2857% 78.5714% no-repeat,
+
+      /* Right header band: x 1510-2610, y 150-300 */
+      linear-gradient(rgba(255, 224, 64, 0.30), rgba(255, 224, 64, 0.30))
+        53.9286% 10.7143% / 39.2857% 10.7143% no-repeat,
+
+      /* Right content area: x 1510-2610, y 320-1250 */
+      linear-gradient(rgba(180, 96, 255, 0.18), rgba(180, 96, 255, 0.18))
+        53.9286% 22.8571% / 39.2857% 66.4286% no-repeat;
+
+    mix-blend-mode: multiply;
+  }
+
+  #codex-header,
+  #codex-content,
+  .codex-panel-nav,
+  #codex-global-search-modal {
+    position: relative;
+    z-index: 1;
+  }
+}
