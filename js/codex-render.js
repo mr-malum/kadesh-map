@@ -20,10 +20,11 @@ function renderCodexListControls(config) {
   return `
     <div class="codex-filter-row">
       ${filters.map(filter => `
-        <label class="codex-dynamic-filter">
+        <div class="codex-dynamic-filter">
           <select
             id="${escapeHtml(filter.fieldId || `${filter.id}-field`)}"
             class="codex-filter-field-select"
+            aria-label="${escapeHtml(filter.label)} filter field"
           >
               ${renderCodexSelectOptions(
                 filter.fieldOptions || [
@@ -36,15 +37,18 @@ function renderCodexListControls(config) {
               )}
           </select>
 
-          <select id="${escapeHtml(filter.id)}">
+          <select
+            id="${escapeHtml(filter.id)}"
+            aria-label="${escapeHtml(filter.label)} filter value"
+          >
             ${renderCodexSelectOptions(filter.options, filter.selectedValue)}
           </select>
-        </label>
+        </div>
       `).join("")}
 
-      <label class="codex-sort-label">
-        <span class="codex-sort-topline">
-          Sort
+      <div class="codex-sort-label">
+        <div class="codex-sort-topline">
+          <span>Sort</span>
 
           <button
             id="${escapeHtml(config.directionId)}"
@@ -54,12 +58,15 @@ function renderCodexListControls(config) {
           >
             ${config.direction === "desc" ? "↓ DESC" : "↑ ASC"}
           </button>
-        </span>
+        </div>
 
-        <select id="${escapeHtml(config.sortId)}">
+        <select
+          id="${escapeHtml(config.sortId)}"
+          aria-label="Sort records by"
+        >
           ${renderCodexSelectOptions(config.sortOptions, config.selectedSort)}
         </select>
-      </label>
+      </div>
     </div>
   `;
 }
