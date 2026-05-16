@@ -98,8 +98,7 @@
 
   margin: 0;
 
-  border-top: 1px solid rgba(72, 43, 18, 0.22);
-  border-bottom: 1px solid rgba(255, 241, 202, 0.14);
+  border: 0;
 }
 
 .codex-detail-rail-section.active {
@@ -111,6 +110,20 @@
   padding: 12px 0 8px;
 
   font-size: 1.05rem;
+}
+
+#codex-content .codex-detail-rail-section h3::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin-top: 7px;
+  background: linear-gradient(
+    to right,
+    rgba(72, 43, 18, 0.58),
+    rgba(72, 43, 18, 0.18),
+    transparent
+  );
 }
 
 .codex-detail-rail-section-content {
@@ -153,7 +166,7 @@
   position: absolute;
   top: 12px;
   bottom: 12px;
-  left: calc(190px + 16px + 180px + 2px);
+  left: calc(190px + 16px + 205px + 18px);
   width: 1px;
 
   pointer-events: none;
@@ -237,7 +250,7 @@
 }
 
 .codex-detail-meta {
-  flex: 0 0 auto;
+  flex: 0 0 205px;
 
   display: grid;
   gap: 2px;
@@ -248,7 +261,7 @@
 
   margin:
     0
-    20px
+    30px
     10px
     0;
 }
@@ -279,7 +292,7 @@
 .codex-detail-overview-side {
   align-self: stretch;
   padding-top: 8px;
-  padding-left: 22px;
+  padding-left: 38px;
 }
 
 #codex-content .codex-detail-npc-panel h3,
@@ -394,7 +407,7 @@
   backface-visibility: hidden;
 }
 
-#codex-content.codex-regions-index .codex-region-tile::after {
+#codex-content.codex-regions-index .codex-region-tile-image::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -411,13 +424,13 @@
   transform: none;
 }
 
-#codex-content.codex-regions-index .codex-region-tile:hover::after,
-#codex-content.codex-regions-index .codex-region-tile:focus-visible::after {
-  background: rgba(24, 13, 5, 0.18);
+#codex-content.codex-regions-index .codex-region-tile:hover .codex-region-tile-image::after,
+#codex-content.codex-regions-index .codex-region-tile:focus-visible .codex-region-tile-image::after {
+  background: rgba(24, 13, 5, 0.10);
 }
 
-#codex-content.codex-regions-index .codex-region-tile:active::after {
-  background: rgba(24, 13, 5, 0.28);
+#codex-content.codex-regions-index .codex-region-tile:active .codex-region-tile-image::after {
+  background: rgba(24, 13, 5, 0.18);
 }
 
 #codex-content.codex-regions-index .codex-region-tile-image {
@@ -442,17 +455,18 @@
     0 0 1px rgba(238, 211, 158, 1),
     0 0 2px rgba(238, 211, 158, 1),
     0 0 3px rgba(238, 211, 158, 1),
-    0 0 5px rgba(238, 211, 158, 0.96),
-    0 0 7px rgba(238, 211, 158, 0.90),
-    0 0 10px rgba(238, 211, 158, 0.78),
-    0 0 13px rgba(238, 211, 158, 0.62),
-    0 1px 2px rgba(47, 29, 16, 0.48),
-    0 2px 4px rgba(47, 29, 16, 0.36);
+    0 0 5px rgba(238, 211, 158, 1),
+    0 0 7px rgba(238, 211, 158, 0.96),
+    0 0 10px rgba(238, 211, 158, 0.88),
+    0 0 14px rgba(238, 211, 158, 0.76),
+    0 0 18px rgba(238, 211, 158, 0.58),
+    0 1px 2px rgba(47, 29, 16, 0.50),
+    0 2px 4px rgba(47, 29, 16, 0.40);
 }
 
 #codex-content.codex-regions-index .codex-region-tile-name,
 #codex-content.codex-regions-index .codex-region-tile-details {
-  -webkit-text-stroke: 0.65px rgba(238, 211, 158, 0.96);
+  -webkit-text-stroke: 0.9px rgba(238, 211, 158, 0.98);
   paint-order: stroke fill;
 }
 
