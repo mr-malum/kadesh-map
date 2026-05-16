@@ -229,7 +229,7 @@
   background-color: transparent;
 }
 
-/* Mobile Hex Popup */
+/* Hex Popup Preview */
 
 .leaflet-popup-content-wrapper {
   background: transparent !important;
@@ -270,7 +270,7 @@
   left: -18px;
   right: -18px;
 
-  background-image: url("../assets/Parchment_Panel.png");
+  background-image: url("../assets/codex/Mobile_Panel.png");
   background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
