@@ -59,7 +59,7 @@ function buildPoiGroupListLabel(group) {
 
   const typeLine = [
     group.Group_Type || "Grouped POI",
-    `${groupPois.length} mapped area${groupPois.length !== 1 ? "s" : ""}`
+    `${groupPois.length} Area${groupPois.length !== 1 ? "s" : ""}`
   ].filter(Boolean).join(" • ");
 
   if (typeLine) {
@@ -117,7 +117,7 @@ function buildRegionListLabel(row) {
     `${summary.hexCount} hexes`,
     `${summary.poiCount} POIs`,
     summary.mappedAreaCount > summary.poiCount
-      ? `${summary.mappedAreaCount} mapped areas`
+      ? `${summary.mappedAreaCount} Areas`
       : "",
     `${summary.npcCount} NPCs`
   ].filter(Boolean).join(" • ");
