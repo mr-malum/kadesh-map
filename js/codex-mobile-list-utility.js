@@ -199,6 +199,11 @@ function bindCodexListStateListeners(config) {
   document.getElementById(config.directionId)?.addEventListener("click", function () {
     window.setTimeout(() => updateCodexListStateFromControls(config), 0);
   });
+
+  document.getElementById(config.listId)?.addEventListener("click", function (event) {
+    if (!event.target.closest?.(".codex-linked-record-row")) return;
+    updateCodexListStateFromControls(config);
+  }, true);
 }
 
 function renderCodexListPage(config) {
