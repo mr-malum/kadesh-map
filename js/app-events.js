@@ -140,6 +140,11 @@ function closeTopCodexLayer() {
     return true;
   }
 
+  if (document.getElementById("codex-mobile-utility-panel")?.classList.contains("open")) {
+    closeCodexMobileUtilityPanel?.();
+    return true;
+  }
+
   return false;
 }
 
@@ -474,6 +479,7 @@ function initializeApp() {
   bindMapEvents();
   bindPanelEvents();
   bindCodexEvents();
+  initializeCodexMobileUtility?.();
   bindCodexLongPressEvents();
   bindKeyboardEasterEggEvents();
 
