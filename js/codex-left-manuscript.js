@@ -2,55 +2,99 @@
    DECORATIVE LEFT PAGE MANUSCRIPT
    ========================================================= */
 
-const CODEX_MANUSCRIPT_SEED = "kadesh-left-page-v1";
+const CODEX_MANUSCRIPT_SEED = "kadesh-left-page-v2";
 
-const CODEX_MANUSCRIPT_FRAGMENTS = [
-  "KAD — VOR — EN",
-  "THUR · ASH · REN",
-  "VEL-KA / OM-NAR",
-  "MIR · DOR · KESH",
-  "ASHEN KADU VOR",
-  "NAR ETH KESH VAR",
-  "OMEN TAL · RUTH",
-  "SAH VELIR · KAD",
-  "DROM VEK · ARA",
-  "TAL OTHEN MIR",
-  "VORU KESH · NAI",
-  "REN ASH · TAL VOR",
-  "KETH AMAR · SOL",
-  "UTH KAD · DORUM",
-  "MIRAKH · VEL · THUR",
-  "OSHEN VAR · KAD",
-  "TALOS · DREN · MIR",
-  "KA VEL · TOR · NAR",
-  "SHEN UTH · ORO",
-  "DOR KESH · VARUN",
-  "KADESH · VEL · ASH",
-  "NARU DROM · ETH",
-  "MIREN · ARA · VOTH",
-  "KOR TAL · VESH",
-  "OM NAR · KADU",
-  "VOR EN · MIR TAL",
-  "DORUM · ASH REN",
-  "THAL KESH · ORU",
-  "VEL AN · DROM",
-  "KAD VETH · SOR",
-  "ARU NAI · KESH",
-  "MIR VOR · ETH KAD"
+const CODEX_MANUSCRIPT_SYLLABLES = [
+  "KAD",
+  "VOR",
+  "EN",
+  "THUR",
+  "ASH",
+  "REN",
+  "VEL",
+  "KA",
+  "OM",
+  "NAR",
+  "MIR",
+  "DOR",
+  "KESH",
+  "KADU",
+  "ETH",
+  "VAR",
+  "TAL",
+  "RUTH",
+  "SAH",
+  "VELIR",
+  "DROM",
+  "VEK",
+  "ARA",
+  "OTHEN",
+  "VORU",
+  "NAI",
+  "KETH",
+  "AMAR",
+  "SOL",
+  "UTH",
+  "DORUM",
+  "MIRAKH",
+  "OSHEN",
+  "TALOS",
+  "DREN",
+  "TOR",
+  "SHEN",
+  "ORO",
+  "VARUN",
+  "NARU",
+  "MIREN",
+  "VOTH",
+  "KOR",
+  "VESH",
+  "THAL",
+  "AN",
+  "VETH",
+  "SOR",
+  "ARU"
+];
+
+const CODEX_MANUSCRIPT_CONNECTORS = [
+  " · ",
+  " — ",
+  " / ",
+  "  ",
+  "-"
 ];
 
 const CODEX_MANUSCRIPT_MARKS = [
-  "— — —     • • •     — —",
-  "•  •  •      —      •  •",
-  "- - -   ·   - - -   ·   -",
-  "·  ·  ·     / / /     ·  ·",
-  "—   ·   —   ·   —   ·   —",
-  "/ / /     •     / / /",
-  "• — • — • — • — •",
-  "—     —     —     —",
-  "· · ·     KAD     · · ·",
-  "— —     VEL     — —",
-  "• •     OM     • •"
+  "— — —",
+  "• • •",
+  "- - -",
+  "· · ·",
+  "/ / /",
+  "• — •",
+  "— · —",
+  "· — ·",
+  "—   —",
+  "•   •",
+  "·   ·",
+  "/   /",
+  "— • —",
+  "• · •",
+  "· / ·",
+  "/ · /",
+  "— —",
+  "• •",
+  "· ·",
+  "/ /",
+  "— ·",
+  "· —",
+  "• —",
+  "— •",
+  "• / •",
+  "/ — /",
+  "· • ·",
+  "— / —",
+  "• · —",
+  "— · •"
 ];
 
 function hashCodexManuscriptSeed(seed) {
@@ -79,6 +123,43 @@ function pickCodexManuscriptItem(items, rng) {
   return items[Math.floor(rng() * items.length)] || items[0];
 }
 
+function pickCodexManuscriptSyllable(rng, state) {
+  let syllable = pickCodexManuscriptItem(CODEX_MANUSCRIPT_SYLLABLES, rng);
+  let safety = 0;
+
+  while (
+    syllable === state.lastSyllable &&
+    state.repeatCount >= 2 &&
+    safety < 12
+  ) {
+    syllable = pickCodexManuscriptItem(CODEX_MANUSCRIPT_SYLLABLES, rng);
+    safety++;
+  }
+
+  if (syllable === state.lastSyllable) {
+    state.repeatCount++;
+  } else {
+    state.lastSyllable = syllable;
+    state.repeatCount = 1;
+  }
+
+  return syllable;
+}
+
+function buildCodexManuscriptPhrase(rng, state) {
+  const syllableCount = 2 + Math.floor(rng() * 4);
+  const parts = [];
+
+  for (let i = 0; i < syllableCount; i++) {
+    parts.push(pickCodexManuscriptSyllable(rng, state));
+  }
+
+  return parts.reduce((line, part, index) => {
+    if (index === 0) return part;
+    return line + pickCodexManuscriptItem(CODEX_MANUSCRIPT_CONNECTORS, rng) + part;
+  }, "");
+}
+
 function getCodexManuscriptLineClass(rng) {
   const roll = rng();
 
@@ -88,15 +169,15 @@ function getCodexManuscriptLineClass(rng) {
   return "codex-manuscript-line";
 }
 
-function renderCodexManuscriptBlock(rng, index) {
+function renderCodexManuscriptBlock(rng, index, state) {
   const lineCount = 5 + Math.floor(rng() * 5);
   const lines = [];
 
   for (let i = 0; i < lineCount; i++) {
-    const useMark = rng() < 0.28;
+    const useMark = rng() < 0.32;
     const text = useMark
       ? pickCodexManuscriptItem(CODEX_MANUSCRIPT_MARKS, rng)
-      : pickCodexManuscriptItem(CODEX_MANUSCRIPT_FRAGMENTS, rng);
+      : buildCodexManuscriptPhrase(rng, state);
 
     lines.push(`<span class="${getCodexManuscriptLineClass(rng)}">${escapeHtml(text)}</span>`);
   }
@@ -113,11 +194,15 @@ function renderCodexLeftManuscript() {
   if (!root) return;
 
   const rng = createCodexManuscriptRng(CODEX_MANUSCRIPT_SEED);
-  const blockCount = 7;
+  const syllableState = {
+    lastSyllable: "",
+    repeatCount: 0
+  };
+  const blockCount = 9;
   const blocks = [];
 
   for (let i = 0; i < blockCount; i++) {
-    blocks.push(renderCodexManuscriptBlock(rng, i));
+    blocks.push(renderCodexManuscriptBlock(rng, i, syllableState));
   }
 
   root.innerHTML = blocks.join("");
