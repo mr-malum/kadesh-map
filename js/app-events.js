@@ -174,11 +174,36 @@ function toggleCodexDebugGuides() {
   modal.classList.toggle("codex-debug-guides-visible", shouldShow);
 }
 
-function bindCodexDesktopPersistentSearch() {
+function updateCodexDesktopSearchAction() {
+  const input = document.getElementById("codex-desktop-search-input");
+  const action = document.getElementById("codex-desktop-search-action");
+  if (!input || !action) return;
+
+  const hasText = Boolean(String(input.value || "").trim());
+
+  action.textContent = hasText ? "✕" : "⌾";
+  action.classList.toggle("has-query", hasText);
+  action.setAttribute("aria-label", hasText ? "Clear search" : "Focus search");
+}
+
+function clearCodexDesktopPersistentSearch() {
   const input = document.getElementById("codex-desktop-search-input");
   if (!input) return;
 
+  input.value = "";
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+  input.focus();
+}
+
+function bindCodexDesktopPersistentSearch() {
+  const input = document.getElementById("codex-desktop-search-input");
+  const action = document.getElementById("codex-desktop-search-action");
+  if (!input) return;
+
+  updateCodexDesktopSearchAction();
+
   input.addEventListener("input", function () {
+    updateCodexDesktopSearchAction();
     window.clearTimeout(codexDesktopLiveSearchTimer);
 
     const cleanQuery = String(input.value || "").trim();
@@ -198,6 +223,15 @@ function bindCodexDesktopPersistentSearch() {
 
     event.preventDefault();
     input.blur();
+  });
+
+  action?.addEventListener("click", function () {
+    if (String(input.value || "").trim()) {
+      clearCodexDesktopPersistentSearch();
+      return;
+    }
+
+    input.focus();
   });
 }
 
