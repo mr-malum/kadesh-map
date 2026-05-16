@@ -334,7 +334,7 @@ function renderCodexHexPage(hexId) {
 
   const railItems = [
     { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
-    { id: "codex-detail-pois", label: "POIs", icon: "✦", count: pois.length },
+    { id: "codex-detail-pois", label: "POIs", icon: "◎", count: pois.length },
     { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
     { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
   ];
@@ -396,9 +396,9 @@ function renderCodexRegionPage(regionId) {
   setCodexTitle(regionName);
 
   const railItems = [
-    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-lore", label: "Lore", icon: "▤" },
     { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
-    { id: "codex-detail-pois", label: "POIs", icon: "✦", count: poiListRows.length },
+    { id: "codex-detail-pois", label: "POIs", icon: "◎", count: poiListRows.length },
     { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
     { id: "codex-detail-hexes", label: "Hexes", icon: "⬡", count: hexes.length },
     { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
@@ -462,7 +462,7 @@ function renderCodexPoiPage(poiId) {
   setCodexTitle(poiName);
 
   const railItems = [
-    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-lore", label: "Lore", icon: "▤" },
     { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
     { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
     { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
@@ -523,7 +523,7 @@ function renderCodexPoiGroupPage(groupId) {
   setCodexTitle(groupName);
 
   const railItems = [
-    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-lore", label: "Lore", icon: "▤" },
     { id: "codex-detail-journal", label: "DM Journal", icon: "✎" },
     { id: "codex-detail-npcs", label: "NPCs", icon: "♟", count: npcs.length },
     { id: "codex-detail-maps", label: "Maps", icon: "▧", count: maps.length }
@@ -584,7 +584,7 @@ function renderCodexNpcPage(npcId) {
   `;
 
   const railItems = [
-    { id: "codex-detail-lore", label: "Lore", icon: "✧" },
+    { id: "codex-detail-lore", label: "Lore", icon: "▤" },
     { id: "codex-detail-journal", label: "DM Journal", icon: "✎" }
   ];
 
