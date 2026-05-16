@@ -224,7 +224,9 @@
     text-overflow: ellipsis;
   }
 
-  .codex-panel-nav {
+  #codex-overlay .codex-panel-nav,
+  #codex-overlay .panel-nav.codex-panel-nav {
+    position: absolute !important;
     left: var(--codex-mobile-nav-left) !important;
     right: var(--codex-mobile-nav-right) !important;
     top: var(--codex-mobile-nav-y) !important;
@@ -246,12 +248,17 @@
     pointer-events: none;
   }
 
-  #codex-breadcrumbs {
+  #codex-overlay #codex-breadcrumbs {
     position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+
     grid-column: 1 / -1;
     grid-row: 1;
     align-self: end;
 
+    display: block;
     width: 100%;
     max-width: 100%;
     min-height: 1.2em;
@@ -264,7 +271,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    text-align: left;
+    text-align: center;
     font-size: clamp(0.72rem, calc(var(--codex-mobile-image-width) * 0.028), 0.95rem);
     line-height: 1.2;
 
