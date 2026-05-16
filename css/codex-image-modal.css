@@ -1,0 +1,197 @@
+/* =========================================================
+   CODEX IMAGE POPOUT MODAL
+   ========================================================= */
+
+.codex-image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 160ms ease;
+}
+
+.codex-image-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.codex-image-modal-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(12, 7, 3, 0.64);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.codex-image-modal-panel {
+  position: relative;
+  z-index: 1;
+
+  width: min(92vw, 1080px);
+  height: min(88vh, 820px);
+  height: min(88dvh, 820px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  box-sizing: border-box;
+
+  isolation: isolate;
+}
+
+.codex-image-modal-panel::before {
+  content: none;
+}
+
+.codex-image-modal-frame {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+  touch-action: none;
+}
+
+.codex-image-modal-img {
+  display: block;
+
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: contain;
+  object-position: center;
+
+  border: 0;
+  outline: none;
+
+  transform-origin: center;
+  transition: transform 80ms ease-out;
+  user-select: none;
+  -webkit-user-drag: none;
+
+  box-shadow:
+    12px 14px 22px rgba(0, 0, 0, 0.42),
+    4px 5px 8px rgba(0, 0, 0, 0.28);
+
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.codex-image-modal-img.zoomed {
+  cursor: grab;
+}
+
+.codex-image-modal-img.zoomed.panning {
+  cursor: grabbing;
+  transition: none;
+}
+
+.codex-image-modal-close,
+.codex-image-modal-nav {
+  position: absolute;
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(72, 43, 18, 0.26);
+  border-radius: 999px;
+
+  background: rgba(239, 211, 158, 0.86);
+  color: #2f1d10;
+
+  font-family: 'Marcellus SC', Georgia, serif;
+  line-height: 1;
+
+  cursor: pointer;
+
+  box-shadow:
+    5px 6px 10px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 242, 210, 0.28);
+}
+
+.codex-image-modal-close {
+  top: clamp(4px, 1vw, 10px);
+  right: clamp(-28px, -2vw, -18px);
+
+  width: 34px;
+  height: 34px;
+
+  font-size: 1.02rem;
+}
+
+.codex-image-modal-nav {
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 42px;
+  height: 58px;
+
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.codex-image-modal-prev {
+  left: clamp(-54px, -4.5vw, -42px);
+}
+
+.codex-image-modal-next {
+  right: clamp(-54px, -4.5vw, -42px);
+}
+
+.codex-image-modal-nav[hidden] {
+  display: none;
+}
+
+.codex-image-modal-close:hover,
+.codex-image-modal-close:focus-visible,
+.codex-image-modal-nav:hover,
+.codex-image-modal-nav:focus-visible {
+  background: rgba(246, 225, 182, 0.96);
+  outline: none;
+}
+
+@media (max-width: 700px) {
+  .codex-image-modal-panel {
+    width: 88vw;
+    height: 78vh;
+    height: 78dvh;
+  }
+
+  .codex-image-modal-close {
+    top: -42px;
+    right: -4px;
+  }
+
+  .codex-image-modal-nav {
+    width: 36px;
+    height: 48px;
+    font-size: 1.7rem;
+  }
+
+  .codex-image-modal-prev {
+    left: -8px;
+  }
+
+  .codex-image-modal-next {
+    right: -8px;
+  }
+}

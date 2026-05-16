@@ -52,28 +52,18 @@ function bindHexEvents(hex, hexId) {
       .getElementById("codex-button")
       .classList.remove("codex-label-visible");
 
+    closePanel({ syncHistory: false });
     selectHex(this);
     selectedHexId = hexId;
 
-    if (isTouchDevice) {
-      this.bindPopup(buildMobilePopupHtml(hexId)).openPopup();
-      return;
-    }
-
-    renderHexPreview(hexId);
-
-    const panelWidth =
-      document.getElementById("app-panel").offsetWidth;
-
-    if (panelWidth / window.innerWidth > 0.32) {
-      panHexIntoInspectorView(hexId);
-    }
+    this.bindPopup(buildMobilePopupHtml(hexId)).openPopup();
   });
 }
 
 function bindMapEvents() {
   map.on("click", function () {
     closePanel();
+    map.closePopup();
 
     document
       .getElementById("codex-button")
@@ -181,7 +171,7 @@ function updateCodexDesktopSearchAction() {
 
   const hasText = Boolean(String(input.value || "").trim());
 
-  action.textContent = hasText ? "✕" : "⌾";
+  action.textContent = hasText ? "✕" : getCodexIcon("search");
   action.classList.toggle("has-query", hasText);
   action.setAttribute("aria-label", hasText ? "Clear search" : "Focus search");
 }

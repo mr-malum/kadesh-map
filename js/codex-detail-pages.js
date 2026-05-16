@@ -360,7 +360,10 @@ function renderCodexHexPage(hexId) {
     renderCodexDetailRailSection("codex-detail-maps", "Maps", renderCodexMapsContent(maps, "No maps recorded for this hex."))
   ].join("");
 
-  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexBreadcrumbTrail(`Hex ${hexId}`));
+  setCodexContent(renderCodexDetailRailPage(overview, railItems, sections), buildCodexBreadcrumbTrail(`Hex ${hexId}`, {
+    label: "Hexes",
+    pageType: "hexes"
+  }));
 
   document.getElementById("codex-content").classList.add("codex-detail-page", "codex-hex-detail-page");
 }
