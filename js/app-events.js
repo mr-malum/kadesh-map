@@ -130,9 +130,16 @@ function bindCodexEvents() {
     });
 }
 
-function handleCodexBackAction() {
+function handleCodexBackAction(options = {}) {
+  const shouldRearmBrowserTrap = options.rearmBrowserTrap === true;
+
   if (codexHistory.length > 1) {
     goBackCodex();
+
+    if (shouldRearmBrowserTrap && isCodexOpen()) {
+      ensureAppBrowserBackTrap();
+    }
+
     return;
   }
 
@@ -379,7 +386,7 @@ window.addEventListener("popstate", function () {
   }
 
   if (isCodexOpen()) {
-    handleCodexBackAction();
+    handleCodexBackAction({ rearmBrowserTrap: true });
     return;
   }
 
