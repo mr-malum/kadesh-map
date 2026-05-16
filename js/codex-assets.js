@@ -53,6 +53,67 @@ function getCodexImageUrl(record, fieldNames) {
   return resolveCodexAssetUrl(getCodexRawAssetValue(record, fieldNames));
 }
 
+function getRegionImageUrl(region) {
+  return getCodexImageUrl(region, [
+    "Image_File_ID",
+    "Image",
+    "Image_URL",
+    "Region_Image_File_ID",
+    "Region_Image",
+    "Region_Image_URL"
+  ]);
+}
+
+function getPoiImageUrl(poi) {
+  return getCodexImageUrl(poi, [
+    "Image_File_ID",
+    "Image",
+    "Image_URL",
+    "POI_Image_File_ID",
+    "POI_Image",
+    "POI_Image_URL"
+  ]);
+}
+
+function getPoiGroupImageUrl(group) {
+  return getCodexImageUrl(group, [
+    "Image_File_ID",
+    "Image",
+    "Image_URL",
+    "POI_Group_Image_File_ID",
+    "POI_Group_Image",
+    "POI_Group_Image_URL",
+    "Group_Image_File_ID",
+    "Group_Image",
+    "Group_Image_URL"
+  ]);
+}
+
+function getNpcImageUrl(npc) {
+  return getCodexImageUrl(npc, [
+    "Image_File_ID",
+    "Image",
+    "Image_URL",
+    "NPC_Image_File_ID",
+    "NPC_Image",
+    "NPC_Image_URL",
+    "Portrait_File_ID",
+    "Portrait",
+    "Portrait_URL"
+  ]);
+}
+
+function getCodexMapImageUrl(map) {
+  return getCodexImageUrl(map, [
+    "Map_Image_File_ID",
+    "Image_File_ID",
+    "Map_Image",
+    "Map_Image_URL",
+    "Image",
+    "Image_URL"
+  ]);
+}
+
 function getCodexAssetAttrs(imageUrl, assetKind = "record") {
   const resolvedUrl = resolveCodexAssetUrl(imageUrl);
   if (!resolvedUrl) return "";
@@ -106,6 +167,19 @@ function renderCodexMapCard(map) {
   `;
 }
 
+function ensureCodexImageMissingLabel(node) {
+  if (!node || node.querySelector?.(".codex-image-state-label")) return;
+
+  const label = document.createElement("span");
+  label.className = "codex-image-state-label";
+  label.setAttribute("aria-hidden", "true");
+  label.textContent = node.dataset.codexImageKind === "map"
+    ? "Map unavailable"
+    : "Image unavailable";
+
+  node.appendChild(label);
+}
+
 function hydrateCodexImageAssets(root = document) {
   const nodes = Array.from(root.querySelectorAll?.("[data-codex-image-source]") || []);
 
@@ -126,10 +200,72 @@ function hydrateCodexImageAssets(root = document) {
     image.onerror = () => {
       node.classList.remove("codex-image-loading", "codex-image-loaded");
       node.classList.add("codex-image-missing");
+      ensureCodexImageMissingLabel(node);
     };
 
     image.src = src;
   });
+}
+
+function injectCodexAssetStyles() {
+  if (document.getElementById("codex-asset-state-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "codex-asset-state-styles";
+  style.textContent = `
+    [data-codex-image-source].codex-image-missing {
+      --codex-record-image: none !important;
+      --codex-map-image: none !important;
+    }
+
+    .codex-image-state-label {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 4;
+
+      display: none;
+      transform: translate(-50%, -50%);
+
+      max-width: 82%;
+      padding: 6px 9px;
+
+      border: 1px solid rgba(72, 43, 18, 0.28);
+      border-radius: 999px;
+
+      background: rgba(239, 211, 158, 0.76);
+      color: rgba(47, 29, 16, 0.86);
+
+      font-family: 'Marcellus SC', Georgia, serif;
+      font-size: 0.72rem;
+      line-height: 1.05;
+      letter-spacing: 0.045em;
+      text-align: center;
+      text-transform: uppercase;
+
+      box-shadow:
+        0 1px 4px rgba(45, 25, 8, 0.12),
+        inset 0 1px 0 rgba(255, 242, 210, 0.30);
+
+      pointer-events: none;
+    }
+
+    .codex-image-missing > .codex-image-state-label,
+    .codex-map-card-missing > .codex-image-state-label {
+      display: block;
+    }
+
+    .codex-map-card-missing::before {
+      opacity: 0.42;
+    }
+
+    .codex-image-missing {
+      outline: 1px solid rgba(120, 56, 31, 0.28);
+      outline-offset: -1px;
+    }
+  `;
+
+  document.head.appendChild(style);
 }
 
 if (typeof setCodexContent === "function") {
@@ -142,6 +278,7 @@ if (typeof setCodexContent === "function") {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  injectCodexAssetStyles();
   hydrateCodexImageAssets(document);
 });
 
