@@ -157,7 +157,8 @@
     bottom: calc(env(safe-area-inset-bottom) + 18px);
 
     display: grid !important;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: end;
     gap: 8px;
 
     margin: 0 !important;
@@ -181,7 +182,7 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    text-align: center;
+    text-align: left;
     font-size: clamp(0.78rem, 3.2vw, 0.95rem);
     line-height: 1.2;
 
@@ -201,13 +202,24 @@
     text-overflow: ellipsis;
   }
 
+  #codex-mobile-debug-toggle {
+    pointer-events: auto;
+    min-width: 58px;
+    min-height: 40px;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 0.78rem;
+    line-height: 1;
+    opacity: 0.82;
+  }
+
   .codex-control-cluster {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 10px;
 
-    width: 100%;
+    width: auto;
     margin: 0;
 
     pointer-events: auto;
@@ -255,6 +267,50 @@
     height: 100%;
     min-height: 0;
     max-height: none;
+  }
+
+  #codex-modal.codex-debug-guides-visible #codex-header,
+  #codex-modal.codex-debug-guides-visible #codex-content,
+  #codex-modal.codex-debug-guides-visible .codex-panel-nav {
+    outline: 2px solid;
+    outline-offset: -2px;
+  }
+
+  #codex-modal.codex-debug-guides-visible #codex-header {
+    background: rgba(255, 224, 64, 0.24);
+    outline-color: rgba(255, 224, 64, 0.95);
+  }
+
+  #codex-modal.codex-debug-guides-visible #codex-content {
+    background: rgba(180, 96, 255, 0.16);
+    outline-color: rgba(180, 96, 255, 0.92);
+  }
+
+  #codex-modal.codex-debug-guides-visible .codex-panel-nav {
+    background: rgba(64, 192, 255, 0.16);
+    outline-color: rgba(64, 192, 255, 0.92);
+  }
+
+  #codex-modal.codex-debug-guides-visible #codex-book-stage::after {
+    content: "mobile shell safe area";
+    position: absolute;
+    inset: 0;
+    border: 2px dashed rgba(64, 255, 128, 0.86);
+    background: rgba(64, 255, 128, 0.06);
+    color: rgba(30, 78, 46, 0.95);
+    font: 700 11px/1.1 system-ui, sans-serif;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 4px;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 20;
+  }
+}
+
+@media (min-width: 1100px) and (min-height: 700px) {
+  #codex-mobile-debug-toggle {
+    display: none !important;
   }
 }
 
@@ -383,6 +439,12 @@
   #codex-search-button {
     min-width: 78px;
     padding-inline: 12px;
+  }
+
+  #codex-mobile-debug-toggle {
+    min-width: 48px;
+    padding-inline: 8px;
+    font-size: 0.72rem;
   }
 }
 
