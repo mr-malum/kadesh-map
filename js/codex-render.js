@@ -87,13 +87,13 @@ function getCodexRecordTypeIcon(type) {
   switch (type) {
     case "poi":
     case "poi-group":
-      return "✦";
+      return "◎";
 
     case "npc":
       return "♟";
 
     case "region":
-      return "◇";
+      return "✥";
 
     case "hex":
       return "⬡";
