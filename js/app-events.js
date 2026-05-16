@@ -130,7 +130,18 @@ function bindCodexEvents() {
     });
 }
 
+function closeTopCodexLayer() {
+  if (typeof isCodexImageModalOpen === "function" && isCodexImageModalOpen()) {
+    closeCodexImageModal();
+    return true;
+  }
+
+  return false;
+}
+
 function handleCodexBackAction() {
+  if (closeTopCodexLayer()) return;
+
   if (isMobileBrowserBackEnabled() && appBrowserHistoryDepth > 0) {
     history.back();
     return;
@@ -395,6 +406,10 @@ window.addEventListener("popstate", function () {
 
   if (appBrowserHistoryDepth > 0) {
     appBrowserHistoryDepth -= 1;
+  }
+
+  if (closeTopCodexLayer()) {
+    return;
   }
 
   if (isCodexOpen()) {
