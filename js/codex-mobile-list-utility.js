@@ -7,8 +7,10 @@
 */
 
 let originalRenderCodexListPage = renderCodexListPage;
+let originalRenderCodexHexListPage = renderCodexHexListPage;
 let codexListStateCache = {};
 let codexCurrentListConfig = null;
+let codexHexListStateCache = null;
 
 function getCodexListStateKey(config) {
   return config?.listId || config?.title || "default-list";
@@ -136,6 +138,7 @@ function applyCodexCachedListState(config) {
 
 function openCodexListResult(type, id) {
   updateCodexListStateFromControls();
+  cacheCodexHexListState();
   openCodexPage(type, id);
 }
 
@@ -269,6 +272,147 @@ function renderCodexListPage(config) {
   bindCodexListStateListeners(listConfig);
   applyCodexCachedListState(listConfig);
   listConfig.renderList();
+  registerCodexMobileListFilterUtility();
+}
+
+function getCodexHexListSortLabel(sortMode) {
+  return hexCodexListConfig.sortOptions.find(option => option.value === sortMode)?.label || sortMode || "Hex ID";
+}
+
+function getCheckedHexRegionLabels() {
+  const selectedIds = readCheckedHexRegionIds();
+  const allRegions = getHexRegionFilterOptions();
+
+  if (selectedIds.size === allRegions.length) return ["All Regions"];
+  if (selectedIds.size === 0) return ["No Regions"];
+
+  return allRegions
+    .filter(region => selectedIds.has(region.id))
+    .map(region => region.label);
+}
+
+function cacheCodexHexListState() {
+  const sortMode = document.getElementById(hexCodexListConfig.sortId)?.value || hexCodexListConfig.selectedSort;
+  const direction = document.getElementById(hexCodexListConfig.directionId)?.dataset?.direction || "asc";
+  const regionIds = [...readCheckedHexRegionIds()];
+
+  codexHexListStateCache = { sortMode, direction, regionIds };
+}
+
+function applyCodexHexListState() {
+  if (!codexHexListStateCache) {
+    cacheCodexHexListState();
+    updateCodexHexListSummary();
+    return;
+  }
+
+  const sortEl = document.getElementById(hexCodexListConfig.sortId);
+  if (sortEl) sortEl.value = codexHexListStateCache.sortMode;
+
+  const directionEl = document.getElementById(hexCodexListConfig.directionId);
+  if (directionEl) {
+    directionEl.dataset.direction = codexHexListStateCache.direction;
+    directionEl.textContent = codexHexListStateCache.direction === "asc" ? "↑ ASC" : "↓ DESC";
+  }
+
+  const selectedIds = new Set(codexHexListStateCache.regionIds || []);
+  getHexRegionCheckboxes().forEach(checkbox => {
+    checkbox.checked = selectedIds.has(checkbox.value);
+  });
+
+  updateHexRegionAllCheckbox();
+  updateCodexHexListSummary();
+}
+
+function renderCodexHexListSummaryInner() {
+  const state = codexHexListStateCache || {
+    sortMode: hexCodexListConfig.selectedSort,
+    direction: "asc"
+  };
+
+  const regions = getCheckedHexRegionLabels().join(" • ");
+  const sortLabel = getCodexHexListSortLabel(state.sortMode);
+  const directionArrow = state.direction === "desc" ? "↓" : "↑";
+
+  return `
+    <span class="codex-mobile-list-summary-filters">${escapeHtml(regions)}</span>
+    <span class="codex-mobile-list-summary-sort">${escapeHtml(sortLabel)} ${directionArrow}</span>
+  `;
+}
+
+function renderCodexHexListSummary() {
+  return `
+    <div id="codex-mobile-list-summary" class="codex-mobile-list-summary codex-mobile-hex-list-summary">
+      ${renderCodexHexListSummaryInner()}
+    </div>
+  `;
+}
+
+function updateCodexHexListSummary() {
+  const summary = document.getElementById("codex-mobile-list-summary");
+  if (!summary) return;
+
+  summary.innerHTML = renderCodexHexListSummaryInner();
+}
+
+function renderCodexHexListPage() {
+  setCodexTitle("Hexes");
+
+  setCodexContent(`
+    <div class="codex-list-page-shell codex-hex-list-page-shell">
+      ${renderCodexHexListSummary()}
+
+      <div class="codex-list-control-split-view">
+        <aside class="codex-list-control-rail codex-hex-list-control-rail">
+          <div id="codex-list-controls-home">
+            <div class="codex-list-controls-shell" id="codex-list-controls-shell" data-mobile-mounted="false">
+              <div class="codex-mobile-controls-panel">
+                <div class="codex-mobile-controls-heading">
+                  <h3>Filter & Sort</h3>
+                </div>
+
+                ${renderHexListControls()}
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <div class="codex-list-scroll-shell codex-scroll-fade">
+          <div id="codex-hex-list"></div>
+        </div>
+      </div>
+    </div>
+  `, [
+    { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
+    { label: "Hexes" }
+  ]);
+
+  document.getElementById("codex-content").classList.add("codex-list-page", "codex-hexes-index-page");
+
+  bindHexListControls();
+  applyCodexHexListState();
+
+  const controls = document.getElementById("codex-list-controls-shell");
+  controls?.addEventListener("change", function () {
+    window.setTimeout(() => {
+      cacheCodexHexListState();
+      updateCodexHexListSummary();
+    }, 0);
+  });
+
+  document.getElementById(hexCodexListConfig.directionId)?.addEventListener("click", function () {
+    window.setTimeout(() => {
+      cacheCodexHexListState();
+      updateCodexHexListSummary();
+    }, 0);
+  });
+
+  document.getElementById("codex-hex-list")?.addEventListener("click", function (event) {
+    if (!event.target.closest?.(".codex-linked-record-row")) return;
+    cacheCodexHexListState();
+  }, true);
+
+  renderHexListIntoContainer();
   registerCodexMobileListFilterUtility();
 }
 
