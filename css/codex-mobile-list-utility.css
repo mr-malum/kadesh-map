@@ -141,6 +141,12 @@
     text-transform: uppercase !important;
   }
 
+  .codex-mobile-list-controls-mount .codex-filter-field-select {
+    width: 67% !important;
+    max-width: 67% !important;
+    align-self: flex-start !important;
+  }
+
   .codex-mobile-list-controls-mount .codex-sort-topline {
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) auto !important;
