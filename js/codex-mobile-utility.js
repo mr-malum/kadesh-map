@@ -6,7 +6,8 @@ let codexMobileUtilityState = {
   type: "none",
   label: "",
   panelTitle: "",
-  renderPanel: null
+  renderPanel: null,
+  bindPanel: null
 };
 
 function isMobileCodexUtilityLayout() {
@@ -39,7 +40,8 @@ function setCodexMobileUtility(config = {}) {
     type: config.type || "none",
     label: config.label || "",
     panelTitle: config.panelTitle || config.label || "",
-    renderPanel: config.renderPanel || null
+    renderPanel: config.renderPanel || null,
+    bindPanel: config.bindPanel || null
   };
 
   updateCodexMobileUtilityButton();
@@ -87,6 +89,10 @@ function openCodexMobileUtilityPanel() {
 
   panel.querySelector(".codex-mobile-utility-close")
     ?.addEventListener("click", closeCodexMobileUtilityPanel);
+
+  if (typeof codexMobileUtilityState.bindPanel === "function") {
+    codexMobileUtilityState.bindPanel(panel);
+  }
 
   panel.classList.add("open");
   panel.setAttribute("aria-hidden", "false");
