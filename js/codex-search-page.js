@@ -80,7 +80,9 @@ function bindCodexSearchInput() {
     renderCodexSearchResults(codexSearchQuery);
   }
 
-  input.focus();
+  if (!isMobileCodexSearchLayout()) {
+    input.focus();
+  }
 }
 
 function isMobileCodexSearchLayout() {
