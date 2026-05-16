@@ -31,17 +31,19 @@
   }
 
   #codex-title::after {
-    bottom: calc(-17 * var(--codex-book-scale));
+    bottom: calc(-15 * var(--codex-book-scale));
 
-    width: min(122%, calc(520 * var(--codex-book-scale)));
-    height: calc(18 * var(--codex-book-scale));
+    width: min(118%, calc(480 * var(--codex-book-scale)));
+    height: 1px;
 
-    background-image: url("../assets/codex/Header_Divider.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(72, 43, 18, 0.65),
+      transparent
+    );
 
-    opacity: 0.92;
+    opacity: 1;
   }
 
   #codex-overlay.open .codex-panel-nav #codex-back,
