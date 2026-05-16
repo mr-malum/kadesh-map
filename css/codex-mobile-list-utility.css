@@ -185,10 +185,13 @@
     text-transform: uppercase !important;
   }
 
-  .codex-mobile-list-controls-mount .codex-filter-field-select {
+  .codex-mobile-list-controls-mount select.codex-filter-field-select,
+  .codex-mobile-list-controls-mount .codex-dynamic-filter > select.codex-filter-field-select {
     width: 67% !important;
     max-width: 67% !important;
+    min-width: 0 !important;
     align-self: flex-start !important;
+    justify-self: start !important;
   }
 
   .codex-mobile-list-controls-mount .codex-sort-topline {
