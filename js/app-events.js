@@ -136,14 +136,23 @@ function handleCodexBackAction(options = {}) {
   if (codexHistory.length > 1) {
     goBackCodex();
 
-    if (shouldRearmBrowserTrap && isCodexOpen()) {
-      ensureAppBrowserBackTrap();
+    if (shouldRearmBrowserTrap) {
+      scheduleAppBrowserBackTrapRearm();
     }
 
     return;
   }
 
   closeCodex();
+}
+
+function scheduleAppBrowserBackTrapRearm() {
+  if (!isMobileBrowserBackEnabled()) return;
+
+  window.setTimeout(() => {
+    if (!isCodexOpen()) return;
+    ensureAppBrowserBackTrap({ force: true });
+  }, 0);
 }
 
 function isDesktopCodexBookLayout() {
@@ -351,10 +360,12 @@ function isAppPanelOpen() {
     ?.classList.contains("open");
 }
 
-function ensureAppBrowserBackTrap() {
+function ensureAppBrowserBackTrap(options = {}) {
   if (!isMobileBrowserBackEnabled()) return;
 
-  if (appBrowserHistoryDepth > 0) return;
+  const force = options.force === true;
+
+  if (!force && appBrowserHistoryDepth > 0) return;
 
   appBrowserHistoryDepth = 1;
   history.pushState({ appPanelTrap: true }, "");
