@@ -22,14 +22,14 @@
     --codex-mobile-image-width: calc(var(--codex-mobile-image-height) * 2 / 3);
 
     /* Native Mobile_Codex.png zones, expressed as percentages. */
-    --codex-mobile-safe-x: 5%;          /* 80 / 1600 */
-    --codex-mobile-safe-y: 3.333333%;   /* 80 / 2400 */
-    --codex-mobile-safe-w: 90%;         /* 1440 / 1600 */
-    --codex-mobile-safe-h: 93.333333%;  /* 2240 / 2400 */
+    --codex-mobile-safe-x: 5%;
+    --codex-mobile-safe-y: 3.333333%;
+    --codex-mobile-safe-w: 90%;
+    --codex-mobile-safe-h: 93.333333%;
 
     /*
       Height-first scaling can make the rendered Codex wider than the viewport.
-      These insets keep interactive zones inside BOTH the asset safe zone and
+      This inset keeps interactive zones inside BOTH the asset safe zone and
       the actually visible viewport slice of the centered image.
     */
     --codex-mobile-visible-edge-inset: max(
@@ -40,22 +40,22 @@
     --codex-mobile-header-left: var(--codex-mobile-visible-edge-inset);
     --codex-mobile-header-right: var(--codex-mobile-visible-edge-inset);
     --codex-mobile-header-y: var(--codex-mobile-safe-y);
-    --codex-mobile-header-h: 9.166667%; /* 220 / 2400 */
+    --codex-mobile-header-h: 9.166667%;
 
     --codex-mobile-utility-left: var(--codex-mobile-visible-edge-inset);
     --codex-mobile-utility-right: var(--codex-mobile-visible-edge-inset);
-    --codex-mobile-utility-y: 12.916667%; /* 310 / 2400 */
-    --codex-mobile-utility-h: 5.833333%;  /* 140 / 2400 */
+    --codex-mobile-utility-y: 12.916667%;
+    --codex-mobile-utility-h: 5.833333%;
 
     --codex-mobile-content-left: var(--codex-mobile-visible-edge-inset);
     --codex-mobile-content-right: var(--codex-mobile-visible-edge-inset);
-    --codex-mobile-content-y: 14.166667%; /* 340 / 2400 */
-    --codex-mobile-content-h: 74.166667%; /* 1780 / 2400 */
+    --codex-mobile-content-y: 14.166667%;
+    --codex-mobile-content-h: 74.166667%;
 
     --codex-mobile-nav-left: var(--codex-mobile-visible-edge-inset);
     --codex-mobile-nav-right: var(--codex-mobile-visible-edge-inset);
-    --codex-mobile-nav-y: 90%; /* 2160 / 2400 */
-    --codex-mobile-nav-h: 6.666667%; /* 160 / 2400 */
+    --codex-mobile-nav-y: 90%;
+    --codex-mobile-nav-h: 6.666667%;
 
     position: relative;
 
@@ -139,9 +139,11 @@
   }
 
   #codex-header {
-    left: var(--codex-mobile-header-left);
-    right: var(--codex-mobile-header-right);
-    top: var(--codex-mobile-header-y);
+    left: var(--codex-mobile-header-left) !important;
+    right: var(--codex-mobile-header-right) !important;
+    top: var(--codex-mobile-header-y) !important;
+    width: auto !important;
+    max-width: none !important;
     height: var(--codex-mobile-header-h);
 
     display: flex;
@@ -169,13 +171,15 @@
   }
 
   #codex-content {
-    left: var(--codex-mobile-content-left);
-    right: var(--codex-mobile-content-right);
-    top: var(--codex-mobile-content-y);
+    left: var(--codex-mobile-content-left) !important;
+    right: var(--codex-mobile-content-right) !important;
+    top: var(--codex-mobile-content-y) !important;
+    width: auto !important;
+    max-width: none !important;
     height: var(--codex-mobile-content-h);
     min-height: 0;
 
-    margin: 0;
+    margin: 0 !important;
     padding: 0 2px 12px;
 
     box-sizing: border-box;
@@ -189,6 +193,7 @@
 
   #codex-content.codex-home {
     display: block;
+    width: auto !important;
     max-width: none;
   }
 
@@ -224,11 +229,13 @@
     right: var(--codex-mobile-nav-right) !important;
     top: var(--codex-mobile-nav-y) !important;
     bottom: auto !important;
+    width: auto !important;
+    max-width: none !important;
 
     height: var(--codex-mobile-nav-h);
 
     display: grid !important;
-    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
     gap: 8px;
 
@@ -274,6 +281,11 @@
   }
 
   #codex-mobile-debug-toggle {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+
     pointer-events: auto;
     min-width: 58px;
     min-height: 40px;
@@ -282,6 +294,7 @@
     font-size: 0.78rem;
     line-height: 1;
     opacity: 0.82;
+    z-index: 2;
   }
 
   .codex-control-cluster {
