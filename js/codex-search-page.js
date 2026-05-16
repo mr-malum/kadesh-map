@@ -3,9 +3,9 @@
    ========================================================= */
 
 const CODEX_SEARCH_GROUPS = [
-  { type: "poi", label: "POIs", icon: "✦" },
+  { type: "poi", label: "POIs", icon: "◎" },
   { type: "npc", label: "NPCs", icon: "♟" },
-  { type: "region", label: "Regions", icon: "◇" },
+  { type: "region", label: "Regions", icon: "✥" },
   { type: "hex", label: "Hexes", icon: "⬡" }
 ];
 
@@ -524,7 +524,7 @@ function renderCodexSearchResultGroups(results) {
 }
 
 function getCodexSearchGroupIcon(type) {
-  if (type === "all") return "✧";
+  if (type === "all") return "▤";
 
   const group = CODEX_SEARCH_GROUPS.find(item => item.type === type);
   return group?.icon || "•";
