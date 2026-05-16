@@ -2,8 +2,6 @@
    DECORATIVE LEFT PAGE MANUSCRIPT
    ========================================================= */
 
-const CODEX_MANUSCRIPT_SEED = "kadesh-left-page-v2";
-
 const CODEX_MANUSCRIPT_SYLLABLES = [
   "KAD",
   "VOR",
@@ -97,6 +95,10 @@ const CODEX_MANUSCRIPT_MARKS = [
   "— · •"
 ];
 
+function createRandomCodexManuscriptSeed() {
+  return `kadesh-left-page-${Date.now()}-${Math.random()}`;
+}
+
 function hashCodexManuscriptSeed(seed) {
   let hash = 2166136261;
 
@@ -189,17 +191,20 @@ function renderCodexManuscriptBlock(rng, index, state) {
   return `<div class="codex-manuscript-block">${lines.join("")}</div>`;
 }
 
-function renderCodexLeftManuscript() {
+function renderCodexLeftManuscript(seed = createRandomCodexManuscriptSeed()) {
   const root = document.getElementById("codex-left-manuscript");
   if (!root) return;
 
-  const rng = createCodexManuscriptRng(CODEX_MANUSCRIPT_SEED);
+  const rng = createCodexManuscriptRng(seed);
+  const columnCount = 2 + Math.floor(rng() * 3);
   const syllableState = {
     lastSyllable: "",
     repeatCount: 0
   };
-  const blockCount = 9;
+  const blockCount = columnCount * (3 + Math.floor(rng() * 2));
   const blocks = [];
+
+  root.style.setProperty("--codex-manuscript-columns", String(columnCount));
 
   for (let i = 0; i < blockCount; i++) {
     blocks.push(renderCodexManuscriptBlock(rng, i, syllableState));
@@ -210,4 +215,6 @@ function renderCodexLeftManuscript() {
 
 window.renderCodexLeftManuscript = renderCodexLeftManuscript;
 
-document.addEventListener("DOMContentLoaded", renderCodexLeftManuscript);
+document.addEventListener("DOMContentLoaded", () => {
+  renderCodexLeftManuscript();
+});
