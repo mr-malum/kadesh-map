@@ -383,6 +383,8 @@ function renderCodexIndex() {
   renderCodexBreadcrumbs([]);
 
   clearCodexMobileUtility?.();
+  resetCodexMobileListState?.();
+  codexSearchActiveGroup = "all";
 
   codexSearchQuery = "";
   syncCodexDesktopPersistentSearchInput("");
