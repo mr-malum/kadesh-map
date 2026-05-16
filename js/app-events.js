@@ -266,6 +266,7 @@ function openCodexGlobalSearchModal() {
     if (event.key !== "Enter") return;
 
     event.preventDefault();
+    input.blur();
     commitCodexGlobalSearch(input.value);
   });
 }
@@ -274,6 +275,7 @@ function commitCodexGlobalSearch(query) {
   const cleanQuery = String(query || "").trim();
   if (!cleanQuery) return;
 
+  document.activeElement?.blur?.();
   closeCodexGlobalSearchModal();
   openCodexSearchResults(cleanQuery);
 }
