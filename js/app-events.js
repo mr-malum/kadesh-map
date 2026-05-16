@@ -113,6 +113,10 @@ function bindCodexEvents() {
     .getElementById("codex-search-button")
     .addEventListener("click", openCodexGlobalSearchModal);
 
+  document
+    .getElementById("codex-mobile-debug-toggle")
+    ?.addEventListener("click", toggleCodexDebugGuides);
+
   bindCodexDesktopPersistentSearch();
 
   document
