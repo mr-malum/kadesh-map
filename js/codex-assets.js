@@ -30,7 +30,7 @@ function getGoogleDriveImageSrc(fileId) {
 }
 
 function getGoogleDrivePreviewUrl(fileId) {
-  return `https://drive.google.com/file/d/${encodeURIComponent(fileId)}/view`;
+  return getGoogleDriveImageSrc(fileId);
 }
 
 function getCodexAssetInfo(value) {
@@ -48,10 +48,12 @@ function getCodexAssetInfo(value) {
   const driveId = extractGoogleDriveFileId(raw) || (isLikelyGoogleDriveFileId(raw) ? raw : "");
 
   if (driveId) {
+    const src = getGoogleDriveImageSrc(driveId);
+
     return {
       raw,
-      src: getGoogleDriveImageSrc(driveId),
-      href: getGoogleDrivePreviewUrl(driveId),
+      src,
+      href: src,
       driveId,
       isDrive: true
     };
@@ -161,11 +163,13 @@ function getCodexAssetAttrs(imageUrl, assetKind = "record") {
   const resolvedUrl = resolveCodexAssetUrl(imageUrl);
   if (!resolvedUrl) return "";
 
+  const resolvedHref = resolveCodexAssetHref(imageUrl) || resolvedUrl;
   const cssVar = assetKind === "map" ? "--codex-map-image" : "--codex-record-image";
 
   return [
     `style="${cssVar}: url('${escapeJsString(resolvedUrl)}')"`,
     `data-codex-image-source="${escapeHtml(resolvedUrl)}"`,
+    `data-codex-image-href="${escapeHtml(resolvedHref)}"`,
     `data-codex-image-kind="${escapeHtml(assetKind)}"`
   ].join(" ");
 }
@@ -224,10 +228,48 @@ function ensureCodexImageMissingLabel(node) {
   node.appendChild(label);
 }
 
+function bindCodexImageExpansion(node) {
+  if (!node || node.dataset.codexImageClickBound === "true") return;
+
+  const href = node.dataset.codexImageHref || node.dataset.codexImageSource;
+  if (!href) return;
+
+  node.dataset.codexImageClickBound = "true";
+  node.classList.add("codex-image-expandable");
+  node.setAttribute("title", "Open image");
+
+  if (!node.closest("a")) {
+    node.setAttribute("tabindex", "0");
+    node.setAttribute("role", "button");
+    node.setAttribute("aria-label", "Open image");
+  }
+
+  node.addEventListener("click", event => {
+    if (node.classList.contains("codex-image-missing")) return;
+
+    if (!node.closest("a")) {
+      event.preventDefault();
+      event.stopPropagation();
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+  });
+
+  node.addEventListener("keydown", event => {
+    if (node.classList.contains("codex-image-missing")) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    window.open(href, "_blank", "noopener,noreferrer");
+  });
+}
+
 function hydrateCodexImageAssets(root = document) {
   const nodes = Array.from(root.querySelectorAll?.("[data-codex-image-source]") || []);
 
   nodes.forEach(node => {
+    bindCodexImageExpansion(node);
+
     const src = node.dataset.codexImageSource;
     if (!src || node.dataset.codexImageChecked === "true") return;
 
@@ -274,6 +316,64 @@ function injectCodexAssetStyles() {
     .codex-placeholder-poi.codex-image-missing::before,
     .codex-placeholder-region.codex-image-missing::before {
       opacity: 0.90;
+    }
+
+    .codex-placeholder-npc,
+    .codex-map-card::before {
+      background-size: contain !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .codex-placeholder-settlement,
+    .codex-placeholder-poi,
+    .codex-placeholder-region,
+    .codex-region-tile-image {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .codex-image-expandable {
+      cursor: zoom-in;
+    }
+
+    .codex-image-expandable:focus-visible {
+      outline: 1px solid rgba(72, 43, 18, 0.45);
+      outline-offset: -3px;
+    }
+
+    .codex-map-card {
+      border-radius: 16px;
+    }
+
+    .codex-map-card::before {
+      background:
+        var(--codex-map-image, none),
+        radial-gradient(circle at center, rgba(255, 232, 174, 0.18), transparent 62%),
+        rgba(94, 55, 22, 0.08) !important;
+      background-size: contain, cover, auto !important;
+      background-position: center, center, center !important;
+      background-repeat: no-repeat, no-repeat, no-repeat !important;
+    }
+
+    .codex-map-card-info {
+      min-height: 33.333%;
+      padding: 12px 14px 14px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .codex-map-card-title {
+      font-size: clamp(0.94rem, 1.38vw, 1.22rem);
+      line-height: 1.05;
+      letter-spacing: 0.04em;
+      font-weight: 700;
+      text-align: center;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
     }
 
     .codex-image-state-label {
