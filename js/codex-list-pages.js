@@ -148,6 +148,27 @@ function renderNpcListIntoContainer() {
   );
 }
 
+function renderHexListIntoContainer() {
+  const listEl = document.getElementById("codex-hex-list");
+  if (!listEl) return;
+
+  const hexes = [...(db?.raw?.hexes || [])].sort((a, b) => {
+    return String(a.Hex_ID || "").localeCompare(
+      String(b.Hex_ID || ""),
+      undefined,
+      { numeric: true, sensitivity: "base" }
+    );
+  });
+
+  listEl.innerHTML = renderCodexLinkedList(
+    hexes,
+    "No hexes recorded.",
+    "hex",
+    "Hex_ID",
+    buildHexListLabel
+  );
+}
+
 function renderCodexListPage(config) {
   setCodexTitle(config.title);
 
@@ -208,6 +229,22 @@ function renderCodexListPage(config) {
   config.renderList();
 }
 
+function renderCodexSimpleListPage({ title, listId, breadcrumbs, renderList }) {
+  setCodexTitle(title);
+
+  setCodexContent(`
+    <div class="codex-list-page-shell codex-simple-list-page-shell">
+      <div class="codex-list-scroll-shell codex-scroll-fade codex-simple-list-scroll-shell">
+        <div id="${escapeHtml(listId)}"></div>
+      </div>
+    </div>
+  `, breadcrumbs);
+
+  document.getElementById("codex-content").classList.add("codex-list-page", "codex-simple-list-page");
+
+  renderList();
+}
+
 function renderCodexPoisIndex() {
   renderCodexListPage({
     ...poiCodexListConfig,
@@ -243,5 +280,20 @@ function renderCodexNpcsIndex() {
     getFilterOptions: getNpcFilterOptions,
 
     renderList: renderNpcListIntoContainer
+  });
+}
+
+function renderCodexHexesIndex() {
+  renderCodexSimpleListPage({
+    title: "Hexes",
+
+    listId: "codex-hex-list",
+
+    breadcrumbs: [
+      { label: "Codex", clickable: true, onclick: "resetCodexToIndex()" },
+      { label: "Hexes" }
+    ],
+
+    renderList: renderHexListIntoContainer
   });
 }
