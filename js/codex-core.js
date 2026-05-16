@@ -325,6 +325,10 @@ function resetCodexToIndex() {
 }
 
 function renderCodexPage(type, id) {
+  if (typeof renderCodexLeftManuscript === "function") {
+    renderCodexLeftManuscript();
+  }
+
   if (databaseLoadError) {
     setCodexTitle("The Codex of Kadesh");
     setCodexContent(`
