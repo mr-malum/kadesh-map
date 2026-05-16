@@ -107,8 +107,24 @@ function closeCodexMobileUtilityPanel() {
   panel.innerHTML = "";
 }
 
+function patchCodexContentUtilityReset() {
+  if (typeof window.setCodexContent !== "function") return;
+  if (window.setCodexContent.__mobileUtilityResetPatched) return;
+
+  const originalSetCodexContent = window.setCodexContent;
+
+  window.setCodexContent = function (...args) {
+    clearCodexMobileUtility();
+    return originalSetCodexContent.apply(this, args);
+  };
+
+  window.setCodexContent.__mobileUtilityResetPatched = true;
+  setCodexContent = window.setCodexContent;
+}
+
 function initializeCodexMobileUtility() {
   ensureCodexMobileUtilityPanel();
+  patchCodexContentUtilityReset();
 
   document
     .getElementById("codex-mobile-page-control")
