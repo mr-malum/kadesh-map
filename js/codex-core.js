@@ -382,7 +382,7 @@ function renderCodexIndex() {
   content.innerHTML = `
     <div id="codex-home-section-buttons" class="codex-home-section-buttons codex-row-list">
       <button class="codex-row codex-home-section-row" type="button" onclick="openCodexPage('regions')">
-        <span class="codex-row-icon" aria-hidden="true">✥</span>
+        <span class="codex-row-icon" aria-hidden="true">${getCodexIcon("region")}</span>
         <span class="codex-row-main">
           <span class="codex-row-title">Regions</span>
           <span class="codex-row-meta">Browse lands, territories, and terrain profiles</span>
@@ -391,7 +391,7 @@ function renderCodexIndex() {
       </button>
 
       <button class="codex-row codex-home-section-row" type="button" onclick="openCodexPage('pois')">
-        <span class="codex-row-icon" aria-hidden="true">◎</span>
+        <span class="codex-row-icon" aria-hidden="true">${getCodexIcon("poi")}</span>
         <span class="codex-row-main">
           <span class="codex-row-title">Points of Interest</span>
           <span class="codex-row-meta">Settlements, ruins, landmarks, and mapped places</span>
@@ -400,7 +400,7 @@ function renderCodexIndex() {
       </button>
 
       <button class="codex-row codex-home-section-row" type="button" onclick="openCodexPage('npcs')">
-        <span class="codex-row-icon" aria-hidden="true">♟</span>
+        <span class="codex-row-icon" aria-hidden="true">${getCodexIcon("npc")}</span>
         <span class="codex-row-main">
           <span class="codex-row-title">NPCs</span>
           <span class="codex-row-meta">The denizens of Kadesh</span>
@@ -409,7 +409,7 @@ function renderCodexIndex() {
       </button>
 
       <button class="codex-row codex-home-section-row" type="button" onclick="openCodexPage('hexes')">
-        <span class="codex-row-icon codex-row-icon-hex" aria-hidden="true">⬡</span>
+        <span class="codex-row-icon codex-row-icon-hex" aria-hidden="true">${getCodexIcon("hex")}</span>
         <span class="codex-row-main">
           <span class="codex-row-title">Hexes</span>
           <span class="codex-row-meta">Browse map hexes by terrain and region</span>
