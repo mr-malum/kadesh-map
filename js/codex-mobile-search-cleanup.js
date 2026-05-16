@@ -85,7 +85,7 @@ function renderCodexMobileSearchQuerySummary(results = null) {
 
   return `
     <span class="codex-mobile-search-summary-query">
-      Search Results for query &ldquo;${escapeHtml(codexSearchQuery)}&rdquo;
+      For &ldquo;${escapeHtml(codexSearchQuery)}&rdquo;
     </span>
     <span class="codex-mobile-search-summary-count">
       ${escapeHtml(categoryLabel)}: ${escapeHtml(matchLabel)}
