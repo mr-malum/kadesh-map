@@ -118,17 +118,12 @@ function bindCodexEvents() {
   document
     .getElementById("codex-back")
     .addEventListener("click", function () {
-      if (isMobileBrowserBackEnabled() && appBrowserHistoryDepth > 0) {
-        history.back();
+      if (codexHistory.length > 1) {
+        goBackCodex();
         return;
       }
 
-      if (codexHistory.length <= 1) {
-        closeCodex();
-        return;
-      }
-
-      goBackCodex();
+      closeCodex();
     });
 
   document
