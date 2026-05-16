@@ -178,6 +178,23 @@ function renderMapTileStyle(imageUrl) {
   return getCodexAssetAttrs(imageUrl, "map");
 }
 
+function renderCodexRecordImageLayer(imageUrl, alt = "") {
+  const src = resolveCodexAssetUrl(imageUrl);
+  if (!src) return "";
+
+  return `
+    <img
+      class="codex-record-image-layer"
+      src="${escapeHtml(src)}"
+      alt="${escapeHtml(alt)}"
+      loading="lazy"
+      decoding="async"
+      onload="this.closest('[data-codex-image-source]')?.classList.add('codex-image-loaded')"
+      onerror="this.closest('[data-codex-image-source]')?.classList.add('codex-image-missing')"
+    >
+  `;
+}
+
 function renderCodexImageStateLabel(label = "Image unavailable") {
   return `<span class="codex-image-state-label" aria-hidden="true">${escapeHtml(label)}</span>`;
 }
@@ -262,6 +279,32 @@ function injectCodexAssetStyles() {
       --codex-map-image: none !important;
     }
 
+    .codex-record-image-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+
+      display: block;
+      width: 100%;
+      height: 100%;
+
+      object-fit: cover;
+      object-position: center;
+
+      opacity: 0;
+      transition: opacity 0.16s ease;
+
+      pointer-events: none;
+    }
+
+    .codex-image-loaded > .codex-record-image-layer {
+      opacity: 1;
+    }
+
+    .codex-image-missing > .codex-record-image-layer {
+      display: none;
+    }
+
     .codex-image-state-label {
       position: absolute;
       left: 50%;
@@ -329,3 +372,4 @@ document.addEventListener("DOMContentLoaded", () => {
 window.hydrateCodexImageAssets = hydrateCodexImageAssets;
 window.resolveCodexAssetUrl = resolveCodexAssetUrl;
 window.resolveCodexAssetHref = resolveCodexAssetHref;
+window.renderCodexRecordImageLayer = renderCodexRecordImageLayer;
