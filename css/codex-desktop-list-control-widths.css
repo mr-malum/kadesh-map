@@ -2,13 +2,15 @@
    DESKTOP LIST FILTER CONTROL WIDTH LOCK
    =========================================================
 
-   Last-mile desktop-only hardening for the dynamic POI/NPC/Hex filter rails.
+   Targeted desktop-only hardening for the dynamic POI/NPC/Hex filter rails.
    Mobile filter controls are intentionally untouched; mobile owns the same
    moved DOM under .codex-mobile-list-controls-mount.
 
-   This is keyed to desktop input behavior instead of book-stage viewport size,
-   because desktop/narrow testing can fall below the full desktop book media
-   breakpoint while still showing the desktop rail.
+   The important fix here is #codex-list-controls-home. The mobile utility
+   introduced that wrapper inside the desktop rail, and because it was an
+   auto-sized flex child, the rail controls could still shrink/grow according
+   to the currently selected option text even when the inner controls were
+   given percentage widths.
 */
 
 @media (hover: hover) and (pointer: fine) {
@@ -24,6 +26,17 @@
     width: var(--codex-rail-width, 190px) !important;
     min-width: var(--codex-rail-width, 190px) !important;
     max-width: var(--codex-rail-width, 190px) !important;
+    overflow: hidden !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail > #codex-list-controls-home {
+    inline-size: 100% !important;
+    width: 100% !important;
+    min-inline-size: 0 !important;
+    min-width: 0 !important;
+    max-inline-size: 100% !important;
+    max-width: 100% !important;
+    flex: 0 1 var(--codex-rail-width, 190px) !important;
     overflow: hidden !important;
   }
 
@@ -63,6 +76,7 @@
   #codex-content.codex-list-page .codex-list-control-rail button.codex-sort-direction {
     min-inline-size: 0 !important;
     min-width: 0 !important;
+    max-inline-size: 100% !important;
     box-sizing: border-box !important;
   }
 
