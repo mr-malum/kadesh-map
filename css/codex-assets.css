@@ -124,6 +124,11 @@
   outline: none !important;
 }
 
+#codex-content .codex-detail-portrait-slot.codex-image-loaded > .codex-rendered-image-layer[data-codex-image-fit="cover"] {
+  left: -1px !important;
+  width: calc(100% + 2px) !important;
+}
+
 .codex-placeholder-npc,
 .codex-map-card::before {
   background-size: contain !important;
