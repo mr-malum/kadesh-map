@@ -6,7 +6,7 @@
    left/right flourishes, and a centered divider line.
 */
 
-@media (max-width: 1099px), (max-height: 699px) {
+@media (hover: none) and (pointer: coarse), (max-width: 700px) {
   #codex-overlay #codex-header {
     display: grid !important;
     grid-template-columns: minmax(22px, 1fr) minmax(0, auto) minmax(22px, 1fr) !important;
@@ -97,7 +97,7 @@
   }
 }
 
-@media (max-width: 420px) {
+@media (hover: none) and (pointer: coarse) and (max-width: 420px), (max-width: 420px) {
   #codex-overlay #codex-header {
     grid-template-columns: minmax(14px, 0.8fr) minmax(0, auto) minmax(14px, 0.8fr) !important;
     column-gap: 7px !important;
