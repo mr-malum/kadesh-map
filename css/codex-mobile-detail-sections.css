@@ -46,6 +46,7 @@
     flex: 0 0 auto !important;
     margin: 0 !important;
     padding: 8px 0 8px !important;
+    text-align: center !important;
     background: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
@@ -57,6 +58,20 @@
   #codex-content.codex-detail-page .codex-detail-rail-section > h3::before {
     content: none !important;
     display: none !important;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-rail-section > h3::after {
+    content: "" !important;
+    display: block !important;
+    width: min(72%, 360px) !important;
+    height: 1px !important;
+    margin: 7px auto 0 !important;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(72, 43, 18, 0.65),
+      transparent
+    ) !important;
   }
 
   #codex-content.codex-detail-page .codex-detail-rail-section-content {
