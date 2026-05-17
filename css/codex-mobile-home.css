@@ -16,18 +16,25 @@
 
     display: grid !important;
     grid-template-columns: minmax(0, 1fr) !important;
-    gap: clamp(10px, calc(var(--codex-mobile-image-width) * 0.026), 16px) !important;
+    gap: 0 !important;
+    row-gap: 0 !important;
 
     margin: 0 auto !important;
-    padding: clamp(4px, calc(var(--codex-mobile-image-width) * 0.012), 10px) 0 !important;
+    padding: 0 !important;
   }
 
   #codex-home-section-buttons .codex-home-section-row {
-    min-height: clamp(58px, calc(var(--codex-mobile-image-width) * 0.155), 78px) !important;
-    padding: clamp(9px, calc(var(--codex-mobile-image-width) * 0.024), 14px)
+    min-height: clamp(64px, calc(var(--codex-mobile-image-width) * 0.168), 84px) !important;
+    padding: clamp(10px, calc(var(--codex-mobile-image-width) * 0.028), 15px)
              clamp(12px, calc(var(--codex-mobile-image-width) * 0.035), 20px) !important;
 
     align-items: center !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  #codex-home-section-buttons .codex-home-section-row + .codex-home-section-row {
+    margin-top: 0 !important;
   }
 
   #codex-home-section-buttons .codex-row-main {
@@ -48,11 +55,12 @@
 @media (max-width: 420px) {
   #codex-home-section-buttons.codex-home-section-buttons {
     width: min(100%, calc(var(--codex-mobile-image-width) * 0.82)) !important;
-    gap: 9px !important;
+    gap: 0 !important;
+    row-gap: 0 !important;
   }
 
   #codex-home-section-buttons .codex-home-section-row {
-    min-height: 56px !important;
-    padding-block: 8px !important;
+    min-height: 62px !important;
+    padding-block: 10px !important;
   }
 }
