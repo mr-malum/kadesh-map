@@ -33,7 +33,7 @@
     overflow-y: auto !important;
     overflow-x: hidden !important;
     padding-right: 0 !important;
-    padding-bottom: clamp(18px, calc(var(--codex-mobile-image-width) * 0.045), 30px) !important;
+    padding-bottom: 0 !important;
     -webkit-overflow-scrolling: touch !important;
   }
 
