@@ -8,9 +8,14 @@
 
    Desktop book-stage behavior remains owned by codex-book-stage.css under:
    (min-width: 1100px) and (min-height: 700px).
+
+   This foundation is intentionally scoped to actual mobile/coarse-pointer
+   contexts, plus very narrow desktop browser testing. A short desktop browser
+   window should not receive the portrait mobile Codex foundation merely because
+   its height is below the desktop book breakpoint.
 */
 
-@media (max-width: 1099px), (max-height: 699px) {
+@media (hover: none) and (pointer: coarse), (max-width: 700px) {
   #codex-overlay {
     align-items: stretch;
     justify-content: stretch;
@@ -259,320 +264,90 @@
     right: auto !important;
     bottom: auto !important;
 
-    grid-column: 1;
-    grid-row: 1;
-    align-self: end;
-
-    display: block;
     width: 100%;
-    max-width: 100%;
-    min-height: 1.2em;
-
-    margin: 0;
-    padding: 0 4px;
-    box-sizing: border-box;
-
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-    text-align: center;
-    font-size: clamp(0.72rem, calc(var(--codex-mobile-image-width) * 0.028), 0.95rem);
-    line-height: 1.2;
-
-    pointer-events: auto;
-  }
-
-  .codex-breadcrumbs-desktop {
-    display: none !important;
-  }
-
-  .codex-breadcrumbs-mobile {
-    display: inline-block;
-    max-width: 100%;
-
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .codex-control-cluster {
-    grid-column: 1;
-    grid-row: 2;
+    min-width: 0;
+    min-height: 18px;
+    max-height: 100%;
 
     display: flex;
-    align-items: center;
-    justify-content: stretch;
-    gap: 10px;
+    align-items: end;
+    justify-content: center;
 
-    width: 100%;
     margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    font-size: clamp(0.58rem, calc(var(--codex-mobile-image-width) * 0.028), 0.82rem);
+    line-height: 1.08;
+    text-align: center;
+    white-space: nowrap;
 
     pointer-events: auto;
   }
 
-  #codex-mobile-page-control {
-    flex: 0 0 clamp(132px, 34%, 198px);
+  #codex-overlay .codex-control-cluster {
+    width: 100%;
     min-width: 0;
-  }
 
-  #codex-mobile-page-control[hidden] {
-    display: inline-flex !important;
-    visibility: hidden;
-    pointer-events: none;
-  }
-
-  #codex-mobile-debug-toggle {
-    position: static !important;
-    transform: none !important;
-    flex: 1 1 auto;
-    min-width: 48px;
-  }
-
-  #codex-back,
-  #codex-search-button,
-  #codex-close {
-    flex: 0 0 auto;
-  }
-
-  .codex-panel-nav button,
-  #codex-back,
-  #codex-search-button,
-  #codex-close,
-  #codex-mobile-page-control,
-  #codex-mobile-debug-toggle {
-    min-width: 52px;
-    min-height: 52px;
-    height: 52px;
-
-    display: inline-flex;
+    display: grid;
+    grid-template-columns: minmax(44px, 0.62fr) minmax(0, 1fr) minmax(44px, 0.62fr);
     align-items: center;
-    justify-content: center;
+    justify-items: stretch;
+    gap: clamp(7px, calc(var(--codex-mobile-image-width) * 0.018), 11px);
 
-    box-sizing: border-box;
-    padding: 0 16px;
-
-    font-size: 1rem;
-    line-height: 1;
-  }
-
-  #codex-back,
-  #codex-close {
-    width: 52px;
-    min-width: 52px;
+    margin: 0;
     padding: 0;
+
+    pointer-events: auto;
   }
 
   #codex-search-button {
-    display: inline-flex !important;
-    min-width: 86px;
-  }
-
-  #app-panel {
-    display: none !important;
-  }
-
-  .codex-list-page-shell,
-  .codex-search-page-shell,
-  .codex-detail-page-shell,
-  .codex-detail-rail-page {
-    height: 100%;
-    min-height: 0;
-    max-height: none;
-  }
-
-  #codex-modal.codex-debug-guides-visible #codex-header,
-  #codex-modal.codex-debug-guides-visible #codex-content,
-  #codex-modal.codex-debug-guides-visible .codex-panel-nav {
-    outline: 2px solid;
-    outline-offset: -2px;
-  }
-
-  #codex-modal.codex-debug-guides-visible #codex-header {
-    background: rgba(255, 224, 64, 0.24);
-    outline-color: rgba(255, 224, 64, 0.95);
-  }
-
-  #codex-modal.codex-debug-guides-visible #codex-content {
-    background: rgba(180, 96, 255, 0.16);
-    outline-color: rgba(180, 96, 255, 0.92);
-  }
-
-  #codex-modal.codex-debug-guides-visible .codex-panel-nav {
-    background: rgba(64, 192, 255, 0.16);
-    outline-color: rgba(64, 192, 255, 0.92);
-  }
-
-  #codex-modal.codex-debug-guides-visible #codex-book-stage::before,
-  #codex-modal.codex-debug-guides-visible #codex-book-stage::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    box-sizing: border-box;
-    z-index: 20;
-  }
-
-  #codex-modal.codex-debug-guides-visible #codex-book-stage::before {
-    inset: 0;
-    border: 2px solid rgba(255, 255, 255, 0.86);
-    background: rgba(255, 255, 255, 0.04);
-  }
-
-  #codex-modal.codex-debug-guides-visible #codex-book-stage::after {
-    left: var(--codex-mobile-safe-x);
-    top: var(--codex-mobile-safe-y);
-    width: var(--codex-mobile-safe-w);
-    height: var(--codex-mobile-safe-h);
-    border: 2px dashed rgba(64, 255, 128, 0.86);
-    background: rgba(64, 255, 128, 0.06);
-  }
-}
-
-@media (min-width: 1100px) and (min-height: 700px) {
-  #codex-mobile-page-control,
-  #codex-mobile-debug-toggle {
-    display: none !important;
-  }
-}
-
-@media (max-width: 700px) {
-  #codex-content.codex-search-page {
-    overflow: hidden;
-  }
-
-  .codex-search-page-shell {
-    min-height: 0;
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    overflow: hidden;
-  }
-
-  .codex-search-controls-shell {
-    flex: 0 0 auto;
-    display: block !important;
-    padding: 0 0 12px;
-  }
-
-  .codex-search-results-shell {
-    flex: 1 1 auto;
-    min-height: 0;
-
-    display: block !important;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-
-    padding: 2px 0 24px;
-
-    mask-image: none;
-    -webkit-mask-image: none;
-  }
-
-  .codex-mobile-search-results-page {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .codex-mobile-search-result-count {
-    margin: 0 0 2px;
-
-    font-family: 'Marcellus SC', Georgia, serif;
-    font-size: 0.96rem;
-    letter-spacing: 0.04em;
-    opacity: 0.78;
-  }
-
-  .codex-mobile-search-group {
-    display: grid;
-    gap: 8px;
-  }
-
-  #codex-content .codex-mobile-search-group-title {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-
-    margin: 0;
-
-    font-size: 1.05rem;
-    line-height: 1.15;
-  }
-
-  #codex-content .codex-mobile-search-group-title::after {
     display: none;
   }
 
-  .codex-mobile-search-group-title span {
-    flex: 0 0 auto;
-
-    font-family: 'Spectral', Georgia, serif;
-    font-size: 0.82rem;
-    letter-spacing: 0;
-    opacity: 0.72;
-  }
-
-  .codex-mobile-search-group .codex-list {
-    display: grid;
-    gap: 7px;
-  }
-
-  .codex-mobile-search-group .codex-record-button {
-    min-height: 52px;
-    padding: 10px 12px;
-  }
-
-  .codex-mobile-search-group .codex-row-meta {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-@media (max-width: 420px) {
-  #codex-title {
-    font-size: clamp(1.18rem, calc(var(--codex-mobile-image-width) * 0.07), 1.85rem);
-  }
-
-  .codex-panel-nav button,
-  #codex-back,
-  #codex-search-button,
-  #codex-close,
-  #codex-mobile-page-control,
-  #codex-mobile-debug-toggle {
-    min-height: 50px;
-    height: 50px;
-  }
-
-  #codex-search-button {
-    min-width: 78px;
-    padding-inline: 12px;
-  }
-
   #codex-mobile-page-control {
-    flex-basis: clamp(112px, 31%, 150px);
-    padding-inline: 8px;
-    font-size: 0.72rem;
+    display: flex;
   }
 
   #codex-mobile-debug-toggle {
-    min-width: 48px;
-    padding-inline: 8px;
-    font-size: 0.72rem;
-  }
-}
-
-@media (orientation: landscape) and (max-height: 699px) {
-  #codex-modal {
-    --codex-mobile-image-height: calc(100dvh - var(--codex-mobile-safe-area-top) - var(--codex-mobile-safe-area-bottom));
-    --codex-mobile-image-width: calc(var(--codex-mobile-image-height) * 2 / 3);
+    display: none !important;
   }
 
-  #codex-title {
-    font-size: clamp(1.1rem, calc(var(--codex-mobile-image-height) * 0.045), 1.7rem);
+  #codex-overlay .codex-panel-nav button {
+    min-width: 0;
+    min-height: 44px;
+
+    padding: 0 10px;
+
+    border-radius: 12px;
+
+    font-size: clamp(0.78rem, calc(var(--codex-mobile-image-width) * 0.03), 0.96rem);
+    line-height: 1;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #codex-back,
+  #codex-close {
+    width: auto;
+    min-width: 0;
+    padding: 0;
+  }
+
+  #codex-mobile-page-control[hidden] {
+    display: none !important;
+  }
+
+  #codex-global-search-modal {
+    left: var(--codex-mobile-content-left) !important;
+    right: var(--codex-mobile-content-right) !important;
+    top: var(--codex-mobile-content-y) !important;
+    bottom: calc(100% - var(--codex-mobile-content-y) - var(--codex-mobile-content-h)) !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
   }
 }
