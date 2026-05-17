@@ -9,13 +9,13 @@
    Desktop book-stage behavior remains owned by codex-book-stage.css under:
    (min-width: 1100px) and (min-height: 700px).
 
-   This foundation is intentionally scoped to actual mobile/coarse-pointer
-   contexts, plus very narrow desktop browser testing. A short desktop browser
-   window should not receive the portrait mobile Codex foundation merely because
-   its height is below the desktop book breakpoint.
+   This foundation also owns the non-book fallback state. That includes mobile
+   portrait and short/narrow desktop browser windows that do not satisfy the
+   full desktop book breakpoint. Without this fallback, those in-between
+   viewports drop into the old base Parchment_Panel shell.
 */
 
-@media (hover: none) and (pointer: coarse), (max-width: 700px) {
+@media (max-width: 1099px), (max-height: 699px) {
   #codex-overlay {
     align-items: stretch;
     justify-content: stretch;
