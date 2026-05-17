@@ -1,0 +1,26 @@
+@media (max-width: 1099px), (max-height: 699px) {
+  #codex-content.codex-list-page {
+    outline: 2px solid red !important;
+    outline-offset: -2px !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-page-shell {
+    outline: 2px solid blue !important;
+    outline-offset: -4px !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-split-view {
+    outline: 2px solid green !important;
+    outline-offset: -6px !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-scroll-shell {
+    outline: 2px solid purple !important;
+    outline-offset: -8px !important;
+  }
+
+  #codex-content.codex-list-page .codex-mobile-list-summary {
+    outline: 2px solid orange !important;
+    outline-offset: -2px !important;
+  }
+}
