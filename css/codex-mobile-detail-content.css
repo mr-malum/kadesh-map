@@ -34,6 +34,33 @@
     padding: 0 0 7px !important;
   }
 
+  #codex-content.codex-hex-detail-page .codex-detail-overview-panel .codex-detail-overview-meta {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    align-items: start !important;
+    gap: clamp(12px, calc(var(--codex-mobile-image-width, 100vw) * 0.052), 24px) !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: clamp(8px, calc(var(--codex-mobile-image-height, 100vh) * 0.014), 14px) 4px 10px !important;
+    text-align: left !important;
+  }
+
+  #codex-content.codex-hex-detail-page .codex-detail-overview-panel .codex-detail-overview-meta p {
+    margin: 0 !important;
+    min-width: 0 !important;
+    font-size: clamp(0.82rem, calc(var(--codex-mobile-image-width, 100vw) * 0.031), 1rem) !important;
+    line-height: 1.2 !important;
+  }
+
+  #codex-content.codex-hex-detail-page .codex-detail-overview-panel .codex-detail-overview-meta .codex-link-button {
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline !important;
+    font: inherit !important;
+    line-height: inherit !important;
+    vertical-align: baseline !important;
+  }
+
   #codex-content.codex-detail-page .codex-detail-overview-panel .codex-detail-portrait-slot {
     width: 100% !important;
     height: auto !important;
@@ -67,6 +94,25 @@
   #codex-content.codex-detail-page .codex-detail-lower-pane {
     height: 100% !important;
     min-height: 0 !important;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-main {
+    scroll-padding-top: 44px !important;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-rail-section > h3 {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 4 !important;
+    margin: 0 !important;
+    padding: 8px 0 8px !important;
+    background: rgba(239, 219, 177, 0.96) !important;
+    backdrop-filter: blur(1px) !important;
+    -webkit-backdrop-filter: blur(1px) !important;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-rail-section-content {
+    padding-top: 4px !important;
   }
 
   #codex-overlay #codex-title .codex-header-link {
@@ -106,5 +152,14 @@
 
   #codex-content.codex-detail-page .codex-detail-overview-panel .codex-detail-meta p {
     font-size: 0.74rem !important;
+  }
+
+  #codex-content.codex-hex-detail-page .codex-detail-overview-panel .codex-detail-overview-meta {
+    gap: 10px !important;
+    padding-top: 9px !important;
+  }
+
+  #codex-content.codex-hex-detail-page .codex-detail-overview-panel .codex-detail-overview-meta p {
+    font-size: 0.78rem !important;
   }
 }
