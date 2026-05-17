@@ -71,10 +71,39 @@ function getCodexHeaderFitLines() {
   return [titleEl];
 }
 
+function shouldFitCodexHeaderTextForMobile() {
+  return window.matchMedia?.(
+    "(hover: none) and (pointer: coarse), (max-width: 700px)"
+  )?.matches === true;
+}
+
+function resetCodexHeaderFitStyles() {
+  const titleEl = getCodexTitle();
+  if (!titleEl) return;
+
+  const lines = [
+    titleEl,
+    ...titleEl.querySelectorAll?.(
+      ".codex-superheader, .codex-mainheader, .codex-subheader"
+    ) || []
+  ];
+
+  lines.forEach(line => {
+    line.style.fontSize = "";
+    line.style.whiteSpace = "";
+    delete line.dataset.codexBaseFontSize;
+  });
+}
+
 function fitCodexHeaderText() {
   const titleEl = getCodexTitle();
   const headerEl = document.getElementById("codex-header");
   if (!titleEl || !headerEl) return;
+
+  if (!shouldFitCodexHeaderTextForMobile()) {
+    resetCodexHeaderFitStyles();
+    return;
+  }
 
   const availableWidth = titleEl.clientWidth || headerEl.clientWidth;
   if (!availableWidth) return;
@@ -533,3 +562,4 @@ window.resetCodexToIndex = resetCodexToIndex;
 window.openCodexMobileControls = openCodexMobileControls;
 window.closeCodexMobileControls = closeCodexMobileControls;
 window.fitCodexHeaderText = fitCodexHeaderText;
+window.resetCodexHeaderFitStyles = resetCodexHeaderFitStyles;
