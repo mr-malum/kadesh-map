@@ -145,7 +145,7 @@ function getHexRegionLabel(hex) {
 
 function getNpcFilterValue(npc, field) {
   if (field === "Race") return npc.Race || "";
-  if (field === "Occupation") return npc.Occation || npc.Occupation || "";
+  if (field === "Occupation") return npc.Occupation || "";
   if (field === "Organization") return npc?.Organization || "";
   if (field === "Home") return getNpcHomeLabel(npc);
   return "";
