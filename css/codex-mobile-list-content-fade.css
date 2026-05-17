@@ -12,6 +12,7 @@
     display: grid !important;
     grid-template-rows: auto minmax(0, 1fr) !important;
     gap: 10px !important;
+    overflow: hidden !important;
   }
 
   #codex-content.codex-list-page .codex-mobile-list-summary {
@@ -32,14 +33,17 @@
     overflow-y: auto !important;
     overflow-x: hidden !important;
     padding-right: 0 !important;
+    padding-bottom: clamp(18px, calc(var(--codex-mobile-image-width) * 0.045), 30px) !important;
     -webkit-overflow-scrolling: touch !important;
   }
 
   #codex-content.codex-list-page .codex-list-scroll-shell.codex-scroll-fade {
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%) !important;
-    mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 34px), transparent 100%) !important;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 34px), transparent 100%) !important;
     -webkit-mask-size: 100% 100% !important;
     mask-size: 100% 100% !important;
+    -webkit-mask-position: 0 0 !important;
+    mask-position: 0 0 !important;
     -webkit-mask-repeat: no-repeat !important;
     mask-repeat: no-repeat !important;
   }
