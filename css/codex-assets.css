@@ -166,23 +166,103 @@
   background-repeat: no-repeat, no-repeat !important;
 }
 
+.codex-map-card > .codex-rendered-image-layer {
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 50%,
+      rgba(0, 0, 0, 0.24) 66%,
+      transparent 78%,
+      transparent 100%
+    ) !important;
+  -webkit-mask-composite: source-in !important;
+
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 78%,
+      rgba(0, 0, 0, 0.78) 88%,
+      rgba(0, 0, 0, 0.18) 96%,
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 0, 0, 0.18) 4%,
+      rgba(0, 0, 0, 0.78) 12%,
+      black 22%,
+      black 50%,
+      rgba(0, 0, 0, 0.24) 66%,
+      transparent 78%,
+      transparent 100%
+    ) !important;
+  mask-composite: intersect !important;
+}
+
 .codex-map-card-info {
+  z-index: 2;
   min-height: 33.333%;
-  padding: 12px 14px 14px;
+  padding: 12px 14px 14px !important;
+
   align-items: center;
   justify-content: center;
   text-align: center;
+
+  background: transparent !important;
+  border-top: 0 !important;
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+
+  text-shadow:
+    0 0 1px rgba(238, 211, 158, 1),
+    0 0 2px rgba(238, 211, 158, 1),
+    0 0 3px rgba(238, 211, 158, 1),
+    0 0 5px rgba(238, 211, 158, 1),
+    0 0 7px rgba(238, 211, 158, 1),
+    0 0 10px rgba(238, 211, 158, 0.98),
+    0 0 14px rgba(238, 211, 158, 0.92),
+    0 0 19px rgba(238, 211, 158, 0.82),
+    0 0 25px rgba(238, 211, 158, 0.66),
+    0 1px 2px rgba(47, 29, 16, 0.52),
+    0 2px 4px rgba(47, 29, 16, 0.42) !important;
 }
 
 .codex-map-card-title {
-  font-size: clamp(0.94rem, 1.38vw, 1.22rem);
-  line-height: 1.05;
-  letter-spacing: 0.04em;
-  font-weight: 700;
-  text-align: center;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
+  width: 100%;
+
+  font-size: clamp(0.94rem, 1.38vw, 1.22rem) !important;
+  font-weight: 800 !important;
+  line-height: 1.05 !important;
+  letter-spacing: 0.04em !important;
+
+  text-align: center !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+
+  -webkit-text-stroke: 1.35px rgba(238, 211, 158, 1);
+  paint-order: stroke fill;
 }
 
 .codex-image-state-label {
