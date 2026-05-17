@@ -101,6 +101,29 @@
   display: none;
 }
 
+#codex-content .codex-detail-portrait-slot.codex-image-loaded {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#codex-content .codex-detail-portrait-slot.codex-image-loaded::before,
+#codex-content .codex-detail-portrait-slot.codex-image-loaded::after {
+  opacity: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#codex-content .codex-detail-portrait-slot.codex-image-loaded > .codex-rendered-image-layer {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
 .codex-placeholder-npc,
 .codex-map-card::before {
   background-size: contain !important;
