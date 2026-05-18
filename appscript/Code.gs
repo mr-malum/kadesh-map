@@ -56,7 +56,10 @@ function doPost(event) {
 }
 
 function withWriteLock_(fn) {
-  const lock = LockService.getDocumentLock();
+  // Standalone Apps Script projects are not bound to a document, so document
+  // locks can be null. Script locks are available and still serialize writes
+  // through this deployed backend.
+  const lock = LockService.getScriptLock();
   const acquired = lock.tryLock(30000);
   if (!acquired) {
     throw new Error("Could not acquire write lock. Try again.");
