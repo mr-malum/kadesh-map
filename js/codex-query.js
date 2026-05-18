@@ -63,6 +63,26 @@ function getPoisForGroup(groupId) {
   return db?.poisByGroupId?.[groupId] || [];
 }
 
+function getSiblingPoisForPoi(poi) {
+  const group = getPoiGroupForPoi(poi);
+  if (!group) return [];
+
+  return getPoisForGroup(group.POI_Group_ID)
+    .filter(row => row.POI_ID !== poi?.POI_ID);
+}
+
+function getLocalPoisForPoi(poi) {
+  if (!poi?.Hex_ID_Ref) return [];
+
+  const siblingIds = new Set(
+    getSiblingPoisForPoi(poi).map(row => row.POI_ID)
+  );
+
+  return getPoisForHex(poi.Hex_ID_Ref)
+    .filter(row => row.POI_ID !== poi.POI_ID)
+    .filter(row => !siblingIds.has(row.POI_ID));
+}
+
 function getNpcsForPoiGroup(groupId) {
   return getPoisForGroup(groupId).flatMap(poi => {
     return getNpcsForPoi(poi.POI_ID);

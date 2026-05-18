@@ -38,28 +38,30 @@ function ensureCodexImageModal() {
   modal.innerHTML = `
     <div class="codex-image-modal-backdrop" data-codex-image-modal-close="true"></div>
     <div class="codex-image-modal-panel" role="dialog" aria-modal="true" aria-label="Expanded image">
-      <button
-        class="codex-image-modal-close"
-        type="button"
-        aria-label="Close image"
-        data-codex-image-modal-close="true"
-      >✕</button>
-      <button
-        class="codex-image-modal-nav codex-image-modal-prev"
-        type="button"
-        aria-label="Previous image"
-        data-codex-image-modal-direction="prev"
-      >‹</button>
       <div class="codex-image-modal-frame">
         <img class="codex-image-modal-img" alt="">
       </div>
-      <div class="codex-image-modal-counter" aria-live="polite"></div>
-      <button
-        class="codex-image-modal-nav codex-image-modal-next"
-        type="button"
-        aria-label="Next image"
-        data-codex-image-modal-direction="next"
-      >›</button>
+      <div class="codex-image-modal-controls" aria-label="Image controls">
+        <button
+          class="codex-image-modal-nav codex-image-modal-prev"
+          type="button"
+          aria-label="Previous image"
+          data-codex-image-modal-direction="prev"
+        >‹</button>
+        <button
+          class="codex-image-modal-nav codex-image-modal-next"
+          type="button"
+          aria-label="Next image"
+          data-codex-image-modal-direction="next"
+        >›</button>
+        <div class="codex-image-modal-counter" aria-live="polite"></div>
+        <button
+          class="codex-image-modal-close"
+          type="button"
+          aria-label="Close image"
+          data-codex-image-modal-close="true"
+        >✕</button>
+      </div>
     </div>
   `;
 
@@ -339,7 +341,13 @@ function closeCodexImageModal() {
 
 function getCodexImageModalTriggerFromTarget(target) {
   const trigger = target?.closest?.("[data-codex-image-source]");
-  if (!trigger || trigger.classList.contains("codex-image-missing")) return null;
+  if (
+    !trigger ||
+    trigger.dataset.codexImageExpand === "false" ||
+    trigger.classList.contains("codex-image-missing")
+  ) {
+    return null;
+  }
   return trigger;
 }
 
@@ -513,6 +521,184 @@ function bindCodexImageModalPanEvents(modal) {
   });
 }
 
+/* =========================================================
+   CODEX IMAGE MODAL SWIPE NAVIGATION
+   =========================================================
+
+   Adds mobile horizontal swipe navigation for grouped image popouts.
+   Native touch events are used as the primary mobile path because the image
+   itself uses pointer capture for pinch/pan.
+*/
+
+const codexImageModalSwipeState = {
+  pointerId: null,
+  startX: 0,
+  startY: 0,
+  lastX: 0,
+  lastY: 0,
+  startedAt: 0,
+  cancelled: false,
+  source: ""
+};
+
+function resetCodexImageModalSwipeState() {
+  codexImageModalSwipeState.pointerId = null;
+  codexImageModalSwipeState.startX = 0;
+  codexImageModalSwipeState.startY = 0;
+  codexImageModalSwipeState.lastX = 0;
+  codexImageModalSwipeState.lastY = 0;
+  codexImageModalSwipeState.startedAt = 0;
+  codexImageModalSwipeState.cancelled = false;
+  codexImageModalSwipeState.source = "";
+}
+
+function canCodexImageModalSwipe() {
+  return (
+    isCodexImageModalOpen() &&
+    codexImageModalState.sources?.length > 1 &&
+    codexImageModalState.scale <= 1.01 &&
+    !codexImageModalState.isPinching &&
+    !codexImageModalState.isPanning
+  );
+}
+
+function maybeStepCodexImageModalFromSwipe() {
+  if (!canCodexImageModalSwipe()) return;
+  if (codexImageModalSwipeState.cancelled) return;
+
+  const dx = codexImageModalSwipeState.lastX - codexImageModalSwipeState.startX;
+  const dy = codexImageModalSwipeState.lastY - codexImageModalSwipeState.startY;
+  const elapsed = Date.now() - codexImageModalSwipeState.startedAt;
+
+  const absX = Math.abs(dx);
+  const absY = Math.abs(dy);
+
+  if (absX < 44) return;
+  if (absX < absY * 1.2) return;
+  if (elapsed > 1000 && absX < 88) return;
+
+  stepCodexImageModal(dx < 0 ? 1 : -1);
+}
+
+function startCodexImageModalSwipe(clientX, clientY, source = "") {
+  if (!canCodexImageModalSwipe()) return false;
+
+  resetCodexImageModalSwipeState();
+
+  codexImageModalSwipeState.startX = clientX;
+  codexImageModalSwipeState.startY = clientY;
+  codexImageModalSwipeState.lastX = clientX;
+  codexImageModalSwipeState.lastY = clientY;
+  codexImageModalSwipeState.startedAt = Date.now();
+  codexImageModalSwipeState.source = source;
+
+  return true;
+}
+
+function updateCodexImageModalSwipe(clientX, clientY) {
+  if (!codexImageModalSwipeState.startedAt) return;
+
+  codexImageModalSwipeState.lastX = clientX;
+  codexImageModalSwipeState.lastY = clientY;
+
+  if (
+    codexImageModalState.activePointers?.size > 1 ||
+    codexImageModalState.scale > 1.01 ||
+    codexImageModalState.isPinching ||
+    codexImageModalState.isPanning
+  ) {
+    codexImageModalSwipeState.cancelled = true;
+  }
+}
+
+function finishCodexImageModalSwipe(clientX, clientY) {
+  if (!codexImageModalSwipeState.startedAt) return;
+
+  codexImageModalSwipeState.lastX = clientX;
+  codexImageModalSwipeState.lastY = clientY;
+
+  window.setTimeout(() => {
+    maybeStepCodexImageModalFromSwipe();
+    resetCodexImageModalSwipeState();
+  }, 0);
+}
+
+function bindCodexImageModalSwipeNavigation() {
+  const modal = ensureCodexImageModal();
+  const frame = modal?.querySelector(".codex-image-modal-frame");
+  if (!frame || frame.dataset.codexSwipeBound === "true") return;
+
+  frame.dataset.codexSwipeBound = "true";
+
+  frame.addEventListener("touchstart", event => {
+    if (event.touches.length !== 1) {
+      resetCodexImageModalSwipeState();
+      return;
+    }
+
+    const touch = event.touches[0];
+    startCodexImageModalSwipe(touch.clientX, touch.clientY, "touch");
+  }, { passive: true, capture: true });
+
+  frame.addEventListener("touchmove", event => {
+    if (!codexImageModalSwipeState.startedAt) return;
+
+    if (event.touches.length !== 1) {
+      codexImageModalSwipeState.cancelled = true;
+      return;
+    }
+
+    const touch = event.touches[0];
+    updateCodexImageModalSwipe(touch.clientX, touch.clientY);
+  }, { passive: true, capture: true });
+
+  frame.addEventListener("touchend", event => {
+    if (!codexImageModalSwipeState.startedAt) return;
+    if (codexImageModalSwipeState.source !== "touch") return;
+
+    const touch = event.changedTouches?.[0];
+    if (!touch) {
+      resetCodexImageModalSwipeState();
+      return;
+    }
+
+    finishCodexImageModalSwipe(touch.clientX, touch.clientY);
+  }, { passive: true, capture: true });
+
+  frame.addEventListener("touchcancel", resetCodexImageModalSwipeState, { passive: true, capture: true });
+
+  frame.addEventListener("pointerdown", event => {
+    if (event.pointerType === "touch") return;
+    if (!startCodexImageModalSwipe(event.clientX, event.clientY, "pointer")) return;
+    codexImageModalSwipeState.pointerId = event.pointerId;
+  }, true);
+
+  frame.addEventListener("pointermove", event => {
+    if (codexImageModalSwipeState.source !== "pointer") return;
+    if (codexImageModalSwipeState.pointerId !== event.pointerId) return;
+    updateCodexImageModalSwipe(event.clientX, event.clientY);
+  }, true);
+
+  frame.addEventListener("pointerup", event => {
+    if (codexImageModalSwipeState.source !== "pointer") return;
+    if (codexImageModalSwipeState.pointerId !== event.pointerId) return;
+    finishCodexImageModalSwipe(event.clientX, event.clientY);
+  }, true);
+
+  ["pointercancel", "lostpointercapture"].forEach(eventName => {
+    frame.addEventListener(eventName, event => {
+      if (codexImageModalSwipeState.source !== "pointer") return;
+      if (codexImageModalSwipeState.pointerId !== event.pointerId) return;
+      resetCodexImageModalSwipeState();
+    }, true);
+  });
+}
+
+function initializeCodexImageModalSwipeNavigation() {
+  bindCodexImageModalSwipeNavigation();
+  window.setTimeout(bindCodexImageModalSwipeNavigation, 0);
+}
+
 function bindCodexImageModalEvents() {
   document.addEventListener("click", event => {
     const trigger = getCodexImageModalTriggerFromTarget(event.target);
@@ -573,6 +759,7 @@ function bindCodexImageModalEvents() {
 document.addEventListener("DOMContentLoaded", () => {
   ensureCodexImageModal();
   bindCodexImageModalEvents();
+  initializeCodexImageModalSwipeNavigation();
 });
 
 window.addEventListener("resize", () => {
@@ -584,3 +771,4 @@ window.closeCodexImageModal = closeCodexImageModal;
 window.isCodexImageModalOpen = isCodexImageModalOpen;
 window.stepCodexImageModal = stepCodexImageModal;
 window.setCodexImageModalScale = setCodexImageModalScale;
+window.bindCodexImageModalSwipeNavigation = bindCodexImageModalSwipeNavigation;

@@ -187,6 +187,72 @@ function bindCodexMobileButtonStateCleanup() {
   }, true);
 }
 
+/* =========================================================
+   MOBILE TAP FEEDBACK
+   =========================================================
+
+   Touch browsers can make :active states too fleeting to notice on quick taps.
+   Add a short-lived class at touch start so mobile taps visibly borrow the
+   same styling language desktop users get from hover.
+*/
+
+const codexMobileTapFeedbackSelector = `
+  .codex-row,
+  .codex-link-button,
+  .codex-section-button,
+  .codex-region-tile,
+  .codex-map-card[href],
+  .codex-mobile-utility-close,
+  .codex-mobile-utility-option,
+  .codex-image-modal-close,
+  .codex-image-modal-nav,
+  .panel-nav button,
+  .codex-breadcrumb-button
+`;
+
+function getCodexMobileTapFeedbackTarget(target) {
+  return target?.closest?.(codexMobileTapFeedbackSelector) || null;
+}
+
+function clearCodexMobileTapFeedback(control) {
+  if (!control) return;
+
+  window.clearTimeout(control.__codexTapFeedbackTimeout);
+  control.__codexTapFeedbackTimeout = window.setTimeout(() => {
+    control.classList.remove("codex-tap-active");
+  }, 90);
+}
+
+function bindCodexMobileTapFeedback() {
+  if (bindCodexMobileTapFeedback.__bound) return;
+  bindCodexMobileTapFeedback.__bound = true;
+
+  document.addEventListener("pointerdown", event => {
+    if (event.pointerType && event.pointerType !== "touch") return;
+
+    const control = getCodexMobileTapFeedbackTarget(event.target);
+    if (!control) return;
+
+    control.classList.add("codex-tap-active");
+  }, true);
+
+  document.addEventListener("touchstart", event => {
+    const control = getCodexMobileTapFeedbackTarget(event.target);
+    if (!control) return;
+
+    control.classList.add("codex-tap-active");
+  }, { passive: true, capture: true });
+
+  ["pointerup", "pointercancel", "touchend", "touchcancel"].forEach(eventName => {
+    document.addEventListener(eventName, event => {
+      const control = getCodexMobileTapFeedbackTarget(event.target);
+      if (!control) return;
+
+      clearCodexMobileTapFeedback(control);
+    }, true);
+  });
+}
+
 function initializeCodexMobileUtility() {
   ensureCodexMobileUtilityPanel();
   patchCodexContentUtilityReset();
@@ -196,13 +262,18 @@ function initializeCodexMobileUtility() {
     ?.addEventListener("click", openCodexMobileUtilityPanel);
 
   bindCodexMobileButtonStateCleanup();
+  bindCodexMobileTapFeedback();
   updateCodexMobileUtilityButton();
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", bindCodexMobileButtonStateCleanup);
+  document.addEventListener("DOMContentLoaded", () => {
+    bindCodexMobileButtonStateCleanup();
+    bindCodexMobileTapFeedback();
+  });
 } else {
   bindCodexMobileButtonStateCleanup();
+  bindCodexMobileTapFeedback();
 }
 
 window.setCodexMobileUtility = setCodexMobileUtility;

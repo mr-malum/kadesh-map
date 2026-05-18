@@ -162,11 +162,6 @@ function closeTopCodexLayer() {
 function handleCodexBackAction() {
   if (closeTopCodexLayer()) return;
 
-  if (isMobileBrowserBackEnabled() && appBrowserHistoryDepth > 0) {
-    history.back();
-    return;
-  }
-
   if (codexHistory.length > 1) {
     goBackCodex();
     return;

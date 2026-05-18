@@ -319,6 +319,7 @@ function ensureCodexRenderedImageLayer(node) {
 
 function bindCodexImageExpansion(node) {
   if (!node || node.dataset.codexImageClickBound === "true") return;
+  if (node.dataset.codexImageExpand === "false") return;
 
   const href = node.dataset.codexImageHref || node.dataset.codexImageSource;
   if (!href) return;

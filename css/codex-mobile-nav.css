@@ -52,9 +52,47 @@
     min-height: 0 !important;
 
     margin: 0 !important;
-    padding: 0 4px !important;
+    padding-inline: clamp(2px, calc(var(--codex-mobile-image-width, 100vw) * 0.012), 8px) !important;
 
     line-height: 1.15 !important;
+  }
+
+  #codex-overlay .codex-breadcrumbs-mobile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.28em !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: clip !important;
+  }
+
+  #codex-overlay .codex-breadcrumbs-mobile .codex-breadcrumb-button,
+  #codex-overlay .codex-breadcrumbs-mobile span:not(.codex-breadcrumb-separator):not(.codex-breadcrumb-ellipsis) {
+    min-width: 0 !important;
+    max-width: none !important;
+    padding-inline: 1px !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+  }
+
+  #codex-overlay .codex-breadcrumbs-mobile .codex-breadcrumb-button {
+    font-family: inherit !important;
+    font-weight: inherit !important;
+  }
+
+  #codex-overlay .codex-breadcrumbs-mobile .codex-breadcrumb-separator,
+  #codex-overlay .codex-breadcrumbs-mobile .codex-breadcrumb-ellipsis {
+    flex: 0 0 auto !important;
+  }
+
+  #codex-overlay .codex-breadcrumbs-mobile .codex-breadcrumb-parent-group {
+    flex: 0 1 auto !important;
+    min-width: 2.2em !important;
   }
 
   #codex-overlay .codex-control-cluster {

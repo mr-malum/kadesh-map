@@ -70,6 +70,39 @@ function readCodexSortState(config) {
   };
 }
 
+function getCodexHexListStateConfig() {
+  return {
+    ...hexCodexListConfig,
+    listId: "codex-hex-list",
+    title: "Hexes"
+  };
+}
+
+function presetCodexHexListFilters(regionLabel = "all", terrain = "all") {
+  if (typeof setCodexCachedListState !== "function") return;
+
+  setCodexCachedListState(getCodexHexListStateConfig(), {
+    filters: [
+      { field: "Region", value: regionLabel || "all" },
+      { field: "Terrain", value: terrain || "all" }
+    ],
+    sortMode: "hex-id",
+    direction: "asc"
+  });
+}
+
+function openCodexHexesFiltered(regionLabel = "all", terrain = "all") {
+  presetCodexHexListFilters(regionLabel, terrain);
+  openCodexPage("hexes", null, {
+    state: {
+      presetHexFilters: {
+        regionLabel: regionLabel || "all",
+        terrain: terrain || "all"
+      }
+    }
+  });
+}
+
 function renderPoiListIntoContainer() {
   const listEl = document.getElementById("codex-poi-list");
 
@@ -280,6 +313,14 @@ function renderCodexNpcsIndex() {
 }
 
 function renderCodexHexesIndex() {
+  const presetHexFilters = getCurrentCodexPage?.()?.presetHexFilters;
+  if (presetHexFilters && typeof presetCodexHexListFilters === "function") {
+    presetCodexHexListFilters(
+      presetHexFilters.regionLabel || "all",
+      presetHexFilters.terrain || "all"
+    );
+  }
+
   renderCodexListPage({
     ...hexCodexListConfig,
 
@@ -299,3 +340,6 @@ function renderCodexHexesIndex() {
 
   document.getElementById("codex-content")?.classList.add("codex-hexes-index-page");
 }
+
+window.presetCodexHexListFilters = presetCodexHexListFilters;
+window.openCodexHexesFiltered = openCodexHexesFiltered;

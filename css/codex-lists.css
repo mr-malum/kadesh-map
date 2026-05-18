@@ -525,19 +525,13 @@
 /* Desktop list rail width hardening.
    Kept here because the mobile utility wrapper (#codex-list-controls-home)
    lives in the list-page DOM even on desktop. */
-@media (hover: hover) and (pointer: fine) {
+@media (min-width: 1100px) and (min-height: 700px) {
   #codex-content.codex-list-page .codex-list-control-rail,
   #codex-content.codex-list-page .codex-list-control-rail * {
     box-sizing: border-box !important;
   }
 
   #codex-content.codex-list-page .codex-list-control-rail {
-    inline-size: var(--codex-rail-width, 190px) !important;
-    min-inline-size: var(--codex-rail-width, 190px) !important;
-    max-inline-size: var(--codex-rail-width, 190px) !important;
-    width: var(--codex-rail-width, 190px) !important;
-    min-width: var(--codex-rail-width, 190px) !important;
-    max-width: var(--codex-rail-width, 190px) !important;
     overflow: hidden !important;
   }
 
@@ -548,7 +542,7 @@
     min-width: 0 !important;
     max-inline-size: 100% !important;
     max-width: 100% !important;
-    flex: 0 1 var(--codex-rail-width, 190px) !important;
+    flex: 0 1 auto !important;
     overflow: hidden !important;
   }
 
@@ -565,7 +559,7 @@
     max-inline-size: 100% !important;
     max-width: 100% !important;
     flex: 0 0 auto !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
 
   #codex-content.codex-list-page .codex-list-control-rail .codex-filter-row {
@@ -658,5 +652,84 @@
     padding: 24px;
 
     background: rgba(12, 7, 3, 0.38);
+  }
+}
+/* =========================================================
+   DESKTOP LIST NORMALIZATION
+   ========================================================= */
+
+@media (min-width: 1100px) and (min-height: 700px) {
+  #codex-content.codex-list-page .codex-mobile-list-summary {
+    display: none !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-scroll-shell {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 18px, #000 calc(100% - 22px), transparent 100%) !important;
+    mask-image: linear-gradient(to bottom, transparent 0, #000 18px, #000 calc(100% - 22px), transparent 100%) !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-controls-shell,
+  #codex-content.codex-list-page .codex-mobile-controls-panel,
+  #codex-content.codex-list-page .codex-filter-row,
+  #codex-content.codex-list-page .codex-dynamic-filter,
+  #codex-content.codex-list-page .codex-sort-label {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-dynamic-filter {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-filter-row {
+    gap: calc(10 * var(--codex-book-scale)) !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-filter-row label,
+  #codex-content.codex-list-page .codex-list-control-rail .codex-dynamic-filter,
+  #codex-content.codex-list-page .codex-list-control-rail .codex-sort-label {
+    gap: calc(4 * var(--codex-book-scale)) !important;
+    padding-top: calc(8 * var(--codex-book-scale)) !important;
+    padding-bottom: calc(10 * var(--codex-book-scale)) !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-sort-topline {
+    gap: calc(8 * var(--codex-book-scale)) !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-filter-row select,
+  #codex-content.codex-list-page .codex-list-control-rail .codex-dynamic-filter select,
+  #codex-content.codex-list-page .codex-list-control-rail .codex-sort-label select {
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding-top: calc(6 * var(--codex-book-scale)) !important;
+    padding-bottom: calc(6 * var(--codex-book-scale)) !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-dynamic-filter .codex-filter-field-select,
+  #codex-content.codex-list-page .codex-list-control-rail .codex-filter-field-select {
+    width: 66.666% !important;
+    min-width: 0 !important;
+    max-width: 66.666% !important;
+    flex: 0 0 auto !important;
+    align-self: flex-start !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-dynamic-filter select:not(.codex-filter-field-select) {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    align-self: stretch !important;
+  }
+
+  #codex-content.codex-list-page .codex-list-control-rail .codex-sort-label select {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 }

@@ -46,30 +46,6 @@ function cacheCodexListState(config = codexCurrentListConfig) {
   });
 }
 
-function getCodexHexListStateConfig() {
-  return {
-    ...hexCodexListConfig,
-    listId: "codex-hex-list",
-    title: "Hexes"
-  };
-}
-
-function presetCodexHexListFilters(regionLabel = "all", terrain = "all") {
-  setCodexCachedListState(getCodexHexListStateConfig(), {
-    filters: [
-      { field: "Region", value: regionLabel || "all" },
-      { field: "Terrain", value: terrain || "all" }
-    ],
-    sortMode: "hex-id",
-    direction: "asc"
-  });
-}
-
-function openCodexHexesFiltered(regionLabel = "all", terrain = "all") {
-  presetCodexHexListFilters(regionLabel, terrain);
-  openCodexPage("hexes");
-}
-
 function getCodexListFilterOptionLabel(config, field, value) {
   if (!value || value === "all") return "All";
 
@@ -309,5 +285,3 @@ function renderCodexListPage(config) {
 window.registerCodexMobileListFilterUtility = registerCodexMobileListFilterUtility;
 window.openCodexListResult = openCodexListResult;
 window.resetCodexMobileListState = resetCodexMobileListState;
-window.presetCodexHexListFilters = presetCodexHexListFilters;
-window.openCodexHexesFiltered = openCodexHexesFiltered;

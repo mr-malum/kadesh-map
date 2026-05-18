@@ -438,7 +438,7 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 1099px), (max-height: 699px) {
   #codex-content {
     width: 100%;
     max-width: none;

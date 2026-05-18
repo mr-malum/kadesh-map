@@ -14,6 +14,7 @@
   }
 
   #codex-content.codex-detail-page .codex-detail-lower-pane {
+    position: relative !important;
     display: block !important;
   }
 
@@ -24,6 +25,11 @@
     padding: 0 !important;
     -webkit-mask-image: none !important;
     mask-image: none !important;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-main.codex-mobile-detail-swipe-animating {
+    position: relative !important;
+    overflow: hidden !important;
   }
 
   #codex-content.codex-detail-page .codex-detail-rail-section {
@@ -39,7 +45,22 @@
     grid-template-rows: auto minmax(0, 1fr) !important;
   }
 
+  #codex-content.codex-detail-page .codex-detail-main.codex-mobile-detail-swipe-animating .codex-detail-rail-section.active {
+    animation-duration: 220ms;
+    animation-timing-function: ease-out;
+    animation-fill-mode: both;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-main.codex-mobile-detail-swipe-next .codex-detail-rail-section.active {
+    animation-name: codex-mobile-detail-slide-in-from-right;
+  }
+
+  #codex-content.codex-detail-page .codex-detail-main.codex-mobile-detail-swipe-prev .codex-detail-rail-section.active {
+    animation-name: codex-mobile-detail-slide-in-from-left;
+  }
+
   #codex-content.codex-detail-page .codex-detail-rail-section > h3 {
+    position: relative !important;
     position: static !important;
     top: auto !important;
     z-index: auto !important;
@@ -53,6 +74,36 @@
     border: 0 !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+  }
+
+  #codex-content.codex-detail-page .codex-mobile-detail-swipe-indicators {
+    position: absolute;
+    inset: 8px 0 auto;
+    z-index: 2;
+
+    pointer-events: none;
+  }
+
+  #codex-content.codex-detail-page .codex-mobile-detail-swipe-indicator {
+    position: absolute;
+    top: 0;
+
+    color: rgba(47, 29, 16, 0.34);
+    font-family: 'Marcellus SC', Georgia, serif;
+    font-size: clamp(1rem, 4.6vw, 1.25rem);
+    line-height: 1;
+
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  #codex-content.codex-detail-page .codex-mobile-detail-swipe-indicator-prev {
+    left: 0;
+  }
+
+  #codex-content.codex-detail-page .codex-mobile-detail-swipe-indicator-next {
+    right: 0;
   }
 
   #codex-content.codex-detail-page .codex-detail-rail-section > h3::before {
@@ -95,5 +146,29 @@
 
   .codex-mobile-detail-section-row {
     min-height: 48px !important;
+  }
+}
+
+@keyframes codex-mobile-detail-slide-in-from-right {
+  from {
+    opacity: 0.48;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes codex-mobile-detail-slide-in-from-left {
+  from {
+    opacity: 0.48;
+    transform: translateX(-18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
