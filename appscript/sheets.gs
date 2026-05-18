@@ -53,6 +53,38 @@ function isOptionalAuditField_(field) {
   ].indexOf(field) !== -1;
 }
 
+function shouldForcePlainText_(field) {
+  return [
+    "Region_ID",
+    "Hex_ID",
+    "POI_ID",
+    "POI_Group_ID",
+    "Map_ID",
+    "NPC_ID",
+    "Entry_ID",
+    "Region_ID_Ref",
+    "Hex_ID_Ref",
+    "Home_ID_Ref",
+    "Owner_ID_Ref",
+    "Source_ID",
+    "Map_XY",
+    "Image",
+    "Session_ID"
+  ].indexOf(field) !== -1 || /_ID(_Ref)?$/.test(field);
+}
+
+function writeCellValue_(sheet, rowNumber, columnNumber, field, value) {
+  const cell = sheet.getRange(rowNumber, columnNumber);
+
+  if (shouldForcePlainText_(field)) {
+    cell.setNumberFormat("@");
+    cell.setValue(value === null || value === undefined ? "" : String(value));
+    return;
+  }
+
+  cell.setValue(value);
+}
+
 function findRowById_(sheet, idField, id) {
   const headers = getHeaders_(sheet);
   assertHeaders_(headers, [idField], sheet.getName());
@@ -65,7 +97,9 @@ function findRowById_(sheet, idField, id) {
     return { rowNumber: -1, headers, headerIndex };
   }
 
-  const values = sheet.getRange(2, idColumn, lastRow - 1, 1).getValues();
+  const range = sheet.getRange(2, idColumn, lastRow - 1, 1);
+  range.setNumberFormat("@");
+  const values = range.getDisplayValues();
   const needle = String(id || "").trim();
 
   for (let i = 0; i < values.length; i++) {
@@ -79,7 +113,7 @@ function findRowById_(sheet, idField, id) {
 
 function rowObjectFromRow_(sheet, rowNumber, headers) {
   if (rowNumber < 2) return null;
-  const values = sheet.getRange(rowNumber, 1, 1, headers.length).getValues()[0];
+  const values = sheet.getRange(rowNumber, 1, 1, headers.length).getDisplayValues()[0];
   const row = {};
   headers.forEach((header, i) => {
     if (header) row[header] = values[i];
@@ -94,15 +128,22 @@ function appendEntityRow_(entity, fields) {
   assertHeaders_(headers, requiredHeaders, sheet.getName());
 
   const now = new Date();
-  const row = headers.map(header => {
-    if (Object.prototype.hasOwnProperty.call(fields, header)) return fields[header];
-    if (header === "Created_At" || header === "CreatedAt") return now;
-    if (header === "Updated_At" || header === "UpdatedAt") return now;
-    return "";
+  const rowNumber = sheet.getLastRow() + 1;
+
+  headers.forEach((header, index) => {
+    let value = "";
+
+    if (Object.prototype.hasOwnProperty.call(fields, header)) {
+      value = fields[header];
+    } else if (header === "Created_At" || header === "CreatedAt") {
+      value = now;
+    } else if (header === "Updated_At" || header === "UpdatedAt") {
+      value = now;
+    }
+
+    writeCellValue_(sheet, rowNumber, index + 1, header, value);
   });
 
-  sheet.appendRow(row);
-  const rowNumber = sheet.getLastRow();
   return {
     rowNumber,
     row: rowObjectFromRow_(sheet, rowNumber, headers)
@@ -124,13 +165,13 @@ function updateEntityRow_(entity, id, fields) {
   requestedFields.forEach(field => {
     if (found.headerIndex[field] === undefined) return;
     const column = found.headerIndex[field] + 1;
-    sheet.getRange(found.rowNumber, column).setValue(fields[field]);
+    writeCellValue_(sheet, found.rowNumber, column, field, fields[field]);
   });
 
   if (found.headerIndex.Updated_At !== undefined && !Object.prototype.hasOwnProperty.call(fields, "Updated_At")) {
-    sheet.getRange(found.rowNumber, found.headerIndex.Updated_At + 1).setValue(new Date());
+    writeCellValue_(sheet, found.rowNumber, found.headerIndex.Updated_At + 1, "Updated_At", new Date());
   } else if (found.headerIndex.UpdatedAt !== undefined && !Object.prototype.hasOwnProperty.call(fields, "UpdatedAt")) {
-    sheet.getRange(found.rowNumber, found.headerIndex.UpdatedAt + 1).setValue(new Date());
+    writeCellValue_(sheet, found.rowNumber, found.headerIndex.UpdatedAt + 1, "UpdatedAt", new Date());
   }
 
   return {
