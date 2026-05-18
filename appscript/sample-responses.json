@@ -7,19 +7,14 @@
     "rowNumber": 126,
     "row": {
       "POI_ID": "POI-0124",
-      "Name": "The Salt-Crowned Shrine",
-      "POI_Type": "Shrine",
-      "Hex_ID_Ref": "HEX-0123",
-      "Region_ID_Ref": "REG-0007",
       "POI_Group_ID": "PGRP-0002",
+      "Name": "The Salt-Crowned Shrine",
+      "Hex_ID_Ref": "HEX-0123",
+      "POI_Type": "Shrine",
       "Notoriety Tier": "Local",
-      "Summary": "A wind-scoured shrine overlooking the coast.",
-      "Description": "Ancient stones crusted with sea salt surround a cracked altar.",
-      "Player_Visible": "TRUE",
-      "Created_At": "2026-05-17T22:45:00.000Z",
-      "Created_By": "writer@example.com",
-      "Updated_At": "2026-05-17T22:45:00.000Z",
-      "Updated_By": "writer@example.com"
+      "Population": "0",
+      "Lore": "Ancient stones crusted with sea salt surround a cracked altar.",
+      "Image": ""
     },
     "actor": {
       "actorEmail": "writer@example.com",
@@ -35,10 +30,8 @@
     "row": {
       "POI_ID": "POI-0042",
       "Name": "Existing POI",
-      "Summary": "Updated short player-facing summary.",
-      "Notoriety Tier": "Regional",
-      "Updated_At": "2026-05-17T22:46:00.000Z",
-      "Updated_By": "writer@example.com"
+      "Lore": "Updated test lore from the Apps Script write-back prototype.",
+      "Notoriety Tier": "Regional"
     },
     "actor": {
       "actorEmail": "writer@example.com",
@@ -77,7 +70,7 @@
     "rowNumber": 44,
     "row": {
       "POI_ID": "POI-0042",
-      "Image_Drive_ID": "1abcDEFghiJKLmnoPQRstuVWxyz"
+      "Image": "1abcDEFghiJKLmnoPQRstuVWxyz"
     },
     "actor": {
       "actorEmail": "writer@example.com",
@@ -92,14 +85,14 @@
     "rowNumber": 19,
     "row": {
       "Entry_ID": "JRN-00018",
+      "Entry_Body": "The shrine bell rings only when something beneath the bay moves.",
+      "Entry_Type": "secret",
+      "Source_Type": "poi",
+      "Source_ID": "POI-0042",
       "Timestamp": "2026-05-17T22:47:00.000Z",
       "Created_By": "writer@example.com",
       "Session_ID": "S004",
-      "Source_Type": "poi",
-      "Source_ID": "POI-0042",
-      "Entry_Type": "secret",
-      "Entry_Body": "The shrine bell rings only when something beneath the bay moves.",
-      "Player_Visible": "FALSE"
+      "Visibility": "dm"
     },
     "actor": {
       "actorEmail": "writer@example.com",
