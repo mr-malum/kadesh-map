@@ -270,6 +270,221 @@ async function handleKadeshCreatePoiSubmit(event) {
   }
 }
 
+function getCurrentKadeshPoiRecord() {
+  const current = typeof getCurrentCodexPage === "function"
+    ? getCurrentCodexPage()
+    : null;
+
+  if (!current || current.type !== "poi" || !current.id) return null;
+  return db?.poisById?.[current.id] || null;
+}
+
+function injectKadeshPoiDetailWritebackButton() {
+  if (!isKadeshWritebackEnabled()) return;
+
+  const poi = getCurrentKadeshPoiRecord();
+  if (!poi) return;
+
+  const overviewPanel = document.querySelector("#codex-content.codex-poi-detail-page .codex-detail-overview-panel");
+  if (!overviewPanel || document.getElementById("kadesh-edit-poi-prototype-button")) return;
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "kadesh-writeback-toolbar kadesh-writeback-detail-toolbar";
+  toolbar.innerHTML = `
+    <button
+      id="kadesh-edit-poi-prototype-button"
+      class="kadesh-writeback-button"
+      type="button"
+    >
+      Edit POI
+    </button>
+  `;
+
+  overviewPanel.prepend(toolbar);
+
+  document
+    .getElementById("kadesh-edit-poi-prototype-button")
+    ?.addEventListener("click", function () {
+      openKadeshEditPoiModal(poi);
+    });
+}
+
+function openKadeshEditPoiModal(poi) {
+  if (!poi?.POI_ID) {
+    window.alert("No POI record found to edit.");
+    return;
+  }
+
+  closeKadeshWritebackModal();
+
+  const modal = document.createElement("div");
+  modal.id = "kadesh-writeback-modal";
+  modal.className = "kadesh-writeback-modal";
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-label", "Edit POI");
+
+  modal.innerHTML = `
+    <div class="kadesh-writeback-card">
+      <div class="kadesh-writeback-card-header">
+        <div>
+          <p class="kadesh-writeback-kicker">Prototype Write-Back</p>
+          <h3>Edit POI</h3>
+          <p class="kadesh-writeback-subtitle">${escapeHtml(poi.POI_ID)}</p>
+        </div>
+        <button
+          class="kadesh-writeback-close"
+          type="button"
+          aria-label="Close edit POI form"
+        >✕</button>
+      </div>
+
+      <form id="kadesh-edit-poi-form" class="kadesh-writeback-form" data-poi-id="${escapeHtml(poi.POI_ID)}">
+        <label>
+          <span>Name *</span>
+          <input name="Name" type="text" required value="${escapeHtml(poi.Name || "")}">
+        </label>
+
+        <label>
+          <span>Hex ID Ref</span>
+          <input name="Hex_ID_Ref" type="text" value="${escapeHtml(poi.Hex_ID_Ref || "")}" placeholder="300:300">
+        </label>
+
+        <label>
+          <span>POI Group ID</span>
+          <input name="POI_Group_ID" type="text" value="${escapeHtml(poi.POI_Group_ID || "")}" placeholder="ERIKOL or blank">
+        </label>
+
+        <div class="kadesh-writeback-grid-two">
+          <label>
+            <span>POI Type</span>
+            <input name="POI_Type" type="text" value="${escapeHtml(poi.POI_Type || "")}">
+          </label>
+
+          <label>
+            <span>Notoriety Tier</span>
+            <input name="Notoriety Tier" type="text" value="${escapeHtml(poi["Notoriety Tier"] || "")}">
+          </label>
+        </div>
+
+        <label>
+          <span>Population</span>
+          <input name="Population" type="text" value="${escapeHtml(poi.Population || "")}">
+        </label>
+
+        <label>
+          <span>Image Drive ID</span>
+          <input name="Image" type="text" value="${escapeHtml(poi.Image || "")}" placeholder="Drive file ID or blank">
+        </label>
+
+        <label>
+          <span>Lore</span>
+          <textarea name="Lore" rows="9">${escapeHtml(poi.Lore || "")}</textarea>
+        </label>
+
+        <div class="kadesh-writeback-actions">
+          <button class="kadesh-writeback-secondary-button" type="button" data-kadesh-writeback-cancel>Cancel</button>
+          <button class="kadesh-writeback-button" type="submit">Save POI</button>
+        </div>
+
+        <p class="kadesh-writeback-note">
+          Saves directly to Google Sheets. Current on-screen data still comes from the published CSV and may require refresh after Google republishes it.
+        </p>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal
+    .querySelector(".kadesh-writeback-close")
+    ?.addEventListener("click", closeKadeshWritebackModal);
+
+  modal
+    .querySelector("[data-kadesh-writeback-cancel]")
+    ?.addEventListener("click", closeKadeshWritebackModal);
+
+  modal.addEventListener("click", function (event) {
+    if (event.target === modal) {
+      closeKadeshWritebackModal();
+    }
+  });
+
+  modal
+    .querySelector("#kadesh-edit-poi-form")
+    ?.addEventListener("submit", handleKadeshEditPoiSubmit);
+
+  modal.querySelector("input[name='Name']")?.focus();
+}
+
+async function handleKadeshEditPoiSubmit(event) {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const submitButton = form.querySelector("button[type='submit']");
+  const poiId = form.dataset.poiId;
+
+  const fields = {
+    POI_Group_ID: getFormValue_(form, "POI_Group_ID"),
+    Name: getFormValue_(form, "Name"),
+    Hex_ID_Ref: getFormValue_(form, "Hex_ID_Ref"),
+    POI_Type: getFormValue_(form, "POI_Type"),
+    "Notoriety Tier": getFormValue_(form, "Notoriety Tier"),
+    Population: getFormValue_(form, "Population"),
+    Lore: getFormValue_(form, "Lore"),
+    Image: getFormValue_(form, "Image")
+  };
+
+  submitButton.disabled = true;
+  submitButton.textContent = "Saving...";
+
+  try {
+    const result = await postKadeshWriteback({
+      action: "updateRecord",
+      entityType: "poi",
+      id: poiId,
+      fields
+    });
+
+    closeKadeshWritebackModal();
+
+    window.alert(
+      `Saved ${result.id}.\n\nRefresh the Codex after the published Sheet CSV catches up.`
+    );
+  } catch (error) {
+    window.alert(`Edit POI failed:\n\n${error.message}`);
+  } finally {
+    submitButton.disabled = false;
+    submitButton.textContent = "Save POI";
+  }
+}
+
+function runKadeshWritebackAutoInjectors() {
+  injectKadeshPoiDetailWritebackButton();
+}
+
+function startKadeshWritebackObserver() {
+  if (!isKadeshWritebackEnabled()) return;
+
+  const target = document.getElementById("codex-content");
+  if (!target || target.dataset.kadeshWritebackObserved === "true") return;
+
+  target.dataset.kadeshWritebackObserved = "true";
+
+  const observer = new MutationObserver(() => {
+    window.requestAnimationFrame(runKadeshWritebackAutoInjectors);
+  });
+
+  observer.observe(target, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class"]
+  });
+
+  runKadeshWritebackAutoInjectors();
+}
+
 (function patchPoiIndexForWritebackPrototype() {
   if (!isKadeshWritebackEnabled()) return;
 
@@ -282,7 +497,16 @@ async function handleKadeshCreatePoiSubmit(event) {
   };
 })();
 
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startKadeshWritebackObserver);
+} else {
+  startKadeshWritebackObserver();
+}
+
 window.KADESH_WRITEBACK_PROTOTYPE = KADESH_WRITEBACK_PROTOTYPE;
 window.postKadeshWriteback = postKadeshWriteback;
 window.openKadeshCreatePoiModal = openKadeshCreatePoiModal;
+window.openKadeshEditPoiModal = openKadeshEditPoiModal;
+window.injectKadeshPoiWritebackButton = injectKadeshPoiWritebackButton;
+window.injectKadeshPoiDetailWritebackButton = injectKadeshPoiDetailWritebackButton;
 window.clearKadeshWritebackSecret = clearKadeshWritebackSecret;
