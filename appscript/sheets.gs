@@ -40,6 +40,19 @@ function assertHeaders_(headers, requiredHeaders, contextLabel) {
   }
 }
 
+function isOptionalAuditField_(field) {
+  return [
+    "Created_At",
+    "CreatedAt",
+    "Created_By",
+    "CreatedBy",
+    "Updated_At",
+    "UpdatedAt",
+    "Updated_By",
+    "UpdatedBy"
+  ].indexOf(field) !== -1;
+}
+
 function findRowById_(sheet, idField, id) {
   const headers = getHeaders_(sheet);
   assertHeaders_(headers, [idField], sheet.getName());
@@ -104,16 +117,19 @@ function updateEntityRow_(entity, id, fields) {
     throw new Error(`${entity.label} not found: ${id}`);
   }
 
-  assertHeaders_(found.headers, Object.keys(fields), sheet.getName());
+  const requestedFields = Object.keys(fields);
+  const requiredHeaders = requestedFields.filter(field => !isOptionalAuditField_(field));
+  assertHeaders_(found.headers, requiredHeaders, sheet.getName());
 
-  Object.keys(fields).forEach(field => {
+  requestedFields.forEach(field => {
+    if (found.headerIndex[field] === undefined) return;
     const column = found.headerIndex[field] + 1;
     sheet.getRange(found.rowNumber, column).setValue(fields[field]);
   });
 
-  if (found.headerIndex.Updated_At !== undefined) {
+  if (found.headerIndex.Updated_At !== undefined && !Object.prototype.hasOwnProperty.call(fields, "Updated_At")) {
     sheet.getRange(found.rowNumber, found.headerIndex.Updated_At + 1).setValue(new Date());
-  } else if (found.headerIndex.UpdatedAt !== undefined) {
+  } else if (found.headerIndex.UpdatedAt !== undefined && !Object.prototype.hasOwnProperty.call(fields, "UpdatedAt")) {
     sheet.getRange(found.rowNumber, found.headerIndex.UpdatedAt + 1).setValue(new Date());
   }
 
