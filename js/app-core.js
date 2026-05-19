@@ -47,7 +47,7 @@ const map = L.map("map", {
   maxBoundsViscosity: 0.5
 });
 
-const DEFAULT_CAMPAIGN_MAP_IMAGE = "assets/Kadesh.png";
+const DEFAULT_CAMPAIGN_MAP_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6417' height='7575' viewBox='0 0 6417 7575'%3E%3Crect width='6417' height='7575' fill='transparent'/%3E%3C/svg%3E";
 const imageWidth = 6417;
 const imageHeight = 7575;
 const bounds = [[0, 0], [imageHeight, imageWidth]];
